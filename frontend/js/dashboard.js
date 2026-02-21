@@ -4,6 +4,16 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   // ============================================
+  // Hide page loader after 2 seconds
+  // ============================================
+  setTimeout(() => {
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+      loader.classList.add('hidden');
+    }
+  }, 2000);
+
+  // ============================================
   // Auth Check
   // ============================================
   if (!API.auth.isAuthenticated()) {
