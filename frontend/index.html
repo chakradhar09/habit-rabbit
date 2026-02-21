@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Habit Rabbit - Build better habits, one day at a time. Visual habit tracking and progress monitoring.">
+  <meta name="theme-color" content="#6366f1">
+  
+  <title>Habit Rabbit - Build Better Habits 🐰</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/auth.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐰</text></svg>">
+</head>
+<body>
+  <main class="auth-page">
+    <!-- Animated Background Shapes -->
+    <div class="auth-shapes">
+      <div class="auth-shape"></div>
+      <div class="auth-shape"></div>
+      <div class="auth-shape"></div>
+    </div>
+    
+    <!-- Brand Logo (Outside Card) -->
+    <div class="auth-brand">
+      <span class="auth-logo-icon">🐰</span>
+      <span class="auth-logo-text">Habit Rabbit</span>
+    </div>
+    
+    <!-- Auth Container -->
+    <div class="auth-container">
+      <div class="auth-card">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" id="login-tab">Sign In</button>
+          <button type="button" class="auth-tab" id="register-tab">Create Account</button>
+        </div>
+          
+          <!-- Login Form -->
+          <form class="auth-form active" id="login-form">
+            <!-- Error Alert -->
+            <div class="auth-error" id="login-error" style="display: none;">
+              <span class="auth-error-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </span>
+              <p class="auth-error-text"></p>
+            </div>
+            
+            <!-- Email -->
+            <div class="form-group">
+              <label class="form-label" for="login-email">Email Address</label>
+              <input 
+                type="email" 
+                class="form-input" 
+                id="login-email" 
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              >
+            </div>
+            
+            <!-- Password -->
+            <div class="form-group">
+              <label class="form-label" for="login-password">Password</label>
+              <div class="password-input-container">
+                <input 
+                  type="password" 
+                  class="form-input" 
+                  id="login-password" 
+                  name="password"
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                  required
+                >
+                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg class="eye-closed" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Submit -->
+            <div class="auth-submit">
+              <button type="submit" class="btn btn-primary btn-lg btn-block" id="login-submit">
+                Sign In
+              </button>
+            </div>
+          </form>
+          
+          <!-- Register Form -->
+          <form class="auth-form" id="register-form">
+            <!-- Error Alert -->
+            <div class="auth-error" id="register-error" style="display: none;">
+              <span class="auth-error-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </span>
+              <p class="auth-error-text"></p>
+            </div>
+            
+            <!-- Email -->
+            <div class="form-group">
+              <label class="form-label" for="register-email">Email Address</label>
+              <input 
+                type="email" 
+                class="form-input" 
+                id="register-email" 
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              >
+            </div>
+            
+            <!-- Password -->
+            <div class="form-group">
+              <label class="form-label" for="register-password">Password</label>
+              <div class="password-input-container">
+                <input 
+                  type="password" 
+                  class="form-input" 
+                  id="register-password" 
+                  name="password"
+                  placeholder="Create a password (min. 6 characters)"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                >
+                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg class="eye-closed" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+              <!-- Password Strength -->
+              <div class="password-strength">
+                <div class="password-strength-bar"></div>
+                <div class="password-strength-bar"></div>
+                <div class="password-strength-bar"></div>
+              </div>
+              <span class="password-strength-text"></span>
+            </div>
+            
+            <!-- Confirm Password -->
+            <div class="form-group">
+              <label class="form-label" for="register-confirm-password">Confirm Password</label>
+              <div class="password-input-container">
+                <input 
+                  type="password" 
+                  class="form-input" 
+                  id="register-confirm-password" 
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  autocomplete="new-password"
+                  minlength="6"
+                  required
+                >
+                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg class="eye-closed" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Submit -->
+            <div class="auth-submit">
+              <button type="submit" class="btn btn-primary btn-lg btn-block" id="register-submit">
+                Create Account
+              </button>
+            </div>
+          </form>
+        
+        <!-- Footer -->
+        <footer class="auth-footer">
+          <p>By continuing, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+        </footer>
+      </div>
+    </div>
+    
+    <!-- Tagline (Below Card) -->
+    <div class="auth-tagline">
+      <p>The right place to start building better habits</p>
+    </div>
+  </main>
+  
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
