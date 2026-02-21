@@ -31,7 +31,7 @@ const taskSkeleton = document.getElementById('task-skeleton');
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!API.auth.isAuthenticated()) {
     window.location.href = 'index.html';
     return;
   }
@@ -101,7 +101,7 @@ function setupEventListeners() {
 // Load today's tasks
 async function loadTodaysTasks() {
   try {
-    const response = await tasksAPI.getTodaysTasks();
+    const response = await API.tasks.getToday();
     if (response.success) {
       tasks = response.data.tasks;
       taskSkeleton.classList.add('hidden');
@@ -119,7 +119,7 @@ async function loadTodaysTasks() {
 // Load stats
 async function loadStats() {
   try {
-    const response = await analyticsAPI.getStats();
+    const response = await API.analytics.getStats();
     if (response.success) {
       const { todayCompletions, totalTasks, currentStreak, totalCompletions } = response.data;
       const percentage = totalTasks > 0 ? Math.round((todayCompletions / totalTasks) * 100) : 0;
@@ -203,7 +203,7 @@ async function handleAddTask(e) {
   if (!title) return;
 
   try {
-    const response = await tasksAPI.createTask(title);
+    const response = await API.tasks.create(title);
     if (response.success) {
       tasks.unshift(response.data.task);
       renderTasks();
@@ -234,7 +234,7 @@ async function toggleTaskComplete(taskId) {
   taskCard.classList.toggle('completed');
 
   try {
-    const response = await tasksAPI.toggleComplete(taskId);
+    const response = await API.tasks.toggleComplete(taskId);
     if (response.success) {
       // Update progress
       const total = tasks.length;
@@ -274,7 +274,7 @@ async function handleDelete(deleteHistory) {
   if (!deleteTaskId) return;
 
   try {
-    const response = await tasksAPI.deleteTask(deleteTaskId, deleteHistory);
+    const response = await API.tasks.delete(deleteTaskId, deleteHistory);
     if (response.success) {
       tasks = tasks.filter(t => t._id !== deleteTaskId);
       renderTasks();
@@ -300,12 +300,12 @@ function toggleAnalytics() {
   
   if (isHidden) {
     analyticsSection.classList.remove('hidden');
-    toggleAnalyticsBtn.querySelector('.btn-icon').textContent = '📈';
+    toggleAnalyticsBtn.querySelector('.btn-icon').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>';
     loadProgressChart('7d');
     renderHeatmapSelector();
   } else {
     analyticsSection.classList.add('hidden');
-    toggleAnalyticsBtn.querySelector('.btn-icon').textContent = '📊';
+    toggleAnalyticsBtn.querySelector('.btn-icon').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>';
   }
 }
 
@@ -321,7 +321,7 @@ function handleRangeChange(range) {
 // Load progress chart
 async function loadProgressChart(range) {
   try {
-    const response = await analyticsAPI.getProgress(range);
+    const response = await API.analytics.getProgress(range);
     if (response.success) {
       renderProgressChart(response.data.progress);
     }
@@ -361,16 +361,16 @@ function renderProgressChart(data) {
       datasets: [{
         label: 'Completion %',
         data: data.map(d => d.percentage),
-        borderColor: '#007AFF',
+        borderColor: '#4F46E5',
         backgroundColor: isBar 
-          ? data.map(d => d.percentage >= 80 ? 'rgba(52, 199, 89, 0.65)' 
-                        : d.percentage >= 40 ? 'rgba(0, 122, 255, 0.50)' 
-                        : 'rgba(255, 149, 0, 0.50)')
-          : 'rgba(0, 122, 255, 0.10)',
+          ? data.map(d => d.percentage >= 80 ? 'rgba(34, 197, 94, 0.65)' 
+                        : d.percentage >= 40 ? 'rgba(79, 70, 229, 0.50)' 
+                        : 'rgba(245, 166, 35, 0.50)')
+          : 'rgba(79, 70, 229, 0.08)',
         fill: !isBar,
         tension: 0.4,
-        pointBackgroundColor: '#007AFF',
-        pointBorderColor: '#007AFF',
+        pointBackgroundColor: '#4F46E5',
+        pointBorderColor: '#4F46E5',
         pointRadius: isBar ? 0 : 4,
         pointHoverRadius: isBar ? 0 : 6,
         borderRadius: isBar ? 6 : 0,
@@ -390,10 +390,10 @@ function renderProgressChart(data) {
           display: false
         },
         tooltip: {
-          backgroundColor: 'rgba(28, 28, 30, 0.92)',
+          backgroundColor: 'rgba(31, 41, 55, 0.95)',
           titleColor: '#FFFFFF',
-          bodyColor: 'rgba(235, 235, 245, 0.6)',
-          borderColor: 'rgba(255, 255, 255, 0.10)',
+          bodyColor: 'rgba(229, 231, 235, 0.8)',
+          borderColor: 'rgba(229, 231, 235, 0.15)',
           borderWidth: 1,
           padding: 12,
           cornerRadius: 8,
@@ -406,11 +406,11 @@ function renderProgressChart(data) {
       scales: {
         x: {
           grid: {
-            color: 'rgba(255, 255, 255, 0.05)',
+            color: 'rgba(0, 0, 0, 0.05)',
             display: !isBar
           },
           ticks: {
-            color: 'rgba(235, 235, 245, 0.3)',
+            color: '#9CA3AF',
             maxRotation: 45,
             maxTicksLimit: 15
           }
@@ -419,10 +419,10 @@ function renderProgressChart(data) {
           beginAtZero: true,
           max: 100,
           grid: {
-            color: 'rgba(255, 255, 255, 0.05)'
+            color: 'rgba(0, 0, 0, 0.05)'
           },
           ticks: {
-            color: 'rgba(235, 235, 245, 0.3)',
+            color: '#9CA3AF',
             callback: (value) => value + '%'
           }
         }
@@ -459,7 +459,7 @@ function renderHeatmapSelector() {
 // Load heatmap
 async function loadHeatmap(taskId) {
   try {
-    const response = await analyticsAPI.getHeatmap(taskId);
+    const response = await API.analytics.getHeatmap(taskId);
     if (response.success) {
       renderHeatmap(response.data.heatmap);
     }
@@ -532,7 +532,7 @@ function renderHeatmap(data) {
           className += ' missed';
         }
         const label = formatDate(day.date);
-        grid.innerHTML += `<div class="${className}" data-date="${label}" title="${label}${day.completed === true ? ' ✓' : day.completed === false ? ' ✗' : ''}"></div>`;
+        grid.innerHTML += `<div class="${className}" data-date="${label}" title="${label}${day.completed === true ? ' Done' : day.completed === false ? ' Missed' : ''}"></div>`;
       }
     }
   }
@@ -562,8 +562,7 @@ function renderHeatmap(data) {
 
 // Handle logout
 function handleLogout() {
-  removeToken();
-  window.location.href = 'index.html';
+  API.auth.logout();
 }
 
 // Toast notification
@@ -571,7 +570,7 @@ function showToast(message, type = 'success') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `
-    <span class="toast-icon">${type === 'success' ? '✓' : '⚠'}</span>
+    <span class="toast-icon">${type === 'success' ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'}</span>
     <span class="toast-message">${escapeHtml(message)}</span>
   `;
   
