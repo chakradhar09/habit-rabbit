@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auth Check
   // ============================================
   if (!API.auth.isAuthenticated()) {
-    window.location.href = '/frontend/index.html';
+    window.location.href = '/index.html';
     return;
   }
 

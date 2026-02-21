@@ -61,7 +61,7 @@ const API = (() => {
         if (response.status === 401) {
           removeToken();
           removeUser();
-          window.location.href = '/frontend/index.html';
+          window.location.href = '/index.html';
           throw new Error('Session expired. Please login again.');
         }
         
@@ -129,7 +129,7 @@ const API = (() => {
     logout: () => {
       removeToken();
       removeUser();
-      window.location.href = '/frontend/index.html';
+      window.location.href = '/index.html';
     },
     
     /**

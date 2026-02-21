@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check if already authenticated
   // ============================================
   if (API.auth.isAuthenticated()) {
-    window.location.href = '/frontend/dashboard.html';
+    window.location.href = '/dashboard.html';
     return;
   }
 
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loginSubmit.classList.add('btn-success');
       
       setTimeout(() => {
-        window.location.href = '/frontend/dashboard.html';
+        window.location.href = '/dashboard.html';
       }, 500);
       
     } catch (error) {
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
       registerSubmit.classList.add('btn-success');
       
       setTimeout(() => {
-        window.location.href = '/frontend/dashboard.html';
+        window.location.href = '/dashboard.html';
       }, 500);
       
     } catch (error) {
