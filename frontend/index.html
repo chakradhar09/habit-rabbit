@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Build better habits with Habit Rabbit — track daily habits, visualize streaks, and see your progress with beautiful analytics.">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <title>Habit Rabbit - Build Better Habits</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-container">
+    <!-- Background decoration -->
+    <div class="bg-decoration">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="auth-card">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="logo">
+          <svg width="44" height="44" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="30" r="22" stroke="url(#authGrad)" stroke-width="3" fill="none" opacity="0.4"/>
+            <path d="M22 18 L22 42 M22 30 L38 30 M38 18 L38 42" stroke="url(#authGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="38" cy="18" r="3" fill="#FF9500"/>
+            <circle cx="38" cy="30" r="2.5" fill="#FF9500" opacity="0.7"/>
+            <circle cx="38" cy="42" r="2" fill="#FF9500" opacity="0.5"/>
+            <defs>
+              <linearGradient id="authGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#007AFF;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h1 class="app-title">Habit Rabbit</h1>
+        <p class="app-subtitle">Build better habits, one day at a time</p>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Sign In</button>
+        <button class="tab-btn" data-tab="register">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form active">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input 
+            type="email" 
+            id="login-email" 
+            placeholder="Enter your email"
+            autocomplete="email"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-loader"></span>
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form">
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input 
+            type="email" 
+            id="register-email" 
+            placeholder="Enter your email"
+            autocomplete="email"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input 
+            type="password" 
+            id="register-password" 
+            placeholder="Create a password (min 6 chars)"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="register-confirm">Confirm Password</label>
+          <input 
+            type="password" 
+            id="register-confirm" 
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          >
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span class="btn-text">Create Account</span>
+          <span class="btn-loader"></span>
+        </button>
+      </form>
+
+      <!-- Error/Success Message -->
+      <div id="auth-message" class="auth-message"></div>
+    </div>
+
+    <!-- Footer -->
+    <p class="footer-text">Start tracking your habits today</p>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

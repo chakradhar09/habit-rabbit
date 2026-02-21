@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Rabbit - UI/UX Style Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* =====================
+       Design System Tokens
+       ===================== */
+    :root {
+      /* Colors - Primary (Vibrant Blue/Purple) */
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      
+      /* Colors - Secondary (Vibrant Teal/Cyan) */
+      --secondary: #06b6d4;
+      --secondary-dark: #0891b2;
+      --secondary-light: #22d3ee;
+      --accent: #f59e0b;
+      
+      /* Colors - Semantic */
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --info: #3b82f6;
+      
+      /* Backgrounds (Rich dark with depth) */
+      --bg-dark: #0a0e1a;
+      --bg-card: #131720;
+      --bg-elevated: #1a1f2e;
+      --bg-input: #1e2433;
+      --bg-hover: #252b3b;
+      
+      /* Text (High contrast for professionalism) */
+      --text-primary: #ffffff;
+      --text-secondary: #a1a9b8;
+      --text-muted: #6b7385;
+      
+      /* Spacing (Professional 8px grid) */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-2xl: 48px;
+      --spacing-3xl: 64px;
+      
+      /* Border Radius (Modern, consistent) */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-full: 9999px;
+      
+      /* Shadows (Layered for depth) */
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      /* Transitions (Smooth, professional) */
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* =====================
+       Base Styles
+       ===================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-image: 
+        radial-gradient(at 20% 30%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+        radial-gradient(at 80% 70%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* =====================
+       Layout
+       ===================== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-xl);
+    }3xl) 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: var(--spacing-2xl);
+      background: rgba(19, 23, 32, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px
+      text-align: center;
+      padding: var(--spacing-2xl) 0;
+      border-bottom: 2px solid var(--bg-card);
+      margin-bottom: var(--spacing-2xl);
+    }
+
+    .brand-logo {
+      font-size: 64px;
+      margin-bottom: var(--spacing-md);
+    }40px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, #ffffff 0%, #a6a9c8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 16px;
+    }radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: var(--shadow-lg
+
+    .section {
+      margin-bottom: var(--spacing-2xl);
+      padding: var(--spacing-xl);
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-botto2px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--bg-input);
+      color: var(--text-primary);
+      letter-spacing: -0.01em
+    .section-subtitle {
+      font-size: 18px;
+      font-weight: 600;
+      margin: var(--spacing-lg) 0 var(--spacing-md);
+      color: var(--text-secondary);
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--spacing-md);
+    }
+
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+
+    /* =====================
+       Color Swatches
+       ===================== */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--spacing-md);
+    }
+
+    .color-swatch {
+      border-radius: var(--border-radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .color-block {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .color-info {
+      padding: var(--spacing-md);
+      background: var(--bg-dark);
+    }
+
+    .color-name {
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .color-value {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* =====================
+       Typography
+       ===================== */
+    .type-sample {
+      padding: var(--spacing-md);
+      background: var(--bg-input);
+      border-radius: var(--border-radius-xs);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .type-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: var(--spacing-sm);
+      font-family: 'Courier New', monospace;
+    }600; line-height: 1.3; letter-spacing: -0.02em; }
+    .heading-2 { font-size: 24px; font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+    .heading-3 { font-size: 20px; font-weight: 500; line-height: 1.5; }
+    .heading-4 { font-size: 18px; font-weight: 500; line-height: 1.5; }
+    .body-large { font-size: 16px; font-weight: 400; line-height: 1.7; }
+    .body-base { font-size: 15px; font-weight: 400; line-height: 1.7; }
+    .body-small { font-size: 14px; font-weight: 400; line-height: 1.6; }
+    .body-tiny { font-size: 13px; font-weight: 400; line-height: 1.5; }
+    .body-small { font-size: 13px; font-weight: 400; line-height: 1.5; }
+    .body-tiny { font-size: 12px; font-weight: 400; line-height: 1.4; }
+
+    /* =====================
+       Buttons
+       ===================== */
+    .btn {
+      justify-content: center;
+      gap: var(--spacing-sm);
+      padding: 11px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-decoration: none;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+      opacity: 0;
+      transition: var(--transition-base);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4), var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5), var(--shadow-md);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4), var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5), var(--shadow-md);
+    }
+
+    .btn-ghost {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-hover);
+      border-color: rgba(99, 102, 241, 0.5);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4), var(--shadow-sm);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5), var(--shadow-md);
+    }
+
+    .btn-sm {
+      padding: 8px 18px;
+      font-size: 14px;
+    }
+
+    .btn-lg {
+      padding: 14px 32px;
+      font-size: 17px;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow0.4;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* =====================
+       Task Cards
+       ===================== */
+    .task-card {
+      display:1px solid var(--bg-input);
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .task-card:hover {
+      border-color: var(--primary-light);
+      background: var(--bg-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .task-card.completed {
+      border-color: rgba(94, 234, 212, 0.3);
+      background: rgba(94, 234, 212, 0.05);
+    }
+
+    .task-card.completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--text-muted);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .task-card.completed .task-checkbox {
+      background: var(--secondary);
+      border-color: var(--secondary);
+    }
+
+    .task-card.completed .task-checkbox::after {
+      content: '✓';
+      color: var(--bg-dark);
+      font-weight: 600;
+      font-size: 14px
+
+    .task-card.completed .task-checkbox::after {
+      content: '✓';
+      color: white;
+      font-weight: 500;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+
+    .task-description {
+      font-size: 14
+
+    .task-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .task-description {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition-base);
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .btn-icon:hover {
+      background: var(--bg-hover);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: var(--text-primary);
+    }
+
+    /* =====================
+       Input Fields
+       ===================== */
+    .input-group {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-secondary);
+    }
+
+    .input-fie1px solid transparent;
+      border-radius: var(--border-radius-xs);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .input-field::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      background: var(--bg-hover);
+      box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.1);
+    }
+
+    .input-field.error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.1);
+    }
+
+    .input-field.error {
+      border-color: var(--danger);
+    }
+
+    .input-error {
+      display: block;
+      margin-top: var(--spacing-xs);
+      font-size: 13px;
+      color: var(--danger);
+    }
+
+    .input-field:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* =====================
+       Stat Cards
+       ====================card);
+      border: 1px solid var(--bg-input);
+      border-radius: var(--border-radius-sm);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      background: var(--bg-input);
+      border-color: var(--primary-light);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-icon {
+      font-size: 28px;
+      opacity: 0.8;
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* =====================
+       Animations
+       ===================== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse-success {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes checkbounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .demo-bounce {
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    .demo-fade {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .demo-slide {
+      animation: slideUp 0.3s ease-out;
+    }
+
+    .demo-pulse {
+      animation: pulse-success 0.6s ease-out infinite;
+    }
+
+    /* =====================
+       Spacing Scale
+       ===================== */
+    .spacing-demo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .spacing-box {
+      background: var(--primary);
+      border-radius: var(--border-radius-xs);
+    }
+
+    .spacing-label {
+      min-width: 80px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* =====================
+       Code Blocks
+       ===================== */
+    .code-block {
+      background: var(--bg-dark);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-xs);
+      overflow-x: auto;
+      margin-top: var(--spacing-sm);
+      position: relative;
+    }
+
+    .code-block code {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: var(--spacing-sm);
+      right: var(--spacing-sm);
+      padding: 6px 12px;
+      background: var(--bg-input);
+      border: none;
+      border-radius: var(--border-radius-xs);
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    /* =====================
+       Icons
+       ===================== */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: var(--spacing-md);
+    }
+
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md);
+      background: var(--bg-input);
+      border-radius: var(--border-radius-xs);
+      text-align: center;
+    }
+
+    .icon-symbol {
+      font-size: 32px;
+    }
+
+    .icon-name {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* =====================
+       Progress Elements
+       ===================== */
+    .progress-bar {
+      width: 100%;
+      height: 8px;var(--secondary
+      background: var(--bg-input);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-ring {
+      width: 120px;
+      height: 120px;
+      position: relative;
+    }
+
+    .progress-ring svg {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 8;
+    }
+
+    .progress-ring-bg {
+      stroke: var(--bg-input);
+    }
+
+    .progress-ring-fill {
+      stroke: var(--primary);
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* =====================
+       Utilities
+       ===================== */
+    .mb-0 { margin-bottom: 0; }
+    .mb-sm { margin-bottom: var(--spacing-sm); }
+    .mb-md { margin-bottom: var(--spacing-md); }
+    .mb-lg { margin-bottom: var(--spacing-lg); }
+
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
+
+    /* =====================
+       Responsive
+       ===================== */
+    @media (max-width: 768px) {
+      .container {
+        padding: var(--spacing-md);
+      }
+
+      .section {
+        padding: var(--spacing-md);
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =====================
+       Preset Demos
+       ===================== */
+    .demo-wrapper {
+      padding: var(--spacing-lg);
+      background: var(--bg-dark);
+      border-radius: var(--border-radius-xs);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .preview-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: var(--spacing-md);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand-logo">🐰</div>
+      <h1>Habit Rabbit UI/UX Style Guide</h1>
+      <p>Interactive design system and component library</p>
+    </header>
+
+    <!-- Color System -->
+    <section class="section">
+      <h2 class="section-title">🎨 Color System</h2>
+      
+      <h3 class="section-subtitle">Primary Palette (Muted Slate Blue)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #64748b; color: white;">Primary</div>
+          <div class="color-info">
+            <div class="color-name">Primary</div>
+            <div class="color-value">#64748b</div>
+            <div class="color-value">--primary</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #475569; color: white;">Primary Dark</div>
+          <div class="color-info">
+            <div class="color-name">Primary Dark</div>
+            <div class="color-value">#475569</div>
+            <div class="color-value">--primary-dark</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #94a3b8; color: #1a1d29;">Primary Light</div>
+          <div class="color-info">
+            <div class="color-name">Primary Light</div>
+            <div class="color-value">#94a3b8</div>
+            <div class="color-value">--primary-light</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Secondary Palette (Soft Teal)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #5eead4; color: #1a1d29;">Secondary</div>
+          <div class="color-info">
+            <div class="color-name">Secondary</div>
+            <div class="color-value">#5eead4</div>
+            <div class="color-value">--secondary</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #2dd4bf; color: #1a1d29;">Secondary Dark</div>
+          <div class="color-info">
+            <div class="color-name">Secondary Dark</div>
+            <div class="color-value">#2dd4bf</div>
+            <div class="color-value">--secondary-dark</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #99f6e4; color: #1a1d29;">Secondary Light</div>
+          <div class="color-info">
+            <div class="color-name">Secondary Light</div>
+            <div class="color-value">#99f6e4</div>
+            <div class="color-value">--secondary-light</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Semantic Colors (Softer)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #f87171; color: white;">Danger</div>
+          <div class="color-info">
+            <div class="color-name">Danger</div>
+            <div class="color-value">#f87171</div>
+            <div class="color-value">--danger</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #fbbf24; color: #1a1d29;">Warning</div>
+          <div class="color-info">
+            <div class="color-name">Warning</div>
+            <div class="color-value">#fbbf24</div>
+            <div class="color-value">--warning</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #60a5fa; color: white;">Info</div>
+          <div class="color-info">
+            <div class="color-name">Info</div>
+            <div class="color-value">#60a5fa</div>
+            <div class="color-value">--info</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Neutral Palette (Warmer Grays)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #1a1d29; color: #e5e7eb;">BG Dark</div>
+          <div class="color-info">
+            <div class="color-name">Background Dark</div>
+            <div class="color-value">#1a1d29</div>
+            <div class="color-value">--bg-dark</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #232734; color: #e5e7eb;">BG Card</div>
+          <div class="color-info">
+            <div class="color-name">Background Card</div>
+            <div class="color-value">#232734</div>
+            <div class="color-value">--bg-card</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #2e3240; color: #e5e7eb;">BG Input</div>
+          <div class="color-info">
+            <div class="color-name">Background Input</div>
+            <div class="color-value">#2e3240</div>
+            <div class="color-value">--bg-input</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #e5e7eb; color: #1a1d29;">Text Primary</div>
+          <div class="color-info">
+            <div class="color-name">Text Primary</div>
+            <div class="color-value">#e5e7eb</div>
+            <div class="color-value">--text-primary</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #9ca3af; color: #1a1d29;">Text Secondary</div>
+          <div class="color-info">
+            <div class="color-name">Text Secondary</div>
+            <div class="color-value">#9ca3af</div>
+            <div class="color-value">--text-secondary</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #6b7280; color: white;">Text Muted</div>
+          <div class="color-info">
+            <div class="color-name">Text Muted</div>
+            <div class="color-value">#6b7280</div>
+            <div class="color-value">--text-muted</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Typography -->
+    <section class="section">
+      <h2 class="section-title">📝 Typography</h2>
+      <p class="text-muted mb-lg">Font Family: System UI (SF Pro Display, Segoe UI, Helvetica Neue)</p>
+
+      <div class="type-sample">
+        <div class="type-label">heading-1: 32px / Semi-Bold / 1.3 / -0.02em</div>
+        <h1 class="heading-1">The quick brown fox jumps over the lazy dog</h1>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">heading-2: 24px / Semi-Bold / 1.4 / -0.01em</div>
+        <h2 class="heading-2">The quick brown fox jumps over the lazy dog</h2>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">heading-3: 20px / Medium / 1.5</div>
+        <h3 class="heading-3">The quick brown fox jumps over the lazy dog</h3>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">heading-4: 18px / Medium / 1.5</div>
+        <h4 class="heading-4">The quick brown fox jumps over the lazy dog</h4>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">body-large: 16px / Regular / 1.7</div>
+        <p class="body-large">The quick brown fox jumps over the lazy dog. This is a sample of body text that demonstrates the reading experience.</p>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">body-base: 15px / Regular / 1.7</div>
+        <p class="body-base">The quick brown fox jumps over the lazy dog. This is a sample of body text that demonstrates the reading experience.</p>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">body-small: 14px / Regular / 1.6</div>
+        <p class="body-small">The quick brown fox jumps over the lazy dog. This is a sample of body text.</p>
+      </div>
+
+      <div class="type-sample mb-0">
+        <div class="type-label">body-tiny: 13px / Regular / 1.5</div>
+        <p class="body-tiny">The quick brown fox jumps over the lazy dog. This is a sample of body text.</p>
+      </div>
+    </section>
+
+    <!-- Buttons -->
+    <section class="section">
+      <h2 class="section-title">🔘 Buttons</h2>
+
+      <h3 class="section-subtitle">Button Variants</h3>
+      <div class="demo-wrapper">
+        <div class="preview-label">Default Size</div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <button class="btn btn-primary">Primary Button</button>
+          <button class="btn btn-secondary">Secondary Button</button>
+          <button class="btn btn-ghost">Ghost Button</button>
+          <button class="btn btn-danger">Danger Button</button>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Button Sizes</h3>
+      <div class="demo-wrapper">
+        <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm">Small</button>
+          <button class="btn btn-primary">Medium (Default)</button>
+          <button class="btn btn-primary btn-lg">Large</button>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Button States</h3>
+      <div class="demo-wrapper">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <button class="btn btn-primary">Normal</button>
+          <button class="btn btn-primary" disabled>Disabled</button>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <code>&lt;button class="btn btn-primary"&gt;
+  &lt;span&gt;✨&lt;/span&gt;
+  &lt;span&gt;Primary Button&lt;/span&gt;
+&lt;/button&gt;</code>
+      </div>
+    </section>
+
+    <!-- Task Cards -->
+    <section class="section">
+      <h2 class="section-title">✅ Task Cards</h2>
+
+      <h3 class="section-subtitle">Card States</h3>
+      <div class="grid">
+        <div class="demo-wrapper">
+          <div class="preview-label">Default State</div>
+          <div class="task-card">
+            <div class="task-checkbox"></div>
+            <div class="task-content">
+              <div class="task-title">Morning Exercise</div>
+              <div class="task-description">30 minutes workout</div>
+            </div>
+            <div class="task-actions">
+              <button class="btn-icon">✏️</button>
+              <button class="btn-icon">🗑️</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="preview-label">Completed State</div>
+          <div class="task-card completed">
+            <div class="task-checkbox"></div>
+            <div class="task-content">
+              <div class="task-title">Morning Exercise</div>
+              <div class="task-description">30 minutes workout</div>
+            </div>
+            <div class="task-actions">
+              <button class="btn-icon">✏️</button>
+              <button class="btn-icon">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <code>&lt;div class="task-card"&gt;
+  &lt;div class="task-checkbox"&gt;&lt;/div&gt;
+  &lt;div class="task-content"&gt;
+    &lt;div class="task-title"&gt;Morning Exercise&lt;/div&gt;
+    &lt;div class="task-description"&gt;30 minutes workout&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="task-actions"&gt;
+    &lt;button class="btn-icon"&gt;✏️&lt;/button&gt;
+    &lt;button class="btn-icon"&gt;🗑️&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code>
+      </div>
+    </section>
+
+    <!-- Input Fields -->
+    <section class="section">
+      <h2 class="section-title">📝 Input Fields</h2>
+
+      <div class="grid-2">
+        <div class="demo-wrapper">
+          <div class="preview-label">Default State</div>
+          <div class="input-group">
+            <label class="input-label" for="demo-input-1">Habit Name</label>
+            <input type="text" id="demo-input-1" class="input-field" placeholder="e.g., Morning Exercise">
+          </div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="preview-label">Focused State (click input)</div>
+          <div class="input-group">
+            <label class="input-label" for="demo-input-2">Habit Description</label>
+            <input type="text" id="demo-input-2" class="input-field" placeholder="Optional description">
+          </div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="preview-label">Error State</div>
+          <div class="input-group">
+            <label class="input-label" for="demo-input-3">Habit Name</label>
+            <input type="text" id="demo-input-3" class="input-field error" placeholder="e.g., Morning Exercise">
+            <span class="input-error">This field is required</span>
+          </div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="preview-label">Disabled State</div>
+          <div class="input-group">
+            <label class="input-label" for="demo-input-4">Habit Name</label>
+            <input type="text" id="demo-input-4" class="input-field" value="Cannot edit" disabled>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <code>&lt;div class="input-group"&gt;
+  &lt;label class="input-label" for="habit-name"&gt;Habit Name&lt;/label&gt;
+  &lt;input type="text" id="habit-name" class="input-field" placeholder="e.g., Morning Exercise"&gt;
+&lt;/div&gt;</code>
+      </div>
+    </section>
+
+    <!-- Stat Cards -->
+    <section class="section">
+      <h2 class="section-title">📊 Stat Cards</h2>
+
+      <div class="grid-3">
+        <div class="stat-card">
+          <span class="stat-icon">🎯</span>
+          <div class="stat-info">
+            <span class="stat-value">85%</span>
+            <span class="stat-label">Today</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-icon">🔥</span>
+          <div class="stat-info">
+            <span class="stat-value">12</span>
+            <span class="stat-label">Day Streak</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-icon">⭐</span>
+          <div class="stat-info">
+            <span class="stat-value">156</span>
+            <span class="stat-label">Total Completed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <code>&lt;div class="stat-card"&gt;
+  &lt;span class="stat-icon"&gt;🎯&lt;/span&gt;
+  &lt;div class="stat-info"&gt;
+    &lt;span class="stat-value"&gt;85%&lt;/span&gt;
+    &lt;span class="stat-label"&gt;Today&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code>
+      </div>
+    </section>
+
+    <!-- Animations -->
+    <section class="section">
+      <h2 class="section-title">✨ Animations</h2>
+
+      <div class="grid-2">
+        <div class="demo-wrapper text-center">
+          <div class="preview-label">Bounce Animation</div>
+          <div class="demo-bounce" style="font-size: 48px; display: inline-block;">🐰</div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="preview-label">Pulse Success (on complete)</div>
+          <div class="task-card completed demo-pulse">
+            <div class="task-checkbox"></div>
+            <div class="task-content">
+              <div class="task-title">Completed Task</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="preview-label">Fade In</div>
+          <div class="demo-fade">
+            <p>This content fades in smoothly</p>
+          </div>
+        </div>
+
+        <div class="demo-wrapper">
+          <div class="preview-label">Slide Up</div>
+          <div class="demo-slide">
+            <p>This content slides up and fades in</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress Elements -->
+    <section class="section">
+      <h2 class="section-title">📈 Progress Elements</h2>
+
+      <h3 class="section-subtitle">Progress Bars</h3>
+      <div class="demo-wrapper">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <div class="body-small mb-sm">25% Complete</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 25%;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="body-small mb-sm">50% Complete</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 50%;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="body-small mb-sm">75% Complete</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 75%;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="body-small mb-sm">100% Complete</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Circular Progress</h3>
+      <div class="demo-wrapper text-center">
+        <div style="display: inline-block; position: relative;">
+          <svg class="progress-ring" viewBox="0 0 100 100" width="120" height="120">
+            <circle class="progress-ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="progress-ring-fill" cx="50" cy="50" r="45" 
+                    style="stroke-dashoffset: calc(283 - (283 * 85) / 100)"></circle>
+          </svg>
+          <div class="progress-text">85%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Icons -->
+    <section class="section">
+      <h2 class="section-title">🎨 Icon System</h2>
+      <p class="text-muted mb-lg">Emoji-based icons for visual consistency and quick implementation</p>
+
+      <div class="icon-grid">
+        <div class="icon-item">
+          <div class="icon-symbol">🐰</div>
+          <div class="icon-name">brand</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">➕</div>
+          <div class="icon-name">add</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">✏️</div>
+          <div class="icon-name">edit</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">🗑️</div>
+          <div class="icon-name">delete</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">🎯</div>
+          <div class="icon-name">target</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">🔥</div>
+          <div class="icon-name">streak</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">📊</div>
+          <div class="icon-name">analytics</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">📅</div>
+          <div class="icon-name">calendar</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">✅</div>
+          <div class="icon-name">success</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">❌</div>
+          <div class="icon-name">error</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">⚠️</div>
+          <div class="icon-name">warning</div>
+        </div>
+        <div class="icon-item">
+          <div class="icon-symbol">⭐</div>
+          <div class="icon-name">star</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spacing Scale -->
+    <section class="section">
+      <h2 class="section-title">📏 Spacing Scale</h2>
+      <p class="text-muted mb-lg">Generous spacing for better breathing room and readability</p>
+
+      <div class="spacing-demo">
+        <div class="spacing-label">xs: 6px</div>
+        <div class="spacing-box" style="width: 6px; height: 20px;"></div>
+      </div>
+      <div class="spacing-demo">
+        <div class="spacing-label">sm: 12px</div>
+        <div class="spacing-box" style="width: 12px; height: 20px;"></div>
+      </div>
+      <div class="spacing-demo">
+        <div class="spacing-label">md: 20px</div>
+        <div class="spacing-box" style="width: 20px; height: 20px;"></div>
+      </div>
+      <div class="spacing-demo">
+        <div class="spacing-label">lg: 28px</div>
+        <div class="spacing-box" style="width: 28px; height: 20px;"></div>
+      </div>
+      <div class="spacing-demo">
+        <div class="spacing-label">xl: 40px</div>
+        <div class="spacing-box" style="width: 40px; height: 20px;"></div>
+      </div>
+      <div class="spacing-demo">
+        <div class="spacing-label">2xl: 56px</div>
+        <div class="spacing-box" style="width: 56px; height: 20px;"></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="section text-center">
+      <p class="text-muted">
+        Habit Rabbit Style Guide v1.0 | Built for 24-hour Hackathon<br>
+        Open <code style="color: var(--primary);">docs/style-guide.html</code> in your browser
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const codeBlock = btn.nextElementSibling;
+      const code = codeBlock.textContent;
+      
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+        }, 2000);
+      });
+    }
+
+    // Add interactive demo for task card completion
+    document.querySelectorAll('.task-card:not(.completed)').forEach(card => {
+      card.addEventListener('click', function() {
+        this.classList.toggle('completed');
+      });
+    });
+
+    // Add smooth scroll for long page
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

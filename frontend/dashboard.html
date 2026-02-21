@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track your daily habits and view progress analytics on Habit Rabbit.">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <title>Dashboard - Habit Rabbit</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loader">
+      <span class="loader-icon">🐰</span>
+      <p>Loading your habits...</p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="app hidden">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="brand">
+          <svg width="32" height="32" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="30" r="22" stroke="url(#dashGrad)" stroke-width="3" fill="none" opacity="0.4"/>
+            <path d="M22 18 L22 42 M22 30 L38 30 M38 18 L38 42" stroke="url(#dashGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="38" cy="18" r="3" fill="#FF9500"/>
+            <circle cx="38" cy="30" r="2.5" fill="#FF9500" opacity="0.7"/>
+            <circle cx="38" cy="42" r="2" fill="#FF9500" opacity="0.5"/>
+            <defs>
+              <linearGradient id="dashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#007AFF;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <h1 class="brand-title">Habit Rabbit</h1>
+        </div>
+        <div class="header-actions">
+          <button id="toggle-analytics-btn" class="btn btn-secondary btn-sm">
+            <span class="btn-icon">📊</span>
+            <span class="btn-text">Analytics</span>
+          </button>
+          <button id="logout-btn" class="btn btn-ghost btn-sm">
+            <span class="btn-text">Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Stats Bar -->
+      <section class="stats-bar">
+        <div class="stat-card" id="stat-card-today">
+          <span class="stat-icon">🎯</span>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-today"><span class="skeleton skeleton-text-sm"></span></span>
+            <span class="stat-label">Today</span>
+          </div>
+        </div>
+        <div class="stat-card" id="stat-card-streak">
+          <span class="stat-icon">🔥</span>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-streak"><span class="skeleton skeleton-text-sm"></span></span>
+            <span class="stat-label">Day Streak</span>
+          </div>
+        </div>
+        <div class="stat-card" id="stat-card-total">
+          <span class="stat-icon">✅</span>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-total"><span class="skeleton skeleton-text-sm"></span></span>
+            <span class="stat-label">Total Done</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Task Input Section -->
+      <section class="task-input-section">
+        <form id="add-task-form" class="task-input-form">
+          <div class="task-input-wrapper">
+            <input 
+              type="text" 
+              id="new-task-input" 
+              class="task-input"
+              placeholder="Add a new habit... (e.g., 'Exercise for 30 mins')"
+              maxlength="100"
+              autocomplete="off"
+            >
+            <span id="char-counter" class="char-counter">0/100</span>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-icon">+</span>
+            <span class="btn-text">Add</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Progress Bar -->
+      <section class="progress-section">
+        <div class="progress-header">
+          <h2 class="section-title">Today's Progress</h2>
+          <span class="progress-text" id="progress-text">0/0 completed</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+      </section>
+
+      <!-- Tasks Section -->
+      <section class="tasks-section">
+        <h2 class="section-title">Daily Habits</h2>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-illustration">
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-dasharray="6 4"/>
+              <path d="M32 38 L40 46 L56 30" stroke="#007AFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+              <path d="M25 52 Q40 58 55 52" stroke="#FF9500" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+            </svg>
+          </div>
+          <h3>No habits yet!</h3>
+          <p>Add your first habit above to start building<br>a streak you'll be proud of.</p>
+        </div>
+
+        <!-- Skeleton Loading -->
+        <div id="task-skeleton" class="task-list">
+          <div class="task-card skeleton-card">
+            <div class="skeleton skeleton-circle"></div>
+            <div class="task-content"><span class="skeleton skeleton-text"></span></div>
+          </div>
+          <div class="task-card skeleton-card">
+            <div class="skeleton skeleton-circle"></div>
+            <div class="task-content"><span class="skeleton skeleton-text"></span></div>
+          </div>
+          <div class="task-card skeleton-card">
+            <div class="skeleton skeleton-circle"></div>
+            <div class="task-content"><span class="skeleton skeleton-text short"></span></div>
+          </div>
+        </div>
+
+        <!-- Task List -->
+        <div id="task-list" class="task-list hidden"></div>
+      </section>
+
+      <!-- Analytics Section (Hidden by default) -->
+      <section id="analytics-section" class="analytics-section hidden">
+        <div class="analytics-header">
+          <h2 class="section-title">Progress Analytics</h2>
+          <div class="analytics-tabs">
+            <button class="analytics-tab active" data-range="7d">7 Days</button>
+            <button class="analytics-tab" data-range="30d">30 Days</button>
+            <button class="analytics-tab" data-range="6m">6 Months</button>
+          </div>
+        </div>
+        
+        <!-- Chart Type Toggle -->
+        <div class="chart-type-toggle">
+          <button class="chart-type-btn active" data-type="line" title="Line chart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </button>
+          <button class="chart-type-btn" data-type="bar" title="Bar chart">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="2" width="4" height="19"/></svg>
+          </button>
+        </div>
+
+        <!-- Progress Chart -->
+        <div class="chart-container">
+          <canvas id="progress-chart"></canvas>
+          <div id="chart-empty-state" class="chart-empty-state hidden">
+            <span class="chart-empty-icon">📈</span>
+            <p>No progress data yet. Complete some habits to see your trends!</p>
+          </div>
+        </div>
+
+        <!-- Heatmap Section -->
+        <div class="heatmap-section">
+          <h3 class="subsection-title">Select a habit to view history</h3>
+          <div id="heatmap-task-selector" class="heatmap-selector"></div>
+          <div id="heatmap-container" class="heatmap-container hidden">
+            <div class="heatmap-calendar">
+              <div class="heatmap-weekday-labels">
+                <span></span>
+                <span>Mon</span>
+                <span></span>
+                <span>Wed</span>
+                <span></span>
+                <span>Fri</span>
+                <span></span>
+              </div>
+              <div class="heatmap-scroll-area">
+                <div id="heatmap-month-labels" class="heatmap-month-labels"></div>
+                <div id="heatmap-grid" class="heatmap-grid"></div>
+              </div>
+            </div>
+            <div class="heatmap-legend">
+              <span class="legend-label">Less</span>
+              <span class="legend-color" style="background: var(--bg-input);"></span>
+              <span class="legend-color" style="background: rgba(52, 199, 89, 0.25);"></span>
+              <span class="legend-color" style="background: rgba(52, 199, 89, 0.55);"></span>
+              <span class="legend-color" style="background: #34C759;"></span>
+              <span class="legend-color missed" style="background: rgba(255, 59, 48, 0.40);"></span>
+              <span class="legend-label">More</span>
+              <span class="legend-separator"></span>
+              <span class="legend-item"><span class="legend-color" style="background: rgba(255, 59, 48, 0.40);"></span> Missed</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Delete Habit</h3>
+      </div>
+      <div class="modal-body">
+        <p>How would you like to delete "<span id="delete-task-title"></span>"?</p>
+      </div>
+      <div class="modal-actions">
+        <button id="delete-soft-btn" class="btn btn-secondary">
+          Keep History
+        </button>
+        <button id="delete-hard-btn" class="btn btn-danger">
+          Delete All
+        </button>
+        <button id="delete-cancel-btn" class="btn btn-ghost">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

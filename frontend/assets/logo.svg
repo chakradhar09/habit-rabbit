@@ -1,0 +1,47 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon Mark - Abstract "H" with growth concept -->
+  <g id="icon-mark">
+    <!-- Outer circle/ring -->
+    <circle cx="30" cy="30" r="22" stroke="url(#gradient)" stroke-width="3" fill="none" opacity="0.3"/>
+    
+    <!-- Main "H" shape with rounded elements -->
+    <path d="M22 18 L22 42 M22 30 L38 30 M38 18 L38 42" 
+          stroke="url(#gradient)" 
+          stroke-width="4" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+    
+    <!-- Growth indicator - small circle elements -->
+    <circle cx="38" cy="18" r="3" fill="#FF9500"/>
+    <circle cx="38" cy="30" r="2.5" fill="#FF9500" opacity="0.7"/>
+    <circle cx="38" cy="42" r="2" fill="#FF9500" opacity="0.5"/>
+  </g>
+  
+  <!-- Wordmark -->
+  <g id="wordmark">
+    <text x="60" y="28" 
+          font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" 
+          font-size="20" 
+          font-weight="700" 
+          fill="#FFFFFF" 
+          letter-spacing="-0.5">
+      Habit
+    </text>
+    <text x="60" y="50" 
+          font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" 
+          font-size="20" 
+          font-weight="500" 
+          fill="#FF9500" 
+          letter-spacing="-0.3">
+      Rabbit
+    </text>
+  </g>
+  
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#007AFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

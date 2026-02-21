@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Rabbit - Professional UI/UX Style Guide</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* =====================
+       Design System Tokens
+       ===================== */
+    :root {
+      /* Colors - Primary (Vibrant Indigo/Purple) */
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      
+      /* Colors - Secondary (Vibrant Teal/Cyan) */
+      --secondary: #06b6d4;
+      --secondary-dark: #0891b2;
+      --secondary-light: #22d3ee;
+      
+      /* Colors - Accent & Semantic */
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      
+      /* Backgrounds (Rich dark with depth) */
+      --bg-dark: #0a0e1a;
+      --bg-card: #131720;
+      --bg-elevated: #1a1f2e;
+      --bg-input: #1e2433;
+      --bg-hover: #252b3b;
+      
+      /* Text (High contrast) */
+      --text-primary: #ffffff;
+      --text-secondary: #a1a9b8;
+      --text-muted: #6b7385;
+      
+      /* Spacing (8px grid system) */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-2xl: 48px;
+      --spacing-3xl: 64px;
+      
+      /* Border Radius (Modern, consistent) */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-full: 9999px;
+      
+      /* Shadows (Layered for depth) */
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      /* Transitions (Smooth, professional) */
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-image: 
+        radial-gradient(at 20% 30%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+        radial-gradient(at 80% 70%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-xl);
+    }
+
+    /* =====================
+       Header
+       ===================== */
+    .header {
+      text-align: center;
+      padding: var(--spacing-3xl) 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: var(--spacing-2xl);
+      background: rgba(19, 23, 32, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, #ffffff 0%, #a6a9c8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03em;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    /* =====================
+       Sections
+       ===================== */
+    .section {
+      margin-bottom: var(--spacing-2xl);
+      padding: var(--spacing-xl);
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-size: 20px;
+      font-weight: 600;
+      margin: var(--spacing-xl) 0 var(--spacing-md);
+      color: var(--text-secondary);
+    }
+
+    .section-description {
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-lg);
+      line-height: 1.7;
+    }
+
+    /* =====================
+       Grid System
+       ===================== */
+    .grid {
+      display: grid;
+      gap: var(--spacing-lg);
+    }
+
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+
+    /* =====================
+       Color Swatches
+       ===================== */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--spacing-md);
+    }
+
+    .color-swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .color-block {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .color-block::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    }
+
+    .color-info {
+      padding: var(--spacing-md);
+      background: var(--bg-elevated);
+    }
+
+    .color-name {
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      color: var(--text-primary);
+    }
+
+    .color-value {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* =====================
+       Typography
+       ===================== */
+    .type-sample {
+      padding: var(--spacing-lg);
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-md);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .type-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: var(--spacing-sm);
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .heading-1 { font-size: 40px; font-weight: 700; line-height: 1.2; letter-spacing: -0.03em; }
+    .heading-2 { font-size: 32px; font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; }
+    .heading-3 { font-size: 24px; font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+    .heading-4 { font-size: 20px; font-weight: 600; line-height: 1.5; }
+    .body-large { font-size: 18px; font-weight: 400; line-height: 1.6; }
+    .body-base { font-size: 16px; font-weight: 400; line-height: 1.6; }
+    .body-small { font-size: 14px; font-weight: 400; line-height: 1.5; }
+    .body-tiny { font-size: 13px; font-weight: 400; line-height: 1.5; }
+
+    /* =====================
+       Buttons
+       ===================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-decoration: none;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+      opacity: 0;
+      transition: var(--transition-base);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4), var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5), var(--shadow-md);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4), var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5), var(--shadow-md);
+    }
+
+    .btn-ghost {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-hover);
+      border-color: rgba(99, 102, 241, 0.5);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4), var(--shadow-sm);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5), var(--shadow-md);
+    }
+
+    .btn-sm {
+      padding: 8px 18px;
+      font-size: 14px;
+    }
+
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: 17px;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Modern Button Variations (from 21st.dev & UIverse) */
+    .btn-moving-border {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      position: relative;
+      overflow: visible;
+    }
+
+    .btn-moving-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-md);
+      padding: 2px;
+      background: linear-gradient(90deg, #6366f1, #06b6d4, #f59e0b, #6366f1);
+      background-size: 200% 100%;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: movingBorder 3s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes movingBorder {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .btn-moving-border:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .btn-shimmer {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #06b6d4 100%);
+      background-size: 200% 200%;
+      color: white;
+      animation: shimmerGradient 3s ease infinite;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes shimmerGradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .btn-shimmer::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%
+      );
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .btn-shimmer:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
+    }
+
+    .btn-glass {
+      background: rgba(99, 102, 241, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--text-primary);
+      box-shadow: 
+        0 8px 32px 0 rgba(99, 102, 241, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-glass:hover {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 12px 40px 0 rgba(99, 102, 241, 0.3),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-glow {
+      background: var(--primary);
+      color: white;
+      box-shadow: 
+        0 0 20px rgba(99, 102, 241, 0.4),
+        0 0 40px rgba(99, 102, 241, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.3);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 
+          0 0 20px rgba(99, 102, 241, 0.4),
+          0 0 40px rgba(99, 102, 241, 0.2),
+          0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      50% {
+        box-shadow: 
+          0 0 30px rgba(99, 102, 241, 0.6),
+          0 0 60px rgba(99, 102, 241, 0.3),
+          0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    .btn-glow:hover {
+      transform: translateY(-2px);
+      animation: pulse-glow 1s ease-in-out infinite;
+    }
+
+    .btn-neumorphic {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: none;
+      box-shadow: 
+        8px 8px 16px rgba(0, 0, 0, 0.4),
+        -8px -8px 16px rgba(255, 255, 255, 0.02);
+    }
+
+    .btn-neumorphic:hover {
+      box-shadow: 
+        12px 12px 24px rgba(0, 0, 0, 0.5),
+        -12px -12px 24px rgba(255, 255, 255, 0.03);
+      transform: translateY(-1px);
+    }
+
+    .btn-neumorphic:active {
+      box-shadow: 
+        inset 6px 6px 12px rgba(0, 0, 0, 0.4),
+        inset -6px -6px 12px rgba(255, 255, 255, 0.02);
+      transform: translateY(0);
+    }
+
+    /* =====================
+       Task Cards
+       ===================== */
+    .task-card {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg);
+      background: var(--bg-elevated);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-base);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .task-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, transparent 100%);
+      border-radius: var(--radius-md);
+      opacity: 0;
+      transition: var(--transition-base);
+    }
+
+    .task-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .task-card:hover::before {
+      opacity: 1;
+    }
+
+    .task-card.completed {
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+
+    .task-card.completed::before {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, transparent 100%);
+      opacity: 1;
+    }
+
+    .task-card.completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition-base);
+      background: var(--bg-input);
+    }
+
+    .task-card:hover .task-checkbox {
+      border-color: rgba(99, 102, 241, 0.6);
+    }
+
+    .task-card.completed .task-checkbox {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      border-color: var(--secondary);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+    }
+
+    .task-card.completed .task-checkbox::after {
+      content: '✓';
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+
+    .task-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+      opacity: 0;
+      transition: var(--transition-base);
+    }
+
+    .task-card:hover .task-actions {
+      opacity: 1;
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition-base);
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .btn-icon:hover {
+      background: var(--bg-hover);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      color: var(--text-primary);
+    }
+
+    /* Enhanced Card Variants (from 21st.dev & Landingfolio) */
+    .card-glass {
+      background: rgba(26, 31, 46, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      transition: var(--transition-base);
+      box-shadow: 
+        0 8px 32px 0 rgba(31, 38, 135, 0.37),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .card-glass:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 
+        0 12px 48px 0 rgba(31, 38, 135, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .card-gradient-border {
+      position: relative;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      overflow: hidden;
+    }
+
+    .card-gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      padding: 2px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4, #f59e0b);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      z-index: 0;
+    }
+
+    .card-gradient-border > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-gradient-border:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .card-glow {
+      background: var(--bg-card);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      transition: var(--transition-base);
+      position: relative;
+    }
+
+    .card-glow::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      border-radius: var(--radius-lg);
+      opacity: 0;
+      filter: blur(20px);
+      transition: var(--transition-base);
+      z-index: -1;
+    }
+
+    .card-glow:hover::after {
+      opacity: 0.6;
+    }
+
+    .card-glow:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.6);
+    }
+
+    .card-bento {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      transition: var(--transition-base);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .card-bento:hover {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .card-bento .card-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .card-bento .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .card-bento .card-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Bento Grid Layout (from 21st.dev) */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    @media (min-width: 768px) {
+      .bento-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .bento-grid .card-large {
+        grid-column: span 2;
+      }
+      
+      .bento-grid .card-tall {
+        grid-row: span 2;
+      }
+    }
+
+    /* =====================
+       Input Fields
+       ===================== */
+    .input-group {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-primary);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: inherit;
+      transition: var(--transition-base);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .input-field::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--bg-elevated);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), var(--shadow-md);
+    }
+
+    .input-field.error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15), var(--shadow-md);
+    }
+
+    .input-error {
+      display: block;
+      margin-top: var(--spacing-xs);
+      font-size: 13px;
+      color: var(--danger);
+      font-weight: 500;
+    }
+
+    .input-field:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Modern Input Variants (UIverse inspired) */
+    .input-group-floating {
+      position: relative;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .input-floating {
+      width: 100%;
+      padding: 16px 16px 8px 16px;
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: inherit;
+      transition: var(--transition-base);
+    }
+
+    .label-floating {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      color: var(--text-muted);
+      font-size: 15px;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .input-floating:focus ~ .label-floating,
+    .input-floating:not(:placeholder-shown) ~ .label-floating {
+      top: 8px;
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .input-floating:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .input-search {
+      width: 100%;
+      padding: 12px 16px 12px 48px;
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      color: var(--text-primary);
+      font-size: 15px;
+      transition: var(--transition-base);
+      position: relative;
+    }
+
+    .input-search-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: var(--transition-base);
+    }
+
+    .input-search:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .input-search:focus ~ .input-search-icon {
+      color: var(--primary);
+    }
+
+    .input-gradient-border {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-gradient-border input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-input);
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .input-gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4, #f59e0b);
+      border-radius: var(--radius-md);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+
+    .input-gradient-border:focus-within::before {
+      opacity: 1;
+    }
+
+    .input-gradient-border input:focus {
+      outline: none;
+    }
+
+    /* =====================
+       Stat Cards
+       ===================== */
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-xl);
+      background: var(--bg-elevated);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      transition: var(--transition-base);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+      opacity: 0;
+      transition: var(--transition-base);
+    }
+
+    .stat-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-icon {
+      font-size: 40px;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-input);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* =====================
+       Progress Bars
+       ===================== */
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-input);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* =====================
+       Spacing Examples
+       ===================== */
+    .spacing-box {
+      background: var(--bg-elevated);
+      border: 2px dashed rgba(99, 102, 241, 0.3);
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    /* =====================
+       Code Block
+       ===================== */
+    .code-block {
+      background: var(--bg-dark);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: var(--spacing-sm);
+    }
+
+    .copy-btn {
+      float: right;
+      padding: 4px 12px;
+      font-size: 12px;
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .copy-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <h1>🐰 Habit Rabbit</h1>
+      <p>Professional UI/UX Style Guide - Modern SaaS Design System</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Colors -->
+    <div class="section">
+      <h2 class="section-title">Color Palette</h2>
+      <p class="section-description">
+        Our color system uses vibrant, modern colors with gradient accents for a premium, professional feel. High contrast ensures readability and accessibility.
+      </p>
+      
+      <h3 class="section-subtitle">Primary Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #6366f1; color: white;">Primary</div>
+          <div class="color-info">
+            <div class="color-name">Primary</div>
+            <div class="color-value">#6366f1</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #4f46e5; color: white;">Dark</div>
+          <div class="color-info">
+            <div class="color-name">Primary Dark</div>
+            <div class="color-value">#4f46e5</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #818cf8; color: white;">Light</div>
+          <div class="color-info">
+            <div class="color-name">Primary Light</div>
+            <div class="color-value">#818cf8</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Gradient</div>
+          <div class="color-info">
+            <div class="color-name">Primary Gradient</div>
+            <div class="color-value">135deg gradient</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Secondary & Accent Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #06b6d4; color: white;">Secondary</div>
+          <div class="color-info">
+            <div class="color-name">Secondary</div>
+            <div class="color-value">#06b6d4</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #f59e0b; color: white;">Accent</div>
+          <div class="color-info">
+            <div class="color-name">Accent</div>
+            <div class="color-value">#f59e0b</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #10b981; color: white;">Success</div>
+          <div class="color-info">
+            <div class="color-name">Success</div>
+            <div class="color-value">#10b981</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #ef4444; color: white;">Danger</div>
+          <div class="color-info">
+            <div class="color-name">Danger</div>
+            <div class="color-value">#ef4444</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Background Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #0a0e1a; color: white;">Dark</div>
+          <div class="color-info">
+            <div class="color-name">BG Dark</div>
+            <div class="color-value">#0a0e1a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #131720; color: white;">Card</div>
+          <div class="color-info">
+            <div class="color-name">BG Card</div>
+            <div class="color-value">#131720</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #1a1f2e; color: white;">Elevated</div>
+          <div class="color-info">
+            <div class="color-name">BG Elevated</div>
+            <div class="color-value">#1a1f2e</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #1e2433; color: white;">Input</div>
+          <div class="color-info">
+            <div class="color-name">BG Input</div>
+            <div class="color-value">#1e2433</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typography -->
+    <div class="section">
+      <h2 class="section-title">Typography</h2>
+      <p class="section-description">
+        System font stack for optimal performance and native feel. Strong hierarchy with bold headings and clean body text.
+      </p>
+
+      <div class="type-sample">
+        <div class="type-label">Heading 1 - 40px / Bold / -0.03em</div>
+        <div class="heading-1">The quick brown fox jumps</div>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">Heading 2 - 32px / Bold / -0.02em</div>
+        <div class="heading-2">The quick brown fox jumps over</div>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">Heading 3 - 24px / Semibold / -0.01em</div>
+        <div class="heading-3">The quick brown fox jumps over the lazy dog</div>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">Body Large - 18px / Regular</div>
+        <div class="body-large">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">Body Base - 16px / Regular</div>
+        <div class="body-base">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+      </div>
+
+      <div class="type-sample">
+        <div class="type-label">Body Small - 14px / Regular</div>
+        <div class="body-small">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="section">
+      <h2 class="section-title">Buttons</h2>
+      <p class="section-description">
+        Gradient-powered buttons with subtle animations, clear hover states, and professional shadows.
+      </p>
+
+      <h3 class="section-subtitle">Button Variants</h3>
+      <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; margin-bottom: var(--spacing-xl);">
+        <button class="btn btn-primary">Primary Button</button>
+        <button class="btn btn-secondary">Secondary Button</button>
+        <button class="btn btn-ghost">Ghost Button</button>
+        <button class="btn btn-danger">Danger Button</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+      </div>
+
+      <h3 class="section-subtitle">Button Sizes</h3>
+      <div style="display: flex; gap: var(--spacing-md); align-items: center; flex-wrap: wrap;">
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary">Medium (Default)</button>
+        <button class="btn btn-primary btn-lg">Large</button>
+      </div>
+
+      <h3 class="section-subtitle" style="margin-top: var(--spacing-2xl);">Modern Button Variations</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+        Inspired by 21st.dev and UIverse — cutting-edge button styles with advanced effects.
+      </p>
+      <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; margin-bottom: var(--spacing-xl);">
+        <button class="btn btn-moving-border">Moving Border</button>
+        <button class="btn btn-shimmer">Rainbow Shimmer</button>
+        <button class="btn btn-glass">Glassmorphism</button>
+        <button class="btn btn-glow">Pulsing Glow</button>
+        <button class="btn btn-neumorphic">Neumorphic 3D</button>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;button class="btn btn-primary"&gt;Primary Button&lt;/button&gt;
+&lt;button class="btn btn-secondary"&gt;Secondary Button&lt;/button&gt;
+&lt;button class="btn btn-ghost"&gt;Ghost Button&lt;/button&gt;
+
+&lt;!-- Modern Variations --&gt;
+&lt;button class="btn btn-moving-border"&gt;Moving Border&lt;/button&gt;
+&lt;button class="btn btn-shimmer"&gt;Rainbow Shimmer&lt;/button&gt;
+&lt;button class="btn btn-glass"&gt;Glassmorphism&lt;/button&gt;
+&lt;button class="btn btn-glow"&gt;Pulsing Glow&lt;/button&gt;
+&lt;button class="btn btn-neumorphic"&gt;Neumorphic 3D&lt;/button&gt;
+      </div>
+    </div>
+
+    <!-- Task Cards -->
+    <div class="section">
+      <h2 class="section-title">Task Cards</h2>
+      <p class="section-description">
+        Interactive cards with gradient overlays, smooth animations, and satisfying completion states.
+      </p>
+
+      <div class="grid grid-2">
+        <div class="task-card" onclick="this.classList.toggle('completed')">
+          <div class="task-checkbox"></div>
+          <div class="task-content">
+            <div class="task-title">Complete daily exercise</div>
+            <div class="task-description">30 minutes of cardio</div>
+          </div>
+          <div class="task-actions">
+            <button class="btn-icon">✏️</button>
+            <button class="btn-icon">🗑️</button>
+          </div>
+        </div>
+
+        <div class="task-card completed" onclick="this.classList.toggle('completed')">
+          <div class="task-checkbox"></div>
+          <div class="task-content">
+            <div class="task-title">Morning meditation</div>
+            <div class="task-description">10 minutes mindfulness</div>
+          </div>
+          <div class="task-actions">
+            <button class="btn-icon">✏️</button>
+            <button class="btn-icon">🗑️</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="task-card"&gt;
+  &lt;div class="task-checkbox"&gt;&lt;/div&gt;
+  &lt;div class="task-content"&gt;
+    &lt;div class="task-title"&gt;Task Title&lt;/div&gt;
+    &lt;div class="task-description"&gt;Task description&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Enhanced Cards -->
+    <div class="section">
+      <h2 class="section-title">Enhanced Cards</h2>
+      <p class="section-description">
+        Modern card designs inspired by 21st.dev and Landingfolio — featuring glassmorphism, gradient borders, and glow effects.
+      </p>
+
+      <h3 class="section-subtitle">Card Variants</h3>
+      <div class="bento-grid" style="margin-bottom: var(--spacing-2xl);">
+        <div class="card-glass">
+          <div class="card-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: var(--spacing-md);">✨</div>
+          <h3 style="margin: 0 0 var(--spacing-sm) 0; font-size: 18px; font-weight: 600; color: var(--text-primary);">Glassmorphism</h3>
+          <p style="margin: 0; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">Frosted glass effect with backdrop blur for modern depth.</p>
+        </div>
+
+        <div class="card-gradient-border">
+          <div class="card-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--secondary), var(--secondary-dark)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: var(--spacing-md);">🌈</div>
+          <h3 style="margin: 0 0 var(--spacing-sm) 0; font-size: 18px; font-weight: 600; color: var(--text-primary);">Gradient Border</h3>
+          <p style="margin: 0; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">Animated rainbow border using advanced CSS masking.</p>
+        </div>
+
+        <div class="card-glow">
+          <div class="card-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: var(--spacing-md);">💫</div>
+          <h3 style="margin: 0 0 var(--spacing-sm) 0; font-size: 18px; font-weight: 600; color: var(--text-primary);">Glow Effect</h3>
+          <p style="margin: 0; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">Subtle outer glow that intensifies on hover.</p>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Bento Grid Layout</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+        Asymmetric responsive grid inspired by Apple's design language.
+      </p>
+      <div class="bento-grid">
+        <div class="card-bento card-large">
+          <div class="card-icon">📊</div>
+          <h3 class="card-title">Analytics Dashboard</h3>
+          <p class="card-description">Track your habits with beautiful visualizations and detailed insights into your progress patterns.</p>
+        </div>
+
+        <div class="card-bento">
+          <div class="card-icon">🎯</div>
+          <h3 class="card-title">Goal Setting</h3>
+          <p class="card-description">Define clear objectives and milestones.</p>
+        </div>
+
+        <div class="card-bento">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">Quick Actions</h3>
+          <p class="card-description">Fast access to common tasks.</p>
+        </div>
+
+        <div class="card-bento card-tall">
+          <div class="card-icon">🔔</div>
+          <h3 class="card-title">Smart Notifications</h3>
+          <p class="card-description">Intelligent reminders that adapt to your schedule and help you stay consistent with your habits.</p>
+          <div style="margin-top: auto; padding-top: var(--spacing-md); border-top: 1px solid rgba(255, 255, 255, 0.05);">
+            <span style="font-size: 12px; color: var(--text-muted);">Customizable timing</span>
+          </div>
+        </div>
+
+        <div class="card-bento">
+          <div class="card-icon">📱</div>
+          <h3 class="card-title">Mobile Sync</h3>
+          <p class="card-description">Access your data anywhere.</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="card-glass"&gt;
+  &lt;h3&gt;Glassmorphism Card&lt;/h3&gt;
+  &lt;p&gt;Content with frosted glass effect&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="card-gradient-border"&gt;
+  &lt;h3&gt;Gradient Border&lt;/h3&gt;
+  &lt;p&gt;Rainbow animated border&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="card-glow"&gt;
+  &lt;h3&gt;Glow Effect&lt;/h3&gt;
+  &lt;p&gt;Hover for outer glow&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- Bento Grid --&gt;
+&lt;div class="bento-grid"&gt;
+  &lt;div class="card-bento card-large"&gt;...&lt;/div&gt;
+  &lt;div class="card-bento"&gt;...&lt;/div&gt;
+  &lt;div class="card-bento card-tall"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Input Fields -->
+    <div class="section">
+      <h2 class="section-title">Input Fields</h2>
+      <p class="section-description">
+        Clean inputs with focus glow effects and clear error states for excellent UX.
+      </p>
+
+      <div class="grid grid-2">
+        <div class="input-group">
+          <label class="input-label">Default Input</label>
+          <input type="text" class="input-field" placeholder="Enter your habit name...">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Focused Input (click to see effect)</label>
+          <input type="text" class="input-field" placeholder="Click to see focus state...">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Error State</label>
+          <input type="text" class="input-field error" value="Invalid input">
+          <span class="input-error">This field is required</span>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Disabled Input</label>
+          <input type="text" class="input-field" placeholder="Disabled field" disabled>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle" style="margin-top: var(--spacing-2xl);">Modern Input Variants</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+        Contemporary input designs inspired by UIverse — featuring floating labels, gradient borders, and modern search.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+        <!-- Floating Label Input -->
+        <div class="input-group-floating">
+          <input type="text" class="input-floating" placeholder=" " id="floating-1">
+          <label class="label-floating" for="floating-1">Floating Label</label>
+        </div>
+
+        <!-- Search Input -->
+        <div class="input-search-wrapper">
+          <input type="text" class="input-search" placeholder="Search habits...">
+          <span class="input-search-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </span>
+        </div>
+
+        <!-- Gradient Border Input -->
+        <div class="input-gradient-border">
+          <input type="text" placeholder="Gradient border on focus...">
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="input-group"&gt;
+  &lt;label class="input-label"&gt;Label&lt;/label&gt;
+  &lt;input type="text" class="input-field" placeholder="Placeholder..."&gt;
+&lt;/div&gt;
+
+&lt;!-- Floating Label --&gt;
+&lt;div class="input-group-floating"&gt;
+  &lt;input type="text" class="input-floating" placeholder=" "&gt;
+  &lt;label class="label-floating"&gt;Floating Label&lt;/label&gt;
+&lt;/div&gt;
+
+&lt;!-- Search Input --&gt;
+&lt;div class="input-search-wrapper"&gt;
+  &lt;input type="text" class="input-search" placeholder="Search..."&gt;
+  &lt;span class="input-search-icon"&gt;🔍&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- Gradient Border Input --&gt;
+&lt;div class="input-gradient-border"&gt;
+  &lt;input type="text" placeholder="Gradient border..."&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="section">
+      <h2 class="section-title">Stat Cards</h2>
+      <p class="section-description">
+        Impressive stat displays with gradient text, hover lift effects, and professional depth.
+      </p>
+
+      <div class="grid grid-3">
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-info">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-value">85%</div>
+            <div class="stat-label">Completion</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <div class="stat-value">247</div>
+            <div class="stat-label">Total Points</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="stat-card"&gt;
+  &lt;div class="stat-icon"&gt;🔥&lt;/div&gt;
+  &lt;div class="stat-info"&gt;
+    &lt;div class="stat-value"&gt;12&lt;/div&gt;
+    &lt;div class="stat-label"&gt;Day Streak&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="section">
+      <h2 class="section-title">Progress Bars</h2>
+      <p class="section-description">
+        Animated gradient progress bars with shimmer effects for visual delight.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+            <span class="body-small">Daily Progress</span>
+            <span class="body-small" style="font-weight: 600;">75%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 75%;"></div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+            <span class="body-small">Weekly Goals</span>
+            <span class="body-small" style="font-weight: 600;">45%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 45%;"></div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+            <span class="body-small">Monthly Target</span>
+            <span class="body-small" style="font-weight: 600;">90%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 90%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="progress-bar"&gt;
+  &lt;div class="progress-fill" style="width: 75%;"&gt;&lt;/div&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Spacing -->
+    <div class="section">
+      <h2 class="section-title">Spacing System</h2>
+      <p class="section-description">
+        Consistent 8px grid system for professional, harmonious layouts.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+          <span style="width: 100px; color: var(--text-secondary);">XS (4px)</span>
+          <div class="spacing-box" style="width: 4px; height: 40px;"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+          <span style="width: 100px; color: var(--text-secondary);">SM (8px)</span>
+          <div class="spacing-box" style="width: 8px; height: 40px;"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+          <span style="width: 100px; color: var(--text-secondary);">MD (16px)</span>
+          <div class="spacing-box" style="width: 16px; height: 40px;"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+          <span style="width: 100px; color: var(--text-secondary);">LG (24px)</span>
+          <div class="spacing-box" style="width: 24px; height: 40px;"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+          <span style="width: 100px; color: var(--text-secondary);">XL (32px)</span>
+          <div class="spacing-box" style="width: 32px; height: 40px;"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+          <span style="width: 100px; color: var(--text-secondary);">2XL (48px)</span>
+          <div class="spacing-box" style="width: 48px; height: 40px;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.parentElement.textContent.replace('Copy', '').trim();
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+        }, 2000);
+      });
+    }
+
+    // Animated Counter for Stat Cards (UIverse inspiration)
+    function animateCounter(element, target, duration = 1500) {
+      const start = 0;
+      const increment = target / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          element.textContent = target;
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(current);
+        }
+      }, 16);
+    }
+
+    // Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const statValue = entry.target.querySelector('.stat-value');
+          if (statValue && !statValue.dataset.animated) {
+            statValue.dataset.animated = 'true';
+            const value = parseInt(statValue.textContent);
+            if (!isNaN(value)) {
+              animateCounter(statValue, value);
+            }
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    // Observe all stat cards
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.stat-card').forEach(card => {
+        observer.observe(card);
+      });
+    });
+
+    // Add sparkle effect on button click (21st.dev inspiration)
+    function createSparkle(x, y) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.cssText = `
+        position: fixed;
+        left: ${x}px;
+        top: ${y}px;
+        width: 8px;
+        height: 8px;
+        background: linear-gradient(135deg, #6366f1, #06b6d4);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: sparkleAnimation 0.8s ease-out forwards;
+      `;
+      document.body.appendChild(sparkle);
+      
+      setTimeout(() => sparkle.remove(), 800);
+    }
+
+    // Add sparkle style
+    const sparkleStyle = document.createElement('style');
+    sparkleStyle.textContent = `
+      @keyframes sparkleAnimation {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(
+            ${Math.random() * 100 - 50}px,
+            ${Math.random() * -100}px
+          ) scale(0);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(sparkleStyle);
+
+    // Add sparkle to button clicks
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-shimmer, .btn-glow')) {
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            createSparkle(
+              e.clientX + (Math.random() * 20 - 10),
+              e.clientY + (Math.random() * 20 - 10)
+            );
+          }, i * 50);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

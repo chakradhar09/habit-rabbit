@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Rabbit - Apple-Inspired Elegant Design System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* =====================
+       Apple-Inspired Design Tokens
+       ===================== */
+    :root {
+      /* Primary - iOS Blue */
+      --primary: #007AFF;
+      --primary-dark: #0051D5;
+      --primary-light: #5AC8FA;
+      
+      /* Secondary - Orange */
+      --secondary: #FF9500;
+      --secondary-dark: #FF6B00;
+      --secondary-light: #FFB340;
+      
+      /* Semantic Colors */
+      --success: #34C759;
+      --warning: #FF9500;
+      --danger: #FF3B30;
+      --info: #5AC8FA;
+      
+      /* Backgrounds - Soft Dark (Apple Style) */
+      --bg-base: #000000;
+      --bg-card: #1C1C1E;
+      --bg-elevated: #2C2C2E;
+      --bg-input: #3A3A3C;
+      --bg-hover: rgba(0, 122, 255, 0.08);
+      
+      /* Text - High Contrast */
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(235, 235, 245, 0.6);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
+      
+      /* Glassmorphism */
+      --glass-bg: rgba(28, 28, 30, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      
+      /* Spacing - Apple 4px Grid */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-2xl: 48px;
+      --spacing-3xl: 64px;
+      
+      /* Border Radius - Apple Refined */
+      --radius-xs: 6px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      /* Shadows - Soft & Refined */
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-sm: 0 2px 8px 0 rgba(0, 0, 0, 0.10);
+      --shadow-md: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
+      --shadow-lg: 0 8px 24px 0 rgba(0, 0, 0, 0.15);
+      --shadow-xl: 0 16px 48px 0 rgba(0, 0, 0, 0.20);
+      --shadow-2xl: 0 24px 64px 0 rgba(0, 0, 0, 0.25);
+      --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+      
+      /* Transitions - Smooth & Natural */
+      --transition-fast: 200ms cubic-bezier(0.25, 0.1, 0.25, 1);
+      --transition-base: 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
+      --transition-slow: 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
+      --transition-spring: 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* =====================
+       Base Styles
+       ===================== */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-lg);
+    }
+
+    /* =====================
+       Header - Elegant Glass
+       ===================== */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 0.5px solid var(--glass-border);
+      padding: var(--spacing-lg) 0;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: var(--spacing-xs);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* =====================
+       Sections
+       ===================== */
+    .section {
+      padding: var(--spacing-2xl) 0;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section + .section {
+      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .section-title {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-primary);
+    }
+
+    .section-subtitle {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin: var(--spacing-xl) 0 var(--spacing-lg) 0;
+      color: var(--text-primary);
+    }
+
+    .section-description {
+      font-size: 17px;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xl);
+      line-height: 1.5;
+    }
+
+    /* =====================
+       Grid Systems
+       ===================== */
+    .grid {
+      display: grid;
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+    /* =====================
+       Cards - Apple Elegance
+       ===================== */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-base);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .card-glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      border: 0.5px solid var(--glass-border);
+      box-shadow: var(--shadow-soft);
+      transition: var(--transition-base);
+    }
+
+    .card-glass:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* =====================
+       Buttons - iOS Style
+       ===================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: 11px 20px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      font-family: inherit;
+      letter-spacing: -0.2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 0.5px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: scale(1.02);
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      padding: 11px 16px;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(0, 122, 255, 0.08);
+    }
+
+    .btn-ghost:active {
+      transform: scale(0.96);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* =====================
+       Task Cards
+       ===================== */
+    .task-card {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg);
+      background: var(--bg-card);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-base);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .task-card:hover {
+      border-color: rgba(0, 122, 255, 0.4);
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+
+    .task-card.completed {
+      border-color: rgba(52, 199, 89, 0.4);
+      background: linear-gradient(90deg, transparent 0%, rgba(52, 199, 89, 0.05) 100%);
+    }
+
+    .task-card.completed .task-title {
+      color: var(--text-secondary);
+      text-decoration: line-through;
+    }
+
+    .task-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all var(--transition-base);
+      background: var(--bg-input);
+    }
+
+    .task-card:hover .task-checkbox {
+      border-color: var(--primary);
+    }
+
+    .task-card.completed .task-checkbox {
+      background: var(--success);
+      border-color: var(--success);
+      box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.2);
+    }
+
+    .task-card.completed .task-checkbox::after {
+      content: '✓';
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      animation: checkAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes checkAppear {
+      from {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+      letter-spacing: -0.2px;
+    }
+
+    .task-description {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    /* =====================
+       Input Fields - iOS Style
+       ===================== */
+    .input-group {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .input-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xs);
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-input);
+      border: 0.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 17px;
+      font-family: inherit;
+      transition: all var(--transition-base);
+      -webkit-appearance: none;
+    }
+
+    .input-field::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .input-field:focus {
+      outline: none;
+      background: var(--bg-elevated);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    }
+
+    .input-field:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* =====================
+       Stat Cards - Apple Style
+       ===================== */
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--spacing-xl);
+      background: var(--bg-card);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-lg);
+      transition: var(--transition-base);
+      text-align: center;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .stat-icon {
+      font-size: 48px;
+      margin-bottom: var(--spacing-md);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }
+
+    .stat-value {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* =====================
+       Progress Bars - Smooth Animation
+       ===================== */
+    .progress-container {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .progress-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .progress-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--bg-input);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-full);
+      transition: width 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%
+      );
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+
+
+
+    /* =====================
+       Color Swatches
+       ===================== */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .color-swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      transition: var(--transition-base);
+    }
+
+    .color-swatch:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .color-block {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    .color-info {
+      padding: var(--spacing-md);
+      background: var(--bg-card);
+    }
+
+    .color-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .color-value {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    }
+
+    /* =====================
+       Code Blocks
+       ===================== */
+    .code-block {
+      position: relative;
+      background: var(--bg-elevated);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin-top: var(--spacing-lg);
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: var(--spacing-sm);
+      right: var(--spacing-sm);
+      padding: 6px 12px;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      font-weight: 500;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text-primary);
+    }
+
+    .copy-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* =====================
+       Animations - Entrance
+       ===================== */
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .slide-up {
+      animation: slideUp 0.6s ease forwards;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Add stagger animation delays */
+    .section:nth-child(1) { animation-delay: 0s; }
+    .section:nth-child(2) { animation-delay: 0.1s; }
+    .section:nth-child(3) { animation-delay: 0.2s; }
+    .section:nth-child(4) { animation-delay: 0.3s; }
+    .section:nth-child(5) { animation-delay: 0.4s; }
+    .section:nth-child(6) { animation-delay: 0.5s; }
+    .section:nth-child(7) { animation-delay: 0.6s; }
+    .section:nth-child(8) { animation-delay: 0.7s; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="container">
+      <h1>Habit Rabbit</h1>
+      <p>Apple-Inspired Elegant Design System</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Logo & Branding -->
+    <div class="section">
+      <h2 class="section-title">Logo & Branding</h2>
+      <p class="section-description">
+        Modern, minimal logo design featuring an abstract "H" mark representing habit formation and growth. The gradient blue symbolizes progress, while orange accents represent energy and achievement.
+      </p>
+
+      <div class="grid grid-2" style="margin-bottom: var(--spacing-xl);">
+        <div class="card" style="background: var(--bg-base); padding: var(--spacing-2xl); display: flex; align-items: center; justify-content: center;">
+          <svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="30" r="22" stroke="url(#gradient1)" stroke-width="3" fill="none" opacity="0.3"/>
+            <path d="M22 18 L22 42 M22 30 L38 30 M38 18 L38 42" stroke="url(#gradient1)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="38" cy="18" r="3" fill="#FF9500"/>
+            <circle cx="38" cy="30" r="2.5" fill="#FF9500" opacity="0.7"/>
+            <circle cx="38" cy="42" r="2" fill="#FF9500" opacity="0.5"/>
+            <text x="60" y="28" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" letter-spacing="-0.5">Habit</text>
+            <text x="60" y="50" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="20" font-weight="500" fill="#FF9500" letter-spacing="-0.3">Rabbit</text>
+            <defs>
+              <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#007AFF;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="card" style="background: var(--bg-base); padding: var(--spacing-2xl); display: flex; align-items: center; justify-content: center;">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="30" r="28" fill="#1C1C1E"/>
+            <circle cx="30" cy="30" r="22" stroke="url(#gradient2)" stroke-width="3" fill="none" opacity="0.3"/>
+            <path d="M22 18 L22 42 M22 30 L38 30 M38 18 L38 42" stroke="url(#gradient2)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="38" cy="18" r="3" fill="#FF9500"/>
+            <circle cx="38" cy="30" r="2.5" fill="#FF9500" opacity="0.7"/>
+            <circle cx="38" cy="42" r="2" fill="#FF9500" opacity="0.5"/>
+            <defs>
+              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#007AFF;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#5AC8FA;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 17px; font-weight: 600; color: var(--text-primary);">Full Logo</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: var(--spacing-sm);">Use for headers, landing pages, and primary branding.</p>
+          <code style="background: var(--bg-input); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--primary-light);">logo.svg</code>
+        </div>
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 17px; font-weight: 600; color: var(--text-primary);">Icon Mark</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: var(--spacing-sm);">Use for app icons, favicons, and compact spaces.</p>
+          <code style="background: var(--bg-input); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--primary-light);">logo-icon.svg</code>
+        </div>
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 17px; font-weight: 600; color: var(--text-primary);">Clear Space</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">Maintain minimum padding of 16px around the logo for optimal visibility.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colors -->
+    <div class="section">
+      <h2 class="section-title">Color Palette</h2>
+      <p class="section-description">
+        Our refined color system uses iOS-inspired blues with warm orange accents. Soft, elegant, and accessible.
+      </p>
+      
+      <h3 class="section-subtitle">Primary Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #007AFF; color: white;">Primary</div>
+          <div class="color-info">
+            <div class="color-name">iOS Blue</div>
+            <div class="color-value">#007AFF</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #0051D5; color: white;">Dark</div>
+          <div class="color-info">
+            <div class="color-name">Primary Dark</div>
+            <div class="color-value">#0051D5</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #5AC8FA; color: white;">Light</div>
+          <div class="color-info">
+            <div class="color-name">Primary Light</div>
+            <div class="color-value">#5AC8FA</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Secondary Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #FF9500; color: white;">Secondary</div>
+          <div class="color-info">
+            <div class="color-name">Orange</div>
+            <div class="color-value">#FF9500</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #FF6B00; color: white;">Dark</div>
+          <div class="color-info">
+            <div class="color-name">Dark Orange</div>
+            <div class="color-value">#FF6B00</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #FFB340; color: white;">Light</div>
+          <div class="color-info">
+            <div class="color-name">Light Orange</div>
+            <div class="color-value">#FFB340</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Semantic Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #34C759; color: white;">Success</div>
+          <div class="color-info">
+            <div class="color-name">iOS Green</div>
+            <div class="color-value">#34C759</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #FF3B30; color: white;">Danger</div>
+          <div class="color-info">
+            <div class="color-name">iOS Red</div>
+            <div class="color-value">#FF3B30</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #FF9500; color: white;">Warning</div>
+          <div class="color-info">
+            <div class="color-name">iOS Orange</div>
+            <div class="color-value">#FF9500</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Background System</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-block" style="background: #000000; color: white;">Base</div>
+          <div class="color-info">
+            <div class="color-name">Pure Black</div>
+            <div class="color-value">#000000</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #1C1C1E; color: white;">Card</div>
+          <div class="color-info">
+            <div class="color-name">System Gray 6</div>
+            <div class="color-value">#1C1C1E</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #2C2C2E; color: white;">Elevated</div>
+          <div class="color-info">
+            <div class="color-name">System Gray 5</div>
+            <div class="color-value">#2C2C2E</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-block" style="background: #3A3A3C; color: white;">Input</div>
+          <div class="color-info">
+            <div class="color-name">System Gray 4</div>
+            <div class="color-value">#3A3A3C</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="section">
+      <h2 class="section-title">Buttons</h2>
+      <p class="section-description">
+        iOS-inspired buttons with smooth scaling animations and refined shadows. Subtle, elegant, and responsive.
+      </p>
+
+      <h3 class="section-subtitle">Button Variants</h3>
+      <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; margin-bottom: var(--spacing-xl);">
+        <button class="btn btn-primary">Primary Button</button>
+        <button class="btn btn-secondary">Secondary Button</button>
+        <button class="btn btn-ghost">Ghost Button</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;button class="btn btn-primary"&gt;Primary Button&lt;/button&gt;
+&lt;button class="btn btn-secondary"&gt;Secondary Button&lt;/button&gt;
+&lt;button class="btn btn-ghost"&gt;Ghost Button&lt;/button&gt;
+      </div>
+    </div>
+
+    <!-- Task Cards -->
+    <div class="section">
+      <h2 class="section-title">Task Cards</h2>
+      <p class="section-description">
+        Interactive task cards with smooth animations and elegant hover effects.
+      </p>
+
+      <div class="grid grid-2">
+        <div class="task-card" onclick="toggleTask(this)">
+          <div class="task-checkbox"></div>
+          <div class="task-content">
+            <div class="task-title">Complete daily exercise</div>
+            <div class="task-description">30 minutes of cardio</div>
+          </div>
+        </div>
+
+        <div class="task-card" onclick="toggleTask(this)">
+          <div class="task-checkbox"></div>
+          <div class="task-content">
+            <div class="task-title">Morning meditation</div>
+            <div class="task-description">10 minutes of mindfulness</div>
+          </div>
+        </div>
+
+        <div class="task-card completed">
+          <div class="task-checkbox"></div>
+          <div class="task-content">
+            <div class="task-title">Drink 8 glasses of water</div>
+            <div class="task-description">Stay hydrated throughout the day</div>
+          </div>
+        </div>
+
+        <div class="task-card" onclick="toggleTask(this)">
+          <div class="task-checkbox"></div>
+          <div class="task-content">
+            <div class="task-title">Read for 30 minutes</div>
+            <div class="task-description">Finish current chapter</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="task-card" onclick="toggleTask(this)"&gt;
+  &lt;div class="task-checkbox"&gt;&lt;/div&gt;
+  &lt;div class="task-content"&gt;
+    &lt;div class="task-title"&gt;Complete daily exercise&lt;/div&gt;
+    &lt;div class="task-description"&gt;30 minutes of cardio&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="section">
+      <h2 class="section-title">Cards</h2>
+      <p class="section-description">
+        Refined cards with soft shadows and elegant glassmorphism effects. Hover to see smooth lift animations.
+      </p>
+
+      <h3 class="section-subtitle">Standard Cards</h3>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">Standard Card</h3>
+          <p style="color: var(--text-secondary); font-size: 15px;">Elegant dark card with soft shadows and refined borders.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">Hover Effect</h3>
+          <p style="color: var(--text-secondary); font-size: 15px;">Hover to see smooth lift animation and shadow depth.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">Subtle Animation</h3>
+          <p style="color: var(--text-secondary); font-size: 15px;">Natural cubic-bezier easing for premium feel.</p>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Glass Cards</h3>
+      <div class="grid grid-2">
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">Glassmorphism</h3>
+          <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: var(--spacing-md);">Backdrop blur with 180% saturation for depth and elegance.</p>
+          <p style="color: var(--text-tertiary); font-size: 13px;">backdrop-filter: blur(20px) saturate(180%)</p>
+        </div>
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">Refined Borders</h3>
+          <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: var(--spacing-md);">0.5px borders with subtle transparency for premium polish.</p>
+          <p style="color: var(--text-tertiary); font-size: 13px;">border: 0.5px solid rgba(255, 255, 255, 0.1)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Fields -->
+    <div class="section">
+      <h2 class="section-title">Input Fields</h2>
+      <p class="section-description">
+        Clean iOS-style inputs with smooth focus states and refined interactions.
+      </p>
+
+      <div class="grid grid-2">
+        <div class="input-group">
+          <label class="input-label">Habit Name</label>
+          <input type="text" class="input-field" placeholder="Enter your habit...">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Target Days</label>
+          <input type="number" class="input-field" placeholder="7">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Description</label>
+          <input type="text" class="input-field" placeholder="What do you want to achieve?">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Reminder Time</label>
+          <input type="time" class="input-field">
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="input-group"&gt;
+  &lt;label class="input-label"&gt;Habit Name&lt;/label&gt;
+  &lt;input type="text" class="input-field" placeholder="Enter your habit..."&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="section">
+      <h2 class="section-title">Statistics</h2>
+      <p class="section-description">
+        Elegant stat display with gradient text and refined hover animations.
+      </p>
+
+      <div class="grid grid-3">
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value">85%</div>
+          <div class="stat-label">Completion Rate</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-value">247</div>
+          <div class="stat-label">Total Points</div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="stat-card"&gt;
+  &lt;div class="stat-icon"&gt;🔥&lt;/div&gt;
+  &lt;div class="stat-value"&gt;12&lt;/div&gt;
+  &lt;div class="stat-label"&gt;Day Streak&lt;/div&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="section">
+      <h2 class="section-title">Progress Indicators</h2>
+      <p class="section-description">
+        Smooth animated progress bars with shimmer effects for visual delight.
+      </p>
+
+      <div class="progress-container">
+        <div class="progress-header">
+          <span class="progress-label">Daily Progress</span>
+          <span class="progress-value">75%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 75%"></div>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-header">
+          <span class="progress-label">Weekly Goals</span>
+          <span class="progress-value">60%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 60%"></div>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-header">
+          <span class="progress-label">Monthly Challenge</span>
+          <span class="progress-value">92%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 92%"></div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+&lt;div class="progress-container"&gt;
+  &lt;div class="progress-header"&gt;
+    &lt;span class="progress-label"&gt;Daily Progress&lt;/span&gt;
+    &lt;span class="progress-value"&gt;75%&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="progress-bar"&gt;
+    &lt;div class="progress-fill" style="width: 75%"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+      </div>
+    </div>
+
+
+
+    <!-- Animation Principles -->
+    <div class="section">
+      <h2 class="section-title">Animation Principles</h2>
+      <p class="section-description">
+        All animations follow Apple's Human Interface Guidelines for natural, subtle motion.
+      </p>
+
+      <div class="grid grid-2">
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">🎯 Purposeful</h3>
+          <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6;">Every animation serves a purpose — guiding attention, providing feedback, or indicating relationships between elements.</p>
+        </div>
+
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">⚡ Responsive</h3>
+          <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6;">Fast timing (200-300ms) ensures interactions feel immediate. Longer animations (500-600ms) for state transitions.</p>
+        </div>
+
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">🌊 Natural Easing</h3>
+          <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6;">Cubic-bezier(0.25, 0.1, 0.25, 1) mimics natural motion. Spring curves for playful interactions.</p>
+        </div>
+
+        <div class="card-glass">
+          <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px; font-weight: 600;">✨ Subtle Delight</h3>
+          <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6;">Smooth transitions and shimmer effects add personality without overwhelming the interface.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spacing System -->
+    <div class="section">
+      <h2 class="section-title">Spacing System</h2>
+      <p class="section-description">
+        Apple's 4px grid system for consistent, harmonious layouts.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+        <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+          <div style="width: 4px; height: 40px; background: var(--primary); border-radius: 2px;"></div>
+          <span style="font-family: 'SF Mono', monospace; color: var(--text-secondary);">4px - Extra Small</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+          <div style="width: 8px; height: 40px; background: var(--primary); border-radius: 2px;"></div>
+          <span style="font-family: 'SF Mono', monospace; color: var(--text-secondary);">8px - Small</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+          <div style="width: 16px; height: 40px; background: var(--primary); border-radius: 2px;"></div>
+          <span style="font-family: 'SF Mono', monospace; color: var(--text-secondary);">16px - Medium</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+          <div style="width: 24px; height: 40px; background: var(--primary); border-radius: 2px;"></div>
+          <span style="font-family: 'SF Mono', monospace; color: var(--text-secondary);">24px - Large</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+          <div style="width: 32px; height: 40px; background: var(--primary); border-radius: 2px;"></div>
+          <span style="font-family: 'SF Mono', monospace; color: var(--text-secondary);">32px - Extra Large</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+          <div style="width: 48px; height: 40px; background: var(--primary); border-radius: 2px;"></div>
+          <span style="font-family: 'SF Mono', monospace; color: var(--text-secondary);">48px - 2XL</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--spacing-lg);">
+          <div style="width: 64px; height: 40px; background: var(--primary); border-radius: 2px;"></div>
+          <span style="font-family: 'SF Mono', monospace; color: var(--text-secondary);">64px - 3XL</span>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+--spacing-xs: 4px;
+--spacing-sm: 8px;
+--spacing-md: 16px;
+--spacing-lg: 24px;
+--spacing-xl: 32px;
+--spacing-2xl: 48px;
+--spacing-3xl: 64px;
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Copy code to clipboard
+    function copyCode(btn) {
+      const code = btn.parentElement.textContent.replace('Copy', '').trim();
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+        }, 2000);
+      });
+    }
+
+    // Toggle task completion
+    function toggleTask(taskCard) {
+      taskCard.classList.toggle('completed');
+      
+      // Play sound effect (optional - add later)
+      if (taskCard.classList.contains('completed')) {
+        // Task completed sound
+        console.log('✅ Task completed!');
+      }
+    }
+
+    // Animate progress bars on scroll into view
+    const observerOptions = {
+      threshold: 0.5,
+      rootMargin: '0px'
+    };
+
+    const progressObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const progressFills = entry.target.querySelectorAll('.progress-fill');
+          progressFills.forEach(fill => {
+            const width = fill.style.width;
+            fill.style.width = '0%';
+            setTimeout(() => {
+              fill.style.width = width;
+            }, 100);
+          });
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections with progress bars
+    document.querySelectorAll('.section').forEach(section => {
+      if (section.querySelector('.progress-container')) {
+        progressObserver.observe(section);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "habit-rabbit",
+  "env": {
+    "NODE_ENV": "production",
+    "JWT_SECRET": {
+      "generator": "secret"
+    }
+  },
+  "addons": [],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
