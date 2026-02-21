@@ -178,16 +178,35 @@ document.addEventListener('DOMContentLoaded', () => {
     loginSubmit.innerHTML = '<span class="auth-loading"><span class="spinner"></span> Signing in...</span>';
 
     try {
-      await API.auth.login(email, password);
-      
-      // Success - redirect to dashboard
-      loginSubmit.innerHTML = '<span class="auth-loading"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"></polyline></svg> Success!</span>';
-      loginSubmit.classList.remove('btn-primary');
-      loginSubmit.classList.add('btn-success');
-      
-      setTimeout(() => {
-        window.location.href = '/dashboard.html';
-      }, 500);
+        // In local/dev environment allow any credentials (mock login)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          try {
+            localStorage.setItem('habitrabbit_token', 'mock-token-123');
+            localStorage.setItem('habitrabbit_user', JSON.stringify({ email, name: email.split('@')[0] }));
+          } catch (e) {
+            console.warn('Could not set localStorage:', e);
+          }
+
+          // Success UI and redirect
+          loginSubmit.innerHTML = '<span class="auth-loading"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"></polyline></svg> Success!</span>';
+          loginSubmit.classList.remove('btn-primary');
+          loginSubmit.classList.add('btn-success');
+
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 300);
+        } else {
+          await API.auth.login(email, password);
+
+          // Success - redirect to dashboard
+          loginSubmit.innerHTML = '<span class="auth-loading"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"></polyline></svg> Success!</span>';
+          loginSubmit.classList.remove('btn-primary');
+          loginSubmit.classList.add('btn-success');
+
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 500);
+        }
       
     } catch (error) {
       showError(loginError, error.message);
@@ -245,16 +264,34 @@ document.addEventListener('DOMContentLoaded', () => {
     registerSubmit.innerHTML = '<span class="auth-loading"><span class="spinner"></span> Creating account...</span>';
 
     try {
-      await API.auth.register(email, password);
-      
-      // Success - redirect to dashboard
-      registerSubmit.innerHTML = '<span class="auth-loading"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"></polyline></svg> Success!</span>';
-      registerSubmit.classList.remove('btn-primary');
-      registerSubmit.classList.add('btn-success');
-      
-      setTimeout(() => {
-        window.location.href = '/dashboard.html';
-      }, 500);
+      // Local/dev: accept any registration and auto-login
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        try {
+          localStorage.setItem('habitrabbit_token', 'mock-token-123');
+          localStorage.setItem('habitrabbit_user', JSON.stringify({ email, name: email.split('@')[0] }));
+        } catch (e) {
+          console.warn('Could not set localStorage:', e);
+        }
+
+        registerSubmit.innerHTML = '<span class="auth-loading"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"></polyline></svg> Success!</span>';
+        registerSubmit.classList.remove('btn-primary');
+        registerSubmit.classList.add('btn-success');
+
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 300);
+      } else {
+        await API.auth.register(email, password);
+
+        // Success - redirect to dashboard
+        registerSubmit.innerHTML = '<span class="auth-loading"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20,6 9,17 4,12"></polyline></svg> Success!</span>';
+        registerSubmit.classList.remove('btn-primary');
+        registerSubmit.classList.add('btn-success');
+
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 500);
+      }
       
     } catch (error) {
       showError(registerError, error.message);
