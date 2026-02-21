@@ -4,16 +4,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   // ============================================
-  // Hide page loader after 2 seconds
-  // ============================================
-  setTimeout(() => {
-    const loader = document.getElementById('page-loader');
-    if (loader) {
-      loader.classList.add('hidden');
-    }
-  }, 2000);
-
-  // ============================================
   // Check if already authenticated
   // ============================================
   if (API.auth.isAuthenticated()) {
