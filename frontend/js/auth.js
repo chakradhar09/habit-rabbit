@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
   const authMessage = document.getElementById('auth-message');
+  const authTitle = document.querySelector('.auth-title');
+  const authSubtitle = document.querySelector('.auth-subtitle');
 
   // Tab switching
   tabBtns.forEach(btn => {
@@ -29,9 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tab === 'login') {
         loginForm.classList.add('active');
         registerForm.classList.remove('active');
+        if (authTitle) authTitle.textContent = 'Welcome back';
+        if (authSubtitle) authSubtitle.textContent = 'Sign in to continue your streak.';
       } else {
         registerForm.classList.add('active');
         loginForm.classList.remove('active');
+        if (authTitle) authTitle.textContent = 'Create account';
+        if (authSubtitle) authSubtitle.textContent = 'Start building better habits today.';
       }
       
       // Clear message

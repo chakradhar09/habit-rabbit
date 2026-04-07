@@ -17,14 +17,23 @@ const taskSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  priority: {
+    type: String,
+    enum: ['high', 'medium', 'low'],
+    default: 'medium'
+  },
+  sortOrder: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-// Compound index for user's active tasks
-taskSchema.index({ userId: 1, isActive: 1 });
+// Compound index for user's active tasks with sort order
+taskSchema.index({ userId: 1, isActive: 1, sortOrder: 1 });
 
 const Task = mongoose.model('Task', taskSchema);
 

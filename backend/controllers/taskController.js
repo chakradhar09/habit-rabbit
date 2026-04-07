@@ -55,8 +55,8 @@ const getTodaysTasks = async (req, res) => {
     const today = getTodayDate();
     const userId = req.user._id;
 
-    // Get all active tasks for the user
-    const tasks = await Task.find({ userId, isActive: true }).sort({ createdAt: -1 });
+    // Get all active tasks for the user (sorted by sortOrder, then createdAt)
+    const tasks = await Task.find({ userId, isActive: true }).sort({ sortOrder: 1, createdAt: -1 });
 
     // Get today's completions for these tasks
     const taskIds = tasks.map(t => t._id);
@@ -77,6 +77,8 @@ const getTodaysTasks = async (req, res) => {
       _id: task._id,
       title: task.title,
       isActive: task.isActive,
+      priority: task.priority || 'medium',
+      sortOrder: task.sortOrder || 0,
       createdAt: task.createdAt,
       completed: completedMap.get(task._id.toString()) || false
     }));
@@ -229,10 +231,133 @@ const getAllTasks = async (req, res) => {
   }
 };
 
+// @desc    Update task order (drag-drop reordering)
+// @route   PUT /api/tasks/reorder
+// @access  Private
+const updateTaskOrder = async (req, res) => {
+  try {
+    const { taskOrders } = req.body; // Array of { taskId, sortOrder }
+    const userId = req.user._id;
+
+    if (!Array.isArray(taskOrders) || taskOrders.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'taskOrders array is required'
+      });
+    }
+
+    // Validate all tasks belong to user
+    const taskIds = taskOrders.map(t => t.taskId);
+    const userTasks = await Task.find({ _id: { $in: taskIds }, userId });
+    
+    if (userTasks.length !== taskIds.length) {
+      return res.status(403).json({
+        success: false,
+        message: 'Some tasks do not belong to this user'
+      });
+    }
+
+    // Bulk update sort orders
+    const bulkOps = taskOrders.map(({ taskId, sortOrder }) => ({
+      updateOne: {
+        filter: { _id: taskId, userId },
+        update: { $set: { sortOrder } }
+      }
+    }));
+
+    await Task.bulkWrite(bulkOps);
+
+    res.json({
+      success: true,
+      message: 'Task order updated successfully'
+    });
+  } catch (error) {
+    console.error('Update task order error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error updating task order'
+    });
+  }
+};
+
+// @desc    Apply AI-suggested priorities to tasks
+// @route   PUT /api/tasks/apply-priorities
+// @access  Private
+const applyAIPriorities = async (req, res) => {
+  try {
+    const { priorities } = req.body; // Array of { taskId, priority }
+    const userId = req.user._id;
+
+    if (!Array.isArray(priorities) || priorities.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'priorities array is required'
+      });
+    }
+
+    // Validate priority values
+    const validPriorities = ['high', 'medium', 'low'];
+    const invalidPriority = priorities.find(p => !validPriorities.includes(p.priority));
+    if (invalidPriority) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid priority value. Must be high, medium, or low'
+      });
+    }
+
+    // Validate all tasks belong to user
+    const taskIds = priorities.map(p => p.taskId);
+    const userTasks = await Task.find({ _id: { $in: taskIds }, userId });
+    
+    if (userTasks.length !== taskIds.length) {
+      return res.status(403).json({
+        success: false,
+        message: 'Some tasks do not belong to this user'
+      });
+    }
+
+    // Bulk update priorities and reorder by priority
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    const bulkOps = priorities.map(({ taskId, priority }) => ({
+      updateOne: {
+        filter: { _id: taskId, userId },
+        update: { 
+          $set: { 
+            priority,
+            sortOrder: priorityOrder[priority] * 100 // Group by priority
+          } 
+        }
+      }
+    }));
+
+    await Task.bulkWrite(bulkOps);
+
+    // Refetch tasks to return updated order
+    const updatedTasks = await Task.find({ userId, isActive: true })
+      .sort({ sortOrder: 1, createdAt: -1 });
+
+    res.json({
+      success: true,
+      message: 'Priorities applied successfully',
+      data: {
+        tasks: updatedTasks
+      }
+    });
+  } catch (error) {
+    console.error('Apply priorities error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error applying priorities'
+    });
+  }
+};
+
 module.exports = {
   createTask,
   getTodaysTasks,
   toggleCompletion,
   deleteTask,
-  getAllTasks
+  getAllTasks,
+  updateTaskOrder,
+  applyAIPriorities
 };

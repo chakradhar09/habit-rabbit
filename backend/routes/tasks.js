@@ -5,18 +5,28 @@ const {
   getTodaysTasks,
   toggleCompletion,
   deleteTask,
-  getAllTasks
+  getAllTasks,
+  updateTaskOrder,
+  applyAIPriorities
 } = require('../controllers/taskController');
 const authMiddleware = require('../middleware/authMiddleware');
+const {
+  validateTaskCreatePayload,
+  validateTaskOrderPayload,
+  validateApplyPrioritiesPayload,
+  validateObjectIdParam
+} = require('../middleware/validationMiddleware');
 
 // All routes are protected
 router.use(authMiddleware);
 
 // Task routes
-router.post('/', createTask);
+router.post('/', validateTaskCreatePayload, createTask);
 router.get('/today', getTodaysTasks);
 router.get('/', getAllTasks);
-router.put('/:id/complete', toggleCompletion);
-router.delete('/:id', deleteTask);
+router.put('/:id/complete', validateObjectIdParam('id'), toggleCompletion);
+router.put('/reorder', validateTaskOrderPayload, updateTaskOrder);
+router.put('/apply-priorities', validateApplyPrioritiesPayload, applyAIPriorities);
+router.delete('/:id', validateObjectIdParam('id'), deleteTask);
 
 module.exports = router;

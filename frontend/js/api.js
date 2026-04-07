@@ -248,7 +248,41 @@ const API = (() => {
     getStats: async () => {
       const response = await request('/analytics/stats');
       return response;
+    },
+
+    /**
+     * Get AI-powered insights and suggestions
+     * @param {string} context - User's current situation (e.g., "I have exams next week")
+     * @returns {Promise<object>} - AI insights object
+     */
+    getAIInsights: async (context = '') => {
+      const response = await request('/analytics/ai-insights', {
+        method: 'POST',
+        body: { context }
+      });
+      return response;
     }
+  };
+
+  // ============================================
+  // Task Management (Extended)
+  // ============================================
+
+  // Add reorder and apply priorities to tasks object
+  tasks.reorder = async (taskOrders) => {
+    const response = await request('/tasks/reorder', {
+      method: 'PUT',
+      body: { taskOrders }
+    });
+    return response;
+  };
+
+  tasks.applyPriorities = async (priorities) => {
+    const response = await request('/tasks/apply-priorities', {
+      method: 'PUT',
+      body: { priorities }
+    });
+    return response;
   };
 
   // ============================================
