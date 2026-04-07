@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habit Rabbit — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── TOKENS ───────────────────────────────────────── */
+    :root {
+      --bg:           #0E1512;
+      --bg-panel:     #111A16;
+      --surface:      #1A2420;
+      --surface-2:    #1F2B27;
+      --border:       rgba(127, 212, 162, 0.10);
+      --border-soft:  rgba(255, 255, 255, 0.06);
+      --accent:       #7FD4A2;
+      --accent-dim:   rgba(127, 212, 162, 0.12);
+      --accent-glow:  rgba(127, 212, 162, 0.22);
+      --accent-bright:#A3E4BE;
+      --red:          #E87070;
+      --red-dim:      rgba(232, 112, 112, 0.12);
+      --t1:           #E8F0EB;
+      --t2:           #8BA597;
+      --t3:           #4A6355;
+      --t4:           #2A3D32;
+      --font-d:       'Libre Baskerville', Georgia, serif;
+      --font-b:       'Manrope', system-ui, sans-serif;
+      --font-m:       'JetBrains Mono', monospace;
+    }
+
+    /* ─── RESET ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; height: 100%; }
+    body {
+      font-family: var(--font-b);
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    button { font-family: inherit; cursor: pointer; }
+    input  { font-family: inherit; }
+
+    /* ─── GRAIN TEXTURE ─────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────── */
+    .layout {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* ─── LEFT BRAND PANEL ───────────────────────────────── */
+    .brand {
+      width: 48%;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      padding: 48px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient glow orb */
+    .brand::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(127, 212, 162, 0.07) 0%, transparent 65%);
+      bottom: -150px; right: -150px;
+      pointer-events: none;
+    }
+
+    .brand-top {
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 72px;
+    }
+
+    .brand-logo .rabbit {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .brand-logo .name {
+      font-family: var(--font-d);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--t1);
+    }
+
+    .brand-headline {
+      font-family: var(--font-d);
+      font-size: 54px;
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--t1);
+      margin-bottom: 20px;
+    }
+
+    .brand-headline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .brand-desc {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--t2);
+      line-height: 1.65;
+      max-width: 300px;
+    }
+
+    /* Streak grid */
+    .streak-section {
+      animation: fadeUp 0.8s ease 0.15s both;
+    }
+
+    .streak-label {
+      font-family: var(--font-m);
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--t3);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .streak-grid {
+      display: grid;
+      grid-template-columns: repeat(14, 1fr);
+      gap: 5px;
+      margin-bottom: 24px;
+    }
+
+    .s-day {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: var(--surface);
+      transition: transform 0.15s;
+    }
+    .s-day:hover { transform: scale(1.3); }
+    .s-day.done   { background: var(--accent); }
+    .s-day.part   { background: rgba(127, 212, 162, 0.35); }
+    .s-day.miss   { background: rgba(232, 112, 112, 0.3); }
+
+    .brand-stats {
+      display: flex;
+      gap: 36px;
+    }
+
+    .bstat {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .bstat-val {
+      font-family: var(--font-d);
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--t1);
+    }
+
+    .bstat-key {
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--t3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ─── RIGHT FORM PANEL ───────────────────────────────── */
+    .form-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 64px;
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 360px;
+      animation: fadeRight 0.7s ease 0.1s both;
+    }
+
+    .form-title {
+      font-family: var(--font-d);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--t1);
+      margin-bottom: 6px;
+    }
+
+    .form-sub {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--t2);
+      margin-bottom: 28px;
+    }
+
+    /* Tab toggle */
+    .tabs {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 28px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 9px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      color: var(--t3);
+      font-family: var(--font-b);
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.18s ease;
+    }
+
+    .tab.active {
+      background: var(--surface-2);
+      color: var(--t1);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--t2);
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* Form fields */
+    .panel { display: none; }
+    .panel.active { display: block; animation: fade .2s ease; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .fgroup { margin-bottom: 16px; }
+
+    .flabel {
+      display: block;
+      font-family: var(--font-m);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--t3);
+      margin-bottom: 8px;
+    }
+
+    .iwrap { position: relative; }
+
+    .finput {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      color: var(--t1);
+      font-size: 15px;
+      font-weight: 400;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+
+    .finput::placeholder { color: var(--t4); }
+
+    .finput:focus {
+      border-color: var(--accent);
+      background: rgba(127, 212, 162, 0.04);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .finput.pad-r { padding-right: 44px; }
+
+    .eye-btn {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--t3); padding: 4px;
+      display: flex; align-items: center;
+      transition: color 0.15s;
+    }
+    .eye-btn:hover { color: var(--t2); }
+
+    /* Message */
+    .msg {
+      display: none;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      border: 1px solid transparent;
+    }
+    .msg.err  { display: block; background: var(--red-dim);   border-color: rgba(232,112,112,0.2); color: #F4A0A0; }
+    .msg.ok   { display: block; background: var(--accent-dim); border-color: rgba(127,212,162,0.2); color: var(--accent); }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #0E1512;
+      font-family: var(--font-b);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: all 0.18s ease;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--accent-bright);
+      box-shadow: 0 0 28px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Footer */
+    .footer-note {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--t3);
+    }
+
+    .footer-note a { color: var(--accent); text-decoration: none; }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--t4); font-size: 11px;
+      margin: 18px 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border-soft);
+    }
+
+    /* ─── ANIMATIONS ─────────────────────────────────────── */
+    @keyframes fadeUp   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes fadeRight{ from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .brand { display: none; }
+      .form-panel { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── BRAND PANEL ── -->
+  <aside class="brand">
+    <div class="brand-top">
+      <div class="brand-logo">
+        <span class="rabbit">🐇</span>
+        <span class="name">Habit Rabbit</span>
+      </div>
+
+      <h1 class="brand-headline">
+        Small steps.<br>
+        <em>Lasting change.</em>
+      </h1>
+      <p class="brand-desc">
+        Track your daily habits with clarity. Visualize your streaks, uncover patterns, and build momentum that compounds over time.
+      </p>
+    </div>
+
+    <div class="streak-section">
+      <div class="streak-label">Your last 28 days</div>
+      <div class="streak-grid" id="streakGrid"></div>
+      <div class="brand-stats">
+        <div class="bstat">
+          <span class="bstat-val">21</span>
+          <span class="bstat-key">Day streak</span>
+        </div>
+        <div class="bstat">
+          <span class="bstat-val">8</span>
+          <span class="bstat-key">Habits tracked</span>
+        </div>
+        <div class="bstat">
+          <span class="bstat-val">94%</span>
+          <span class="bstat-key">This month</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── FORM PANEL ── -->
+  <section class="form-panel">
+    <div class="form-box">
+      <h2 class="form-title">Welcome back</h2>
+      <p class="form-sub">Sign in to continue your streak.</p>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" id="tLogin"  onclick="switchTab('login')">Sign In</button>
+        <button class="tab"        id="tReg"    onclick="switchTab('reg')">Create Account</button>
+      </div>
+
+      <!-- Message -->
+      <div class="msg" id="msg"></div>
+
+      <!-- Sign In -->
+      <div class="panel active" id="pLogin">
+        <div class="fgroup">
+          <label class="flabel">Email</label>
+          <input class="finput" type="email" id="lEmail" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Password</label>
+          <div class="iwrap">
+            <input class="finput pad-r" type="password" id="lPwd" placeholder="••••••••" autocomplete="current-password">
+            <button class="eye-btn" onclick="toggleEye('lPwd',this)" type="button" aria-label="Toggle">
+              <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn-submit" id="btnLogin" onclick="doLogin()">Sign In</button>
+      </div>
+
+      <!-- Create Account -->
+      <div class="panel" id="pReg">
+        <div class="fgroup">
+          <label class="flabel">Email</label>
+          <input class="finput" type="email" id="rEmail" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Password</label>
+          <div class="iwrap">
+            <input class="finput pad-r" type="password" id="rPwd" placeholder="Min. 6 characters" autocomplete="new-password">
+            <button class="eye-btn" onclick="toggleEye('rPwd',this)" type="button" aria-label="Toggle">
+              <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Confirm Password</label>
+          <div class="iwrap">
+            <input class="finput pad-r" type="password" id="rConfirm" placeholder="Repeat your password" autocomplete="new-password">
+            <button class="eye-btn" onclick="toggleEye('rConfirm',this)" type="button" aria-label="Toggle">
+              <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn-submit" id="btnReg" onclick="doReg()">Create Account</button>
+      </div>
+
+      <p class="footer-note">
+        By continuing you agree to our <a href="#">Terms of Service</a>
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  /* ── Streak grid (sample data) ── */
+  const states = ['done','done','done','done','part','done','done',
+                  'done','done','miss','done','done','done','done',
+                  'done','done','done','part','done','done','done',
+                  'miss','done','done','done','done','done','done'];
+  const grid = document.getElementById('streakGrid');
+  states.forEach(s => {
+    const d = document.createElement('div');
+    d.className = `s-day ${s}`;
+    grid.appendChild(d);
+  });
+
+  /* ── Tab switching ── */
+  function switchTab(t) {
+    clearMsg();
+    const isLogin = t === 'login';
+    document.getElementById('tLogin').classList.toggle('active', isLogin);
+    document.getElementById('tReg').classList.toggle('active', !isLogin);
+    document.getElementById('pLogin').classList.toggle('active', isLogin);
+    document.getElementById('pReg').classList.toggle('active', !isLogin);
+    document.querySelector('.form-title').textContent = isLogin ? 'Welcome back' : 'Create account';
+    document.querySelector('.form-sub').textContent   = isLogin ? 'Sign in to continue your streak.' : 'Start building better habits today.';
+  }
+
+  /* ── Password toggle ── */
+  const EYE_O = `<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const EYE_C = `<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  function toggleEye(id, btn) {
+    const el = document.getElementById(id);
+    const hidden = el.type === 'password';
+    el.type = hidden ? 'text' : 'password';
+    btn.innerHTML = hidden ? EYE_C : EYE_O;
+  }
+
+  /* ── Messaging ── */
+  function showMsg(txt, type) {
+    const m = document.getElementById('msg');
+    m.textContent = txt;
+    m.className = `msg ${type}`;
+  }
+  function clearMsg() {
+    const m = document.getElementById('msg');
+    m.textContent = '';
+    m.className = 'msg';
+  }
+
+  /* ── Login ── */
+  async function doLogin() {
+    const email = document.getElementById('lEmail').value.trim();
+    const pwd   = document.getElementById('lPwd').value;
+    if (!email || !pwd) return showMsg('Please fill in all fields.', 'err');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showMsg('Enter a valid email address.', 'err');
+    const btn = document.getElementById('btnLogin');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    await new Promise(r => setTimeout(r, 1000));
+    showMsg('Signed in! Redirecting…', 'ok');
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  }
+
+  /* ── Register ── */
+  async function doReg() {
+    const email = document.getElementById('rEmail').value.trim();
+    const pwd   = document.getElementById('rPwd').value;
+    const conf  = document.getElementById('rConfirm').value;
+    if (!email || !pwd || !conf) return showMsg('Please fill in all fields.', 'err');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showMsg('Enter a valid email address.', 'err');
+    if (pwd.length < 6) return showMsg('Password must be at least 6 characters.', 'err');
+    if (pwd !== conf) return showMsg('Passwords do not match.', 'err');
+    const btn = document.getElementById('btnReg');
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    await new Promise(r => setTimeout(r, 1200));
+    showMsg('Account created! Redirecting…', 'ok');
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  }
+
+  /* ── Enter key ── */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const active = document.querySelector('.panel.active');
+    if (active?.id === 'pLogin') doLogin();
+    else doReg();
+  });
+</script>
+</body>
+</html>

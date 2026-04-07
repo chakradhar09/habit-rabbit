@@ -12,6 +12,10 @@ let currentRange = '7d';
 let aiInsights = null; // AI-generated insights
 let aiTaskMetrics = null; // Task metrics from AI analysis
 let habitListResizeRaf = null;
+let currentUser = null;
+let starterPacks = [];
+let selectedStarterPackId = null;
+let weeklyPlanData = null;
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -60,6 +64,24 @@ const aiReplaceList = document.getElementById('ai-replace-list');
 const aiTipsSection = document.getElementById('ai-tips-section');
 const aiTipsList = document.getElementById('ai-tips-list');
 const applyPrioritiesBtn = document.getElementById('apply-priorities-btn');
+const applySkipsBtn = document.getElementById('apply-skips-btn');
+const applyFallbacksBtn = document.getElementById('apply-fallbacks-btn');
+const onboardingModal = document.getElementById('onboarding-modal');
+const starterPackList = document.getElementById('starter-pack-list');
+const onboardingCustomHabitsInput = document.getElementById('onboarding-custom-habits');
+const onboardingContinueBtn = document.getElementById('onboarding-continue-btn');
+const reminderSettingsList = document.getElementById('reminder-settings-list');
+const weeklyPlanWeekLabel = document.getElementById('weekly-plan-week-label');
+const weeklySummaryRate = document.getElementById('weekly-summary-rate');
+const weeklySummaryCount = document.getElementById('weekly-summary-count');
+const weeklySummaryActive = document.getElementById('weekly-summary-active');
+const weeklyFocusInput = document.getElementById('weekly-focus-input');
+const weeklyPriorityList = document.getElementById('weekly-priority-list');
+const weeklyNotesInput = document.getElementById('weekly-notes-input');
+const weeklyReflectionInput = document.getElementById('weekly-reflection-input');
+const saveWeeklyPlanBtn = document.getElementById('save-weekly-plan-btn');
+const weeklyPlanStatus = document.getElementById('weekly-plan-status');
+const weeklyRecommendations = document.getElementById('weekly-recommendations');
 
 const systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 let isSystemThemeListenerBound = false;
@@ -158,9 +180,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     // Load initial data
     await Promise.all([
+      loadCurrentUser(),
       loadTodaysTasks(),
-      loadStats()
+      loadStats(),
+      loadWeeklyPlan()
     ]);
+
+    if (shouldShowOnboarding()) {
+      await loadStarterPacks();
+      openOnboardingModal();
+    }
 
     // Show app
     loadingScreen.classList.add('hidden');
@@ -216,7 +245,7 @@ function setupEventListeners() {
   document.getElementById('delete-soft-btn').addEventListener('click', () => handleDelete(false));
   document.getElementById('delete-hard-btn').addEventListener('click', () => handleDelete(true));
   document.getElementById('delete-cancel-btn').addEventListener('click', closeDeleteModal);
-  document.querySelector('.modal-backdrop').addEventListener('click', closeDeleteModal);
+  deleteModal.querySelector('.modal-backdrop').addEventListener('click', closeDeleteModal);
 
   // Chart type toggle
   document.querySelectorAll('.chart-type-btn').forEach(btn => {
@@ -237,6 +266,37 @@ function setupEventListeners() {
   }
   if (applyPrioritiesBtn) {
     applyPrioritiesBtn.addEventListener('click', applyAIPriorities);
+  }
+  if (applySkipsBtn) {
+    applySkipsBtn.addEventListener('click', applyAISkips);
+  }
+  if (applyFallbacksBtn) {
+    applyFallbacksBtn.addEventListener('click', applyAIFallbacks);
+  }
+  if (saveWeeklyPlanBtn) {
+    saveWeeklyPlanBtn.addEventListener('click', saveWeeklyPlan);
+  }
+  if (onboardingContinueBtn) {
+    onboardingContinueBtn.addEventListener('click', completeOnboardingFlow);
+  }
+  if (onboardingModal) {
+    const backdrop = onboardingModal.querySelector('.modal-backdrop');
+    if (backdrop) {
+      backdrop.addEventListener('click', (event) => {
+        event.preventDefault();
+      });
+    }
+  }
+}
+
+async function loadCurrentUser() {
+  try {
+    const response = await API.auth.getMe();
+    if (response.success) {
+      currentUser = response.data.user;
+    }
+  } catch (error) {
+    console.error('Failed to load current user:', error);
   }
 }
 
@@ -284,6 +344,103 @@ function updateHabitListMaxHeight() {
 
     habitsCard.style.setProperty('--habit-list-max-height', `${Math.round(safeHeight)}px`);
   });
+}
+
+function shouldShowOnboarding() {
+  if (!currentUser || !currentUser.onboarding) return false;
+  const isCompleted = Boolean(currentUser.onboarding.completed);
+  return !isCompleted && tasks.length < 3;
+}
+
+async function loadStarterPacks() {
+  try {
+    const response = await API.tasks.getStarterPacks();
+    if (response.success) {
+      starterPacks = response.data.starterPacks || [];
+      selectedStarterPackId = starterPacks[0]?.id || null;
+      renderStarterPacks();
+    }
+  } catch (error) {
+    console.error('Failed to load starter packs:', error);
+    showToast('Failed to load starter packs', 'error');
+  }
+}
+
+function renderStarterPacks() {
+  if (!starterPackList) return;
+
+  if (!starterPacks.length) {
+    starterPackList.innerHTML = '<p style="color: var(--t3); font-size: 12px;">Starter packs are unavailable right now.</p>';
+    return;
+  }
+
+  starterPackList.innerHTML = starterPacks.map((pack) => `
+    <button
+      class="starter-pack-item ${selectedStarterPackId === pack.id ? 'active' : ''}"
+      data-pack-id="${pack.id}"
+      type="button"
+      aria-label="Select ${escapeHtml(pack.label)}"
+    >
+      <div class="starter-pack-title">${escapeHtml(pack.label)}</div>
+      <div class="starter-pack-preview">${pack.habits.map((habit) => escapeHtml(habit)).join(' • ')}</div>
+    </button>
+  `).join('');
+
+  starterPackList.querySelectorAll('.starter-pack-item').forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedStarterPackId = button.dataset.packId;
+      renderStarterPacks();
+    });
+  });
+}
+
+function openOnboardingModal() {
+  if (!onboardingModal) return;
+  onboardingModal.classList.remove('hidden');
+}
+
+function closeOnboardingModal() {
+  if (!onboardingModal) return;
+  onboardingModal.classList.add('hidden');
+}
+
+async function completeOnboardingFlow() {
+  if (!selectedStarterPackId) {
+    showToast('Select a starter pack first.', 'error');
+    return;
+  }
+
+  onboardingContinueBtn.disabled = true;
+  onboardingContinueBtn.textContent = 'Creating...';
+
+  try {
+    const customHabits = onboardingCustomHabitsInput.value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .slice(0, 5);
+
+    const setupResponse = await API.tasks.setupOnboarding({
+      packId: selectedStarterPackId,
+      customHabits
+    });
+
+    if (!setupResponse.success) {
+      throw new Error(setupResponse.message || 'Failed to create starter habits.');
+    }
+
+    await API.tasks.completeOnboarding();
+    await loadCurrentUser();
+    await Promise.all([loadTodaysTasks(), loadStats(), loadWeeklyPlan()]);
+
+    closeOnboardingModal();
+    showToast('Starter habits created. You are ready to go!', 'success');
+  } catch (error) {
+    showToast(error.message || 'Failed to complete onboarding.', 'error');
+  } finally {
+    onboardingContinueBtn.disabled = false;
+    onboardingContinueBtn.textContent = 'Create Starter Habits';
+  }
 }
 
 // Load today's tasks
@@ -415,6 +572,11 @@ function renderTasks() {
     renderHeatmapSelector();
   }
 
+  const selectedPriorities = weeklyPriorityList
+    ? [...weeklyPriorityList.querySelectorAll('input[type="checkbox"]:checked')].map((checkbox) => checkbox.dataset.taskId)
+    : [];
+  renderWeeklyPriorityOptions(selectedPriorities.length > 0 ? selectedPriorities : ((weeklyPlanData?.plan?.priorities || []).map((id) => String(id))));
+
   updateHabitListMaxHeight();
 }
 
@@ -422,6 +584,14 @@ function renderTasks() {
 function createTaskHTML(task) {
   const streak = taskStreaks[task._id] || 0;
   const streakClass = streak >= 7 ? 'hot' : '';
+  const reminderEnabled = task.reminder && task.reminder.enabled;
+  const reminderTime = reminderEnabled ? task.reminder.time : null;
+  const pauseBadge = task.isPaused
+    ? `<span class="task-paused-badge" title="Paused until ${escapeHtml(task.pausedUntil)}">⏸ ${escapeHtml(task.pausedUntil)}</span>`
+    : '';
+  const reminderBadge = reminderTime
+    ? `<span class="task-reminder" title="Reminder at ${escapeHtml(reminderTime)}">⏰ ${escapeHtml(reminderTime)}</span>`
+    : '';
 
   return `
     <div class="habit-item task-card ${task.completed ? 'completed' : ''}" data-task-id="${task._id}">
@@ -433,6 +603,8 @@ function createTaskHTML(task) {
       <span class="habit-name task-title">${escapeHtml(task.title)}</span>
       <div class="task-meta">
         ${streak > 0 ? `<span class="habit-streak task-streak ${streakClass}" title="${streak} day streak">🔥 ${streak}d</span>` : ''}
+        ${reminderBadge}
+        ${pauseBadge}
       </div>
       <div class="task-actions">
         <button class="habit-del task-action-btn delete" aria-label="Delete task">
@@ -451,11 +623,13 @@ function createTaskHTML(task) {
 
 // Update progress display
 function updateProgress(progress) {
-  const { completed, total, percentage } = progress;
+  const { completed, total, percentage, pausedTasks = 0 } = progress;
   progressFill.style.width = percentage + '%';
   progressText.textContent = `${completed} / ${total}`;
   statToday.textContent = completed;
-  if (habitBadge) habitBadge.textContent = `${completed} / ${total}`;
+  if (habitBadge) {
+    habitBadge.textContent = pausedTasks > 0 ? `${completed} / ${total} (+${pausedTasks} paused)` : `${completed} / ${total}`;
+  }
   if (headerTodayCount) headerTodayCount.textContent = completed;
 }
 
@@ -949,6 +1123,120 @@ function renderHeatmap(data) {
   }
 }
 
+function getCurrentWeekStartDate() {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() + diff);
+  return weekStart.toISOString().split('T')[0];
+}
+
+function renderWeeklyPriorityOptions(selectedTaskIds = []) {
+  if (!weeklyPriorityList) return;
+
+  if (!tasks.length) {
+    weeklyPriorityList.innerHTML = '<p style="color: var(--text-muted); font-size: 12px;">Add habits to build your weekly plan.</p>';
+    return;
+  }
+
+  const selectedSet = new Set(selectedTaskIds.map((id) => String(id)));
+  weeklyPriorityList.innerHTML = tasks.map((task) => `
+    <div class="weekly-priority-item">
+      <input id="weekly-priority-${task._id}" type="checkbox" data-task-id="${task._id}" ${selectedSet.has(String(task._id)) ? 'checked' : ''}>
+      <label for="weekly-priority-${task._id}">${escapeHtml(task.title)}</label>
+    </div>
+  `).join('');
+}
+
+function renderWeeklyRecommendations(recommendations = []) {
+  if (!weeklyRecommendations) return;
+
+  if (!recommendations.length) {
+    weeklyRecommendations.classList.add('hidden');
+    weeklyRecommendations.innerHTML = '';
+    return;
+  }
+
+  weeklyRecommendations.classList.remove('hidden');
+  weeklyRecommendations.innerHTML = recommendations.map((entry) => `
+    <div class="weekly-recommendation-item">
+      <strong>${escapeHtml(entry.title)}:</strong> ${escapeHtml(entry.note)}
+    </div>
+  `).join('');
+}
+
+async function loadWeeklyPlan() {
+  if (!weeklyPlanWeekLabel) return;
+
+  try {
+    const weekStartDate = getCurrentWeekStartDate();
+    const response = await API.analytics.getWeeklyPlan(weekStartDate);
+
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to load weekly plan.');
+    }
+
+    weeklyPlanData = response.data;
+    const plan = response.data.plan || {};
+    const summary = response.data.summary || {};
+
+    weeklyPlanWeekLabel.textContent = `${response.data.weekStartDate} - ${response.data.weekEndDate}`;
+    weeklySummaryRate.textContent = `${summary.completionRate || 0}%`;
+    weeklySummaryCount.textContent = `${summary.totalCompletions || 0}`;
+    weeklySummaryActive.textContent = `${summary.activeTaskCount || 0}`;
+
+    weeklyFocusInput.value = plan.focus || '';
+    weeklyNotesInput.value = plan.notes || '';
+    weeklyReflectionInput.value = plan.reflection || '';
+    weeklyPlanStatus.textContent = plan.updatedAt
+      ? `Last saved ${new Date(plan.updatedAt).toLocaleString()}`
+      : 'Not saved yet';
+
+    renderWeeklyPriorityOptions((plan.priorities || []).map((taskId) => String(taskId)));
+    renderWeeklyRecommendations(response.data.recommendations || []);
+  } catch (error) {
+    console.error('Failed to load weekly plan:', error);
+    weeklyPlanStatus.textContent = 'Failed to load weekly plan';
+  }
+}
+
+async function saveWeeklyPlan() {
+  if (!saveWeeklyPlanBtn) return;
+
+  const selectedPriorities = [...weeklyPriorityList.querySelectorAll('input[type="checkbox"]:checked')]
+    .map((checkbox) => checkbox.dataset.taskId)
+    .slice(0, 10);
+
+  saveWeeklyPlanBtn.disabled = true;
+  saveWeeklyPlanBtn.textContent = 'Saving...';
+
+  try {
+    const payload = {
+      weekStartDate: getCurrentWeekStartDate(),
+      focus: weeklyFocusInput.value.trim(),
+      priorities: selectedPriorities,
+      notes: weeklyNotesInput.value.trim(),
+      reflection: weeklyReflectionInput.value.trim()
+    };
+
+    const response = await API.analytics.saveWeeklyPlan(payload);
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to save weekly plan.');
+    }
+
+    weeklyPlanStatus.textContent = `Saved ${new Date().toLocaleString()}`;
+    showToast('Weekly plan saved.', 'success');
+    await loadWeeklyPlan();
+  } catch (error) {
+    weeklyPlanStatus.textContent = 'Save failed';
+    showToast(error.message || 'Failed to save weekly plan.', 'error');
+  } finally {
+    saveWeeklyPlanBtn.disabled = false;
+    saveWeeklyPlanBtn.textContent = 'Save Weekly Plan';
+  }
+}
+
 // ===== Settings & Theme Management =====
 
 // Initialize theme on page load
@@ -1014,6 +1302,7 @@ function applyResolvedTheme(themeName) {
 function openSettings() {
   // Populate reorder list
   renderReorderList();
+  renderReminderSettings();
   
   settingsModal.classList.remove('hidden');
 }
@@ -1043,6 +1332,66 @@ function renderReorderList() {
   
   // Add drag and drop event listeners
   setupDragAndDrop();
+}
+
+function renderReminderSettings() {
+  if (!reminderSettingsList) return;
+
+  if (!tasks.length) {
+    reminderSettingsList.innerHTML = '<p style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center;">No habits available for reminders</p>';
+    return;
+  }
+
+  reminderSettingsList.innerHTML = tasks.map((task) => {
+    const enabled = Boolean(task.reminder?.enabled);
+    const time = task.reminder?.time || '08:00';
+    return `
+      <div class="reorder-task-item reminder-item" data-task-id="${task._id}">
+        <label class="reorder-task-title" for="reminder-enabled-${task._id}">${escapeHtml(task.title)}</label>
+        <input id="reminder-enabled-${task._id}" type="checkbox" ${enabled ? 'checked' : ''}>
+        <input id="reminder-time-${task._id}" type="time" value="${escapeHtml(time)}" ${enabled ? '' : 'disabled'}>
+      </div>
+    `;
+  }).join('');
+
+  reminderSettingsList.querySelectorAll('.reminder-item').forEach((row) => {
+    const taskId = row.dataset.taskId;
+    const enabledInput = row.querySelector(`#reminder-enabled-${taskId}`);
+    const timeInput = row.querySelector(`#reminder-time-${taskId}`);
+
+    const persistReminder = async () => {
+      try {
+        const response = await API.tasks.updateReminder(taskId, enabledInput.checked, timeInput.value || '08:00');
+        if (!response.success) {
+          throw new Error(response.message || 'Failed to save reminder.');
+        }
+
+        tasks = tasks.map((task) => (
+          task._id === taskId
+            ? {
+                ...task,
+                reminder: {
+                  enabled: enabledInput.checked,
+                  time: timeInput.value || '08:00'
+                }
+              }
+            : task
+        ));
+
+        renderTasks();
+        showToast('Reminder updated.', 'success');
+      } catch (error) {
+        showToast(error.message || 'Failed to update reminder.', 'error');
+      }
+    };
+
+    enabledInput.addEventListener('change', async () => {
+      timeInput.disabled = !enabledInput.checked;
+      await persistReminder();
+    });
+
+    timeInput.addEventListener('change', persistReminder);
+  });
 }
 
 // Setup drag and drop for task reordering
@@ -1250,7 +1599,7 @@ function renderAIInsights() {
       return `
         <div class="ai-suggestion-item">
           <span class="ai-suggestion-habit">${escapeHtml(habitName)}</span>
-          <span class="ai-suggestion-reason">${escapeHtml(skip.reason)}</span>
+          <span class="ai-suggestion-reason">${escapeHtml(skip.reason)} ${skip.days ? `(${skip.days} days)` : ''}</span>
         </div>
       `;
     }).join('');
@@ -1284,6 +1633,71 @@ function renderAIInsights() {
       .join('');
   } else {
     aiTipsSection.classList.add('hidden');
+  }
+}
+
+async function applyAISkips() {
+  if (!aiInsights?.skipSuggestions?.length) {
+    showToast('No skip suggestions available.', 'error');
+    return;
+  }
+
+  applySkipsBtn.disabled = true;
+  applySkipsBtn.textContent = 'Applying...';
+
+  try {
+    const skips = aiInsights.skipSuggestions
+      .filter((item) => item.taskId)
+      .map((item) => ({
+        taskId: item.taskId,
+        days: Number(item.days) > 0 ? Number(item.days) : 3,
+        reason: item.reason || 'AI suggested temporary pause'
+      }));
+
+    const response = await API.tasks.applySkips(skips);
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to apply skip suggestions.');
+    }
+
+    await Promise.all([loadTodaysTasks(), loadStats(), loadWeeklyPlan()]);
+    showToast('Skip suggestions applied.', 'success');
+  } catch (error) {
+    showToast(error.message || 'Failed to apply skip suggestions.', 'error');
+  } finally {
+    applySkipsBtn.disabled = false;
+    applySkipsBtn.textContent = 'Pause Suggested Habits';
+  }
+}
+
+async function applyAIFallbacks() {
+  if (!aiInsights?.replacementSuggestions?.length) {
+    showToast('No fallback suggestions available.', 'error');
+    return;
+  }
+
+  applyFallbacksBtn.disabled = true;
+  applyFallbacksBtn.textContent = 'Applying...';
+
+  try {
+    const fallbacks = aiInsights.replacementSuggestions
+      .filter((item) => item.taskId && item.suggestion)
+      .map((item) => ({
+        taskId: item.taskId,
+        suggestion: item.suggestion
+      }));
+
+    const response = await API.tasks.applyFallbacks(fallbacks);
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to apply fallback suggestions.');
+    }
+
+    await Promise.all([loadTodaysTasks(), loadStats(), loadWeeklyPlan()]);
+    showToast('Fallback conversions applied.', 'success');
+  } catch (error) {
+    showToast(error.message || 'Failed to apply fallback suggestions.', 'error');
+  } finally {
+    applyFallbacksBtn.disabled = false;
+    applyFallbacksBtn.textContent = 'Apply Fallback Conversions';
   }
 }
 

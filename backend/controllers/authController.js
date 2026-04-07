@@ -1,11 +1,67 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const logger = require('../utils/logger');
+const { PASSWORD_REGEX } = require('../middleware/validationMiddleware');
+
+const MAX_FAILED_ATTEMPTS = Number(process.env.MAX_LOGIN_ATTEMPTS || 5);
+const LOGIN_LOCKOUT_MINUTES = Number(process.env.LOGIN_LOCKOUT_MINUTES || 10);
+const LOGIN_ATTEMPT_WINDOW_MS = Number(process.env.LOGIN_ATTEMPT_WINDOW_MINUTES || 30) * 60 * 1000;
+const loginAttempts = new Map();
 
 // Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: '7d'
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    issuer: process.env.JWT_ISSUER || 'habit-rabbit',
+    audience: process.env.JWT_AUDIENCE || 'habit-rabbit-client'
   });
+};
+
+const getAttemptKey = (email, req) => {
+  const forwarded = req.headers['x-forwarded-for'];
+  const forwardedIp = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  const ip = forwardedIp || req.ip || 'unknown';
+  return `${email}:${ip}`;
+};
+
+const getAttemptRecord = (attemptKey) => {
+  const existing = loginAttempts.get(attemptKey);
+  if (!existing) {
+    return null;
+  }
+
+  const now = Date.now();
+
+  if (now - existing.lastAttemptAt > LOGIN_ATTEMPT_WINDOW_MS && (!existing.blockedUntil || existing.blockedUntil <= now)) {
+    loginAttempts.delete(attemptKey);
+    return null;
+  }
+
+  return existing;
+};
+
+const registerFailedAttempt = (attemptKey) => {
+  const now = Date.now();
+  const current = getAttemptRecord(attemptKey) || {
+    failures: 0,
+    lastAttemptAt: now,
+    blockedUntil: null
+  };
+
+  current.failures += 1;
+  current.lastAttemptAt = now;
+
+  if (current.failures >= MAX_FAILED_ATTEMPTS) {
+    const overLimitMultiplier = Math.min(8, 2 ** (current.failures - MAX_FAILED_ATTEMPTS));
+    current.blockedUntil = now + LOGIN_LOCKOUT_MINUTES * 60 * 1000 * overLimitMultiplier;
+  }
+
+  loginAttempts.set(attemptKey, current);
+  return current;
+};
+
+const clearAttemptRecord = (attemptKey) => {
+  loginAttempts.delete(attemptKey);
 };
 
 // @desc    Register new user
@@ -23,17 +79,19 @@ const register = async (req, res) => {
       });
     }
 
-    if (password.length < 6) {
+    if (!PASSWORD_REGEX.test(password)) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 6 characters'
+        message: 'Password must be 8-72 characters and include uppercase, lowercase, and a number'
       });
     }
 
     // Check if user exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return res.status(400).json({
+      logger.warn('Duplicate registration attempt', { email: email.toLowerCase() });
+
+      return res.status(409).json({
         success: false,
         message: 'User already exists with this email'
       });
@@ -48,6 +106,11 @@ const register = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
+    logger.audit('user_registered', {
+      userId: String(user._id),
+      email: user.email
+    });
+
     res.status(201).json({
       success: true,
       message: 'Registration successful',
@@ -60,7 +123,11 @@ const register = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Register error:', error);
+    logger.error('Registration failure', {
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error during registration'
@@ -83,9 +150,25 @@ const login = async (req, res) => {
       });
     }
 
+    const normalizedEmail = email.toLowerCase();
+    const attemptKey = getAttemptKey(normalizedEmail, req);
+    const attemptRecord = getAttemptRecord(attemptKey);
+
+    if (attemptRecord?.blockedUntil && attemptRecord.blockedUntil > Date.now()) {
+      const retryAfterSeconds = Math.ceil((attemptRecord.blockedUntil - Date.now()) / 1000);
+      return res.status(429).json({
+        success: false,
+        message: 'Too many failed login attempts. Please try again later.',
+        retryAfterSeconds
+      });
+    }
+
     // Find user
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
+      registerFailedAttempt(attemptKey);
+      logger.warn('Login failed: user not found', { email: normalizedEmail });
+
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -95,14 +178,27 @@ const login = async (req, res) => {
     // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      const updatedAttempts = registerFailedAttempt(attemptKey);
+      logger.warn('Login failed: invalid password', {
+        email: normalizedEmail,
+        failedAttempts: updatedAttempts.failures
+      });
+
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
 
+    clearAttemptRecord(attemptKey);
+
     // Generate token
     const token = generateToken(user._id);
+
+    logger.audit('user_logged_in', {
+      userId: String(user._id),
+      email: user.email
+    });
 
     res.json({
       success: true,
@@ -116,7 +212,11 @@ const login = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login failure', {
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error during login'
@@ -128,10 +228,26 @@ const login = async (req, res) => {
 // @route   GET /api/auth/me
 // @access  Private
 const getMe = async (req, res) => {
+  const user = req.user;
+
   res.json({
     success: true,
     data: {
-      user: req.user
+      user: {
+        id: user._id,
+        email: user.email,
+        onboarding: user.onboarding || {
+          completed: false,
+          completedAt: null,
+          starterPack: null
+        },
+        reminderPreferences: user.reminderPreferences || {
+          enabled: false,
+          time: '08:00',
+          timezone: 'UTC'
+        },
+        createdAt: user.createdAt
+      }
     }
   });
 };

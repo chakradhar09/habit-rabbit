@@ -189,11 +189,13 @@
                   <div id="ai-skip-section" class="ai-insight-card ai-skip hidden">
                     <h4 class="ai-card-title"><span class="ai-card-icon">⏸</span> Can Skip During Busy Times</h4>
                     <div id="ai-skip-list" class="ai-suggestion-list"></div>
+                    <button id="apply-skips-btn" class="ai-btn ai-action-btn" type="button">Pause Suggested Habits</button>
                   </div>
 
                   <div id="ai-replace-section" class="ai-insight-card ai-replace hidden">
                     <h4 class="ai-card-title"><span class="ai-card-icon">🔄</span> Consider Replacing</h4>
                     <div id="ai-replace-list" class="ai-suggestion-list"></div>
+                    <button id="apply-fallbacks-btn" class="ai-btn ai-action-btn" type="button">Apply Fallback Conversions</button>
                   </div>
 
                   <div id="ai-tips-section" class="ai-insight-card ai-tips hidden">
@@ -257,6 +259,58 @@
           </div>
         </div>
       </section>
+
+      <section id="weekly-plan-section" class="weekly-plan-section card">
+        <div class="card-head">
+          <span class="card-title">Weekly Plan and Review</span>
+          <span class="card-badge" id="weekly-plan-week-label">This Week</span>
+        </div>
+        <div class="card-body weekly-plan-body">
+          <div class="weekly-plan-summary">
+            <div class="weekly-summary-card">
+              <span class="weekly-summary-label">Completion Rate</span>
+              <span class="weekly-summary-value" id="weekly-summary-rate">0%</span>
+            </div>
+            <div class="weekly-summary-card">
+              <span class="weekly-summary-label">Completions</span>
+              <span class="weekly-summary-value" id="weekly-summary-count">0</span>
+            </div>
+            <div class="weekly-summary-card">
+              <span class="weekly-summary-label">Active Habits</span>
+              <span class="weekly-summary-value" id="weekly-summary-active">0</span>
+            </div>
+          </div>
+
+          <div class="weekly-plan-grid">
+            <label class="weekly-field">
+              <span>Focus for the Week</span>
+              <input id="weekly-focus-input" type="text" maxlength="240" placeholder="What is your primary focus this week?">
+            </label>
+
+            <div class="weekly-field">
+              <span>Priority Habits</span>
+              <div id="weekly-priority-list" class="weekly-priority-list"></div>
+            </div>
+
+            <label class="weekly-field">
+              <span>Planning Notes</span>
+              <textarea id="weekly-notes-input" rows="3" maxlength="800" placeholder="Add quick planning notes..."></textarea>
+            </label>
+
+            <label class="weekly-field">
+              <span>Reflection</span>
+              <textarea id="weekly-reflection-input" rows="3" maxlength="800" placeholder="Capture what worked and what to improve..."></textarea>
+            </label>
+          </div>
+
+          <div class="weekly-plan-footer">
+            <button id="save-weekly-plan-btn" class="add-btn" type="button">Save Weekly Plan</button>
+            <span id="weekly-plan-status" class="weekly-plan-status">Not saved yet</span>
+          </div>
+
+          <div id="weekly-recommendations" class="weekly-recommendations hidden"></div>
+        </div>
+      </section>
     </main>
 
     <div id="toast-container" class="toast-container"></div>
@@ -312,6 +366,32 @@
           <p class="settings-section-description">Drag and drop to reorder your habits</p>
           <div id="reorder-task-list" class="reorder-task-list"></div>
         </div>
+
+        <div class="settings-section">
+          <h4 class="settings-section-title">Reminders</h4>
+          <p class="settings-section-description">Enable reminders and choose a time for each habit.</p>
+          <div id="reminder-settings-list" class="reorder-task-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="onboarding-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content onboarding-modal-content">
+      <div class="modal-header">
+        <h3>Welcome to Habit Rabbit</h3>
+      </div>
+      <div class="modal-body">
+        <p>Create three starter habits to begin your first streak.</p>
+        <div id="starter-pack-list" class="starter-pack-list"></div>
+        <label class="weekly-field" for="onboarding-custom-habits">
+          <span>Optional extra habits (comma separated)</span>
+          <input id="onboarding-custom-habits" type="text" maxlength="300" placeholder="Example: Drink water, Read 10 pages">
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button id="onboarding-continue-btn" class="btn btn-secondary" type="button">Create Starter Habits</button>
       </div>
     </div>
   </div>

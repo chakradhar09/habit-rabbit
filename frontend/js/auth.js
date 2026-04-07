@@ -131,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    if (password.length < 6) {
-      showMessage('Password must be at least 6 characters');
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,72}$/.test(password)) {
+      showMessage('Password must be 8+ chars with uppercase, lowercase, and a number');
       return;
     }
     

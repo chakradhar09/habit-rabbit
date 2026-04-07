@@ -1,17 +1,45 @@
 const Task = require('../models/Task');
 const TaskCompletion = require('../models/TaskCompletion');
+const User = require('../models/User');
+const logger = require('../utils/logger');
+
+const STARTER_PACKS = [
+  {
+    id: 'focus-foundation',
+    label: 'Focus Foundation',
+    habits: ['Deep work block', 'Hydration check-in', 'Evening reflection']
+  },
+  {
+    id: 'student-sprint',
+    label: 'Student Sprint',
+    habits: ['Review notes for 25 minutes', 'Practice questions', 'Plan tomorrow priorities']
+  },
+  {
+    id: 'wellness-core',
+    label: 'Wellness Core',
+    habits: ['Morning stretch', 'Walk for 20 minutes', 'No-screen wind-down']
+  }
+];
 
 // Get today's date in YYYY-MM-DD format
 const getTodayDate = () => {
   return new Date().toISOString().split('T')[0];
 };
 
+const getDateOffset = (days = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split('T')[0];
+};
+
+const isTaskPaused = (task, dateStr) => Boolean(task.pausedUntil && task.pausedUntil >= dateStr);
+
 // @desc    Create new task
 // @route   POST /api/tasks
 // @access  Private
 const createTask = async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title, reminder } = req.body;
 
     if (!title || title.trim() === '') {
       return res.status(400).json({
@@ -20,9 +48,23 @@ const createTask = async (req, res) => {
       });
     }
 
+    const reminderPayload = reminder && typeof reminder === 'object'
+      ? {
+          enabled: Boolean(reminder.enabled),
+          time: typeof reminder.time === 'string' ? reminder.time : '08:00'
+        }
+      : undefined;
+
     const task = await Task.create({
       userId: req.user._id,
-      title: title.trim()
+      title: title.trim(),
+      ...(reminderPayload ? { reminder: reminderPayload } : {})
+    });
+
+    logger.audit('task_created', {
+      userId: String(req.user._id),
+      taskId: String(task._id),
+      title: task.title
     });
 
     res.status(201).json({
@@ -33,13 +75,22 @@ const createTask = async (req, res) => {
           _id: task._id,
           title: task.title,
           isActive: task.isActive,
+          reminder: task.reminder,
+          pausedUntil: task.pausedUntil,
+          pauseReason: task.pauseReason,
+          isPaused: false,
           createdAt: task.createdAt,
           completed: false // New tasks are not completed
         }
       }
     });
   } catch (error) {
-    console.error('Create task error:', error);
+    logger.error('Create task error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error creating task'
@@ -79,14 +130,23 @@ const getTodaysTasks = async (req, res) => {
       isActive: task.isActive,
       priority: task.priority || 'medium',
       sortOrder: task.sortOrder || 0,
+      reminder: task.reminder,
+      pausedUntil: task.pausedUntil,
+      pauseReason: task.pauseReason,
+      fallbackFromTitle: task.fallbackFromTitle,
+      fallbackAppliedAt: task.fallbackAppliedAt,
+      isPaused: isTaskPaused(task, today),
       createdAt: task.createdAt,
       completed: completedMap.get(task._id.toString()) || false
     }));
 
     // Calculate progress
-    const total = tasksWithStatus.length;
-    const completed = tasksWithStatus.filter(t => t.completed).length;
+    const actionableTasks = tasksWithStatus.filter((task) => !task.isPaused);
+    const total = actionableTasks.length;
+    const completed = actionableTasks.filter(t => t.completed).length;
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    const pausedTasks = tasksWithStatus.filter((task) => task.isPaused).length;
 
     res.json({
       success: true,
@@ -95,13 +155,19 @@ const getTodaysTasks = async (req, res) => {
         progress: {
           completed,
           total,
-          percentage
+          percentage,
+          pausedTasks
         },
         date: today
       }
     });
   } catch (error) {
-    console.error('Get tasks error:', error);
+    logger.error('Get today tasks error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error fetching tasks'
@@ -158,7 +224,13 @@ const toggleCompletion = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Toggle completion error:', error);
+    logger.error('Toggle completion error', {
+      userId: String(req.user._id),
+      taskId: req.params.id,
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error toggling completion'
@@ -188,10 +260,22 @@ const deleteTask = async (req, res) => {
       // Hard delete: Remove task and all completion history
       await TaskCompletion.deleteMany({ taskId: id });
       await Task.findByIdAndDelete(id);
+
+      logger.audit('task_hard_deleted', {
+        userId: String(userId),
+        taskId: id,
+        taskTitle: task.title
+      });
     } else {
       // Soft delete: Just deactivate the task
       task.isActive = false;
       await task.save();
+
+      logger.audit('task_soft_deleted', {
+        userId: String(userId),
+        taskId: id,
+        taskTitle: task.title
+      });
     }
 
     res.json({
@@ -201,7 +285,13 @@ const deleteTask = async (req, res) => {
         : 'Task deactivated (history preserved)'
     });
   } catch (error) {
-    console.error('Delete task error:', error);
+    logger.error('Delete task error', {
+      userId: String(req.user._id),
+      taskId: req.params.id,
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error deleting task'
@@ -214,16 +304,26 @@ const deleteTask = async (req, res) => {
 // @access  Private
 const getAllTasks = async (req, res) => {
   try {
+    const today = getTodayDate();
     const tasks = await Task.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const normalized = tasks.map((task) => ({
+      ...task.toObject(),
+      isPaused: isTaskPaused(task, today)
+    }));
     
     res.json({
       success: true,
       data: {
-        tasks
+        tasks: normalized
       }
     });
   } catch (error) {
-    console.error('Get all tasks error:', error);
+    logger.error('Get all tasks error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error fetching tasks'
@@ -267,12 +367,22 @@ const updateTaskOrder = async (req, res) => {
 
     await Task.bulkWrite(bulkOps);
 
+    logger.audit('task_order_updated', {
+      userId: String(userId),
+      itemCount: taskOrders.length
+    });
+
     res.json({
       success: true,
       message: 'Task order updated successfully'
     });
   } catch (error) {
-    console.error('Update task order error:', error);
+    logger.error('Update task order error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error updating task order'
@@ -332,22 +442,346 @@ const applyAIPriorities = async (req, res) => {
 
     await Task.bulkWrite(bulkOps);
 
+    logger.audit('ai_priorities_applied', {
+      userId: String(userId),
+      itemCount: priorities.length
+    });
+
     // Refetch tasks to return updated order
     const updatedTasks = await Task.find({ userId, isActive: true })
       .sort({ sortOrder: 1, createdAt: -1 });
+
+    const today = getTodayDate();
 
     res.json({
       success: true,
       message: 'Priorities applied successfully',
       data: {
-        tasks: updatedTasks
+        tasks: updatedTasks.map((task) => ({
+          ...task.toObject(),
+          isPaused: isTaskPaused(task, today)
+        }))
       }
     });
   } catch (error) {
-    console.error('Apply priorities error:', error);
+    logger.error('Apply priorities error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error applying priorities'
+    });
+  }
+};
+
+// @desc    Get starter packs for onboarding
+// @route   GET /api/tasks/starter-packs
+// @access  Private
+const getStarterPacks = async (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      starterPacks: STARTER_PACKS
+    }
+  });
+};
+
+// @desc    Setup onboarding starter habits
+// @route   POST /api/tasks/onboarding/setup
+// @access  Private
+const setupOnboarding = async (req, res) => {
+  try {
+    const { packId, customHabits = [] } = req.body;
+    const userId = req.user._id;
+
+    const pack = STARTER_PACKS.find((item) => item.id === packId) || STARTER_PACKS[0];
+    const normalizedCustomHabits = Array.isArray(customHabits)
+      ? customHabits
+          .filter((habit) => typeof habit === 'string')
+          .map((habit) => habit.trim())
+          .filter(Boolean)
+          .slice(0, 5)
+      : [];
+
+    const starterHabits = [...pack.habits, ...normalizedCustomHabits]
+      .filter((title, index, list) => list.findIndex((value) => value.toLowerCase() === title.toLowerCase()) === index)
+      .slice(0, 8);
+
+    if (starterHabits.length < 3) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least three starter habits are required.'
+      });
+    }
+
+    const existingTasks = await Task.find({ userId, isActive: true }).select('title sortOrder').lean();
+    const existingTitleSet = new Set(existingTasks.map((task) => task.title.toLowerCase()));
+    let sortOrderBase = existingTasks.length > 0
+      ? Math.max(...existingTasks.map((task) => Number(task.sortOrder) || 0)) + 1
+      : 0;
+
+    const tasksToCreate = starterHabits
+      .filter((title) => !existingTitleSet.has(title.toLowerCase()))
+      .map((title) => ({
+        userId,
+        title,
+        sortOrder: sortOrderBase++
+      }));
+
+    const createdTasks = tasksToCreate.length > 0 ? await Task.insertMany(tasksToCreate) : [];
+
+    await User.findByIdAndUpdate(userId, {
+      $set: {
+        'onboarding.starterPack': pack.id
+      }
+    });
+
+    logger.audit('onboarding_setup_completed', {
+      userId: String(userId),
+      packId: pack.id,
+      createdTaskCount: createdTasks.length
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Starter habits created successfully.',
+      data: {
+        packId: pack.id,
+        createdTaskCount: createdTasks.length,
+        tasks: createdTasks
+      }
+    });
+  } catch (error) {
+    logger.error('Onboarding setup error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error during onboarding setup.'
+    });
+  }
+};
+
+// @desc    Mark onboarding completed
+// @route   PUT /api/tasks/onboarding/complete
+// @access  Private
+const completeOnboarding = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const completedAt = new Date();
+
+    await User.findByIdAndUpdate(userId, {
+      $set: {
+        'onboarding.completed': true,
+        'onboarding.completedAt': completedAt
+      }
+    });
+
+    logger.audit('onboarding_marked_complete', {
+      userId: String(userId)
+    });
+
+    res.json({
+      success: true,
+      message: 'Onboarding completed.',
+      data: {
+        completed: true,
+        completedAt
+      }
+    });
+  } catch (error) {
+    logger.error('Complete onboarding error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error while completing onboarding.'
+    });
+  }
+};
+
+// @desc    Apply temporary pauses from AI suggestions
+// @route   PUT /api/tasks/apply-skips
+// @access  Private
+const applyAISkips = async (req, res) => {
+  try {
+    const { skips } = req.body;
+    const userId = req.user._id;
+
+    const taskIds = skips.map((item) => item.taskId);
+    const userTasks = await Task.find({ _id: { $in: taskIds }, userId }).select('_id').lean();
+
+    if (userTasks.length !== taskIds.length) {
+      return res.status(403).json({
+        success: false,
+        message: 'Some tasks do not belong to this user.'
+      });
+    }
+
+    const operations = skips.map((item) => {
+      const days = Number(item.days) > 0 ? Number(item.days) : 3;
+      return {
+        updateOne: {
+          filter: { _id: item.taskId, userId },
+          update: {
+            $set: {
+              pausedUntil: getDateOffset(days),
+              pauseReason: typeof item.reason === 'string' ? item.reason.trim().slice(0, 160) : 'AI suggested skip'
+            }
+          }
+        }
+      };
+    });
+
+    await Task.bulkWrite(operations);
+
+    logger.audit('ai_skips_applied', {
+      userId: String(userId),
+      itemCount: skips.length
+    });
+
+    res.json({
+      success: true,
+      message: 'AI skip suggestions applied successfully.'
+    });
+  } catch (error) {
+    logger.error('Apply AI skips error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error applying skip suggestions.'
+    });
+  }
+};
+
+// @desc    Apply fallback habit conversions from AI suggestions
+// @route   PUT /api/tasks/apply-fallbacks
+// @access  Private
+const applyAIFallbacks = async (req, res) => {
+  try {
+    const { fallbacks } = req.body;
+    const userId = req.user._id;
+
+    const taskIds = fallbacks.map((item) => item.taskId);
+    const userTasks = await Task.find({ _id: { $in: taskIds }, userId }).select('_id title').lean();
+
+    if (userTasks.length !== taskIds.length) {
+      return res.status(403).json({
+        success: false,
+        message: 'Some tasks do not belong to this user.'
+      });
+    }
+
+    const titleById = new Map(userTasks.map((task) => [String(task._id), task.title]));
+
+    const operations = fallbacks.map((item) => ({
+      updateOne: {
+        filter: { _id: item.taskId, userId },
+        update: {
+          $set: {
+            title: item.suggestion,
+            fallbackFromTitle: titleById.get(String(item.taskId)) || null,
+            fallbackAppliedAt: new Date(),
+            pausedUntil: null,
+            pauseReason: null
+          }
+        }
+      }
+    }));
+
+    await Task.bulkWrite(operations);
+
+    logger.audit('ai_fallbacks_applied', {
+      userId: String(userId),
+      itemCount: fallbacks.length
+    });
+
+    res.json({
+      success: true,
+      message: 'Fallback habits applied successfully.'
+    });
+  } catch (error) {
+    logger.error('Apply AI fallbacks error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error applying fallback suggestions.'
+    });
+  }
+};
+
+// @desc    Update reminder settings for a task
+// @route   PUT /api/tasks/:id/reminder
+// @access  Private
+const updateTaskReminder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { enabled, time } = req.body;
+    const userId = req.user._id;
+
+    const task = await Task.findOneAndUpdate(
+      { _id: id, userId },
+      {
+        $set: {
+          reminder: {
+            enabled,
+            time
+          }
+        }
+      },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found.'
+      });
+    }
+
+    logger.audit('task_reminder_updated', {
+      userId: String(userId),
+      taskId: String(task._id),
+      enabled: task.reminder.enabled,
+      time: task.reminder.time
+    });
+
+    res.json({
+      success: true,
+      message: 'Reminder updated successfully.',
+      data: {
+        taskId: task._id,
+        reminder: task.reminder
+      }
+    });
+  } catch (error) {
+    logger.error('Update task reminder error', {
+      userId: String(req.user._id),
+      taskId: req.params.id,
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error updating reminder.'
     });
   }
 };
@@ -359,5 +793,11 @@ module.exports = {
   deleteTask,
   getAllTasks,
   updateTaskOrder,
-  applyAIPriorities
+  applyAIPriorities,
+  getStarterPacks,
+  setupOnboarding,
+  completeOnboarding,
+  applyAISkips,
+  applyAIFallbacks,
+  updateTaskReminder
 };

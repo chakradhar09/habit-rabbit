@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Habit Rabbit light theme scratch lab.">
+  <title>Habit Rabbit - Light Theme Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../frontend/css/dashboard.css">
+
+  <style>
+    :root {
+      --bg: #F6F2E8;
+      --bg2: #EEE8DA;
+      --surface: #FFFFFF;
+      --surface-2: #F2F5EF;
+      --surface-3: #E7ECE3;
+
+      --border: rgba(42, 92, 70, 0.18);
+      --border-soft: rgba(20, 34, 27, 0.10);
+      --border-mid: rgba(20, 34, 27, 0.18);
+
+      --accent: #2E8B62;
+      --accent-dim: rgba(46, 139, 98, 0.12);
+      --accent-glow: rgba(46, 139, 98, 0.22);
+      --accent-bright: #47A879;
+
+      --amber: #C28640;
+      --amber-dim: rgba(194, 134, 64, 0.16);
+      --red: #C45A5A;
+      --red-dim: rgba(196, 90, 90, 0.12);
+
+      --t1: #14221B;
+      --t2: #355044;
+      --t3: #627A6E;
+      --t4: #8AA095;
+
+      --brand: #2E8B62;
+      --text-primary: #14221B;
+      --text-secondary: #355044;
+      --text-muted: #627A6E;
+      --bg-page: #F6F2E8;
+      --bg-card: #FFFFFF;
+      --bg-input: #F2F5EF;
+      --border-light: rgba(20, 34, 27, 0.10);
+      --border-color: rgba(42, 92, 70, 0.18);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 10% -10%, rgba(46, 139, 98, 0.10), transparent 40%),
+        radial-gradient(circle at 110% 10%, rgba(194, 134, 64, 0.08), transparent 42%),
+        var(--bg);
+      color: var(--t1);
+    }
+
+    body::after {
+      opacity: 0.014;
+    }
+
+    .header {
+      background: rgba(246, 242, 232, 0.90);
+      border-bottom: 1px solid rgba(20, 34, 27, 0.10);
+    }
+
+    .hbtn {
+      color: var(--t2);
+    }
+
+    .main {
+      max-width: 1280px;
+    }
+
+    .light-lab-panel {
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-xl);
+      background: color-mix(in srgb, var(--surface) 90%, #F3EEDF 10%);
+      padding: 16px;
+      margin-bottom: 18px;
+      display: grid;
+      gap: 12px;
+      animation: fadeUp 0.45s ease both;
+    }
+
+    .lab-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lab-title {
+      font-family: var(--font-d);
+      font-size: 16px;
+      color: var(--t1);
+    }
+
+    .lab-subtitle {
+      font-size: 12px;
+      color: var(--t2);
+      line-height: 1.5;
+    }
+
+    .token-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .token-item {
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 10px;
+      background: var(--surface-2);
+      display: grid;
+      gap: 6px;
+    }
+
+    .token-item label {
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--t2);
+    }
+
+    .token-item input[type="color"] {
+      width: 100%;
+      height: 34px;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .token-value {
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--t3);
+    }
+
+    .lab-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .lab-btn {
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: var(--surface-2);
+      color: var(--t2);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lab-btn:hover {
+      border-color: var(--border);
+      color: var(--t1);
+      background: var(--surface-3);
+    }
+
+    .lab-btn.primary {
+      border-color: var(--border);
+      background: var(--accent);
+      color: #F4FAF7;
+    }
+
+    .lab-btn.primary:hover {
+      background: var(--accent-bright);
+      color: #F8FFFB;
+      box-shadow: 0 0 22px var(--accent-glow);
+    }
+
+    .token-output {
+      width: 100%;
+      min-height: 116px;
+      resize: vertical;
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      background: var(--surface-2);
+      color: var(--t2);
+      padding: 10px;
+      font-family: var(--font-m);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .ai-body.open {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ai-insights-results {
+      display: flex;
+    }
+
+    .analytics-section {
+      margin-top: 18px;
+      display: block;
+    }
+
+    .preview-note {
+      color: var(--t2);
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .token-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .token-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        padding-top: 132px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="header">
+      <div class="header-logo">
+        <span class="rabbit">🐇</span>
+        <span class="brand-name">Habit Rabbit</span>
+      </div>
+
+      <div class="header-date" id="header-date"></div>
+
+      <div class="header-spacer"></div>
+
+      <div class="header-stats">
+        <div class="hstat">
+          <span class="hstat-icon">✓</span>
+          <span class="hstat-val">6</span>
+          <span class="hstat-label">today</span>
+        </div>
+        <div class="hstat accent">
+          <span class="hstat-icon">🔥</span>
+          <span class="hstat-val">12</span>
+          <span class="hstat-label">day streak</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="hbtn active" type="button">Analytics</button>
+        <button class="hbtn" type="button">Settings</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="light-lab-panel">
+        <div class="lab-header">
+          <div>
+            <h2 class="lab-title">Light Theme Scratch Lab</h2>
+            <p class="lab-subtitle">Adjust token colors below and preview all key dashboard components before applying changes to the main project.</p>
+          </div>
+          <p class="preview-note">This file is sandbox-only.</p>
+        </div>
+
+        <div class="token-grid" id="token-grid">
+          <div class="token-item">
+            <label for="token-bg">--bg</label>
+            <input id="token-bg" type="color" value="#F6F2E8">
+            <span class="token-value" id="token-bg-value">#F6F2E8</span>
+          </div>
+          <div class="token-item">
+            <label for="token-surface">--surface</label>
+            <input id="token-surface" type="color" value="#FFFFFF">
+            <span class="token-value" id="token-surface-value">#FFFFFF</span>
+          </div>
+          <div class="token-item">
+            <label for="token-surface2">--surface-2</label>
+            <input id="token-surface2" type="color" value="#F2F5EF">
+            <span class="token-value" id="token-surface2-value">#F2F5EF</span>
+          </div>
+          <div class="token-item">
+            <label for="token-accent">--accent</label>
+            <input id="token-accent" type="color" value="#2E8B62">
+            <span class="token-value" id="token-accent-value">#2E8B62</span>
+          </div>
+          <div class="token-item">
+            <label for="token-t1">--t1</label>
+            <input id="token-t1" type="color" value="#14221B">
+            <span class="token-value" id="token-t1-value">#14221B</span>
+          </div>
+          <div class="token-item">
+            <label for="token-t2">--t2</label>
+            <input id="token-t2" type="color" value="#355044">
+            <span class="token-value" id="token-t2-value">#355044</span>
+          </div>
+          <div class="token-item">
+            <label for="token-t3">--t3</label>
+            <input id="token-t3" type="color" value="#627A6E">
+            <span class="token-value" id="token-t3-value">#627A6E</span>
+          </div>
+          <div class="token-item">
+            <label for="token-amber">--amber</label>
+            <input id="token-amber" type="color" value="#C28640">
+            <span class="token-value" id="token-amber-value">#C28640</span>
+          </div>
+        </div>
+
+        <div class="lab-actions">
+          <button id="copy-tokens-btn" class="lab-btn primary" type="button">Copy CSS Tokens</button>
+          <button id="reset-tokens-btn" class="lab-btn" type="button">Reset Tokens</button>
+        </div>
+
+        <textarea id="token-output" class="token-output" readonly></textarea>
+      </section>
+
+      <div class="page-title">
+        <h1 id="dashboard-greeting">Good morning</h1>
+        <p>Previewing the light theme in real dashboard components.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon green">✓</div>
+          <div class="stat-info">
+            <div class="stat-val">6</div>
+            <div class="stat-label">Today's Done</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">🔥</div>
+          <div class="stat-info">
+            <div class="stat-val">12</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">★</div>
+          <div class="stat-info">
+            <div class="stat-val">238</div>
+            <div class="stat-label">Total Done</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div id="habits-card" class="card habits-card">
+          <div class="card-head">
+            <span class="card-title">Today's Habits</span>
+            <span class="card-badge">6 / 10</span>
+          </div>
+          <div class="card-body">
+            <form class="add-wrap" onsubmit="return false;">
+              <div class="add-input-wrap">
+                <input class="add-input" type="text" placeholder="Add a new habit...">
+                <span class="char-counter">23/100</span>
+              </div>
+              <button class="add-btn" type="button">Add</button>
+            </form>
+
+            <div class="progress-section">
+              <div class="progress-meta">
+                <span class="progress-label">Today's Progress</span>
+                <span class="progress-count">6 / 10</span>
+              </div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width:60%"></div>
+              </div>
+            </div>
+
+            <div id="task-list" class="habits-list">
+              <div class="habit-item task-card completed">
+                <button class="habit-check task-checkbox" aria-label="Toggle completion">
+                  <svg width="11" height="11" fill="none" stroke="#0E1512" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+                <span class="habit-name task-title">Hydration check-in</span>
+                <div class="task-meta"><span class="habit-streak task-streak hot">🔥 9d</span></div>
+              </div>
+
+              <div class="habit-item task-card completed">
+                <button class="habit-check task-checkbox" aria-label="Toggle completion">
+                  <svg width="11" height="11" fill="none" stroke="#0E1512" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+                <span class="habit-name task-title">Morning stretch</span>
+                <div class="task-meta"><span class="habit-streak task-streak">🔥 5d</span></div>
+              </div>
+
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">10-minute reading sprint</span><div class="task-meta"></div></div>
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">Protein-focused lunch</span><div class="task-meta"><span class="habit-streak task-streak">🔥 2d</span></div></div>
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">Deep work block</span><div class="task-meta"></div></div>
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">Evening walk</span><div class="task-meta"></div></div>
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">Screen-time shutdown ritual</span><div class="task-meta"></div></div>
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">Journal one highlight from the day</span><div class="task-meta"></div></div>
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">30-minute focused coding practice</span><div class="task-meta"><span class="habit-streak task-streak hot">🔥 13d</span></div></div>
+              <div class="habit-item task-card"><button class="habit-check task-checkbox" aria-label="Toggle completion"></button><span class="habit-name task-title">Prepare tomorrow's top three tasks</span><div class="task-meta"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <section id="ai-insights-section" class="card ai-coach-card">
+            <div class="card-body ai-coach-body">
+              <div class="ai-card-header">
+                <div class="ai-icon">🤖</div>
+                <span class="ai-title">AI Habit Coach</span>
+                <button id="toggle-ai-btn" class="ai-toggle" type="button" aria-label="Toggle AI coach">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+              </div>
+
+              <p class="ai-helper-text">Get personalized priorities from your completion patterns and adapt your routine for busy days.</p>
+
+              <div class="ai-body open" id="ai-insights-content">
+                <textarea class="ai-context" rows="3" placeholder="Optional: describe your current situation..."></textarea>
+                <button class="ai-btn" type="button"><span class="btn-icon">⚡</span><span class="btn-text">Get AI Insights</span></button>
+
+                <div class="ai-insights-results">
+                  <div class="ai-insight-card ai-summary">
+                    <h4 class="ai-card-title"><span class="ai-card-icon">📊</span> Overview</h4>
+                    <p class="ai-summary-text">You are strongest in morning routines. Afternoon consistency dropped this week, so start with one low-friction action before noon.</p>
+                  </div>
+
+                  <div class="ai-insight-card ai-priorities">
+                    <h4 class="ai-card-title"><span class="ai-card-icon">🎯</span> Suggested Priorities</h4>
+                    <p class="ai-card-description">Lead with high-yield habits, then stack easier wins.</p>
+                    <div class="ai-priority-list">
+                      <div class="ai-priority-item">
+                        <span class="ai-priority-title">Deep work block</span>
+                        <span class="ai-priority-badge high">High</span>
+                      </div>
+                      <div class="ai-priority-item">
+                        <span class="ai-priority-title">Hydration check-in</span>
+                        <span class="ai-priority-badge medium">Medium</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="ai-insight-card ai-tips">
+                    <h4 class="ai-card-title"><span class="ai-card-icon">💡</span> Tips</h4>
+                    <ul class="ai-tips-list">
+                      <li>Anchor your first task to a fixed time block.</li>
+                      <li>Use a 2-minute fallback habit on packed days.</li>
+                      <li>Pair evening walk with audio notes for reflection.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section id="analytics-section" class="analytics-section">
+        <div class="analytics-inner">
+          <div class="analytics-head">
+            <span class="analytics-title">Analytics Preview</span>
+            <div class="range-tabs">
+              <button class="range-tab active" type="button">7 Days</button>
+              <button class="range-tab" type="button">30 Days</button>
+              <button class="range-tab" type="button">6 Months</button>
+            </div>
+          </div>
+          <div class="analytics-body">
+            <div class="chart-wrap">
+              <div id="chart-empty-state" class="chart-empty-state">
+                <span class="chart-empty-icon">📈</span>
+                <p>Use this area to validate chart contrast for your light palette.</p>
+              </div>
+            </div>
+
+            <div class="card-title" style="margin-bottom:10px; font-family:var(--font-d); font-size:13px;">Completion Heatmap - Light Theme Contrast</div>
+            <div class="heatmap-legend">
+              <span class="legend-label">Less</span>
+              <span class="legend-color" style="background: var(--surface-2);"></span>
+              <span class="legend-color" style="background: rgba(46, 139, 98, 0.25);"></span>
+              <span class="legend-color" style="background: rgba(46, 139, 98, 0.55);"></span>
+              <span class="legend-color" style="background: var(--accent);"></span>
+              <span class="legend-color" style="background: rgba(196, 90, 90, 0.40);"></span>
+              <span class="legend-label">More</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tokenBindings = [
+      { inputId: 'token-bg', valueId: 'token-bg-value', cssVar: '--bg' },
+      { inputId: 'token-surface', valueId: 'token-surface-value', cssVar: '--surface' },
+      { inputId: 'token-surface2', valueId: 'token-surface2-value', cssVar: '--surface-2' },
+      { inputId: 'token-accent', valueId: 'token-accent-value', cssVar: '--accent' },
+      { inputId: 'token-t1', valueId: 'token-t1-value', cssVar: '--t1' },
+      { inputId: 'token-t2', valueId: 'token-t2-value', cssVar: '--t2' },
+      { inputId: 'token-t3', valueId: 'token-t3-value', cssVar: '--t3' },
+      { inputId: 'token-amber', valueId: 'token-amber-value', cssVar: '--amber' }
+    ];
+
+    const defaults = {
+      '--bg': '#F6F2E8',
+      '--surface': '#FFFFFF',
+      '--surface-2': '#F2F5EF',
+      '--accent': '#2E8B62',
+      '--t1': '#14221B',
+      '--t2': '#355044',
+      '--t3': '#627A6E',
+      '--amber': '#C28640'
+    };
+
+    const derivedTokens = {
+      '--bg2': '#EEE8DA',
+      '--surface-3': '#E7ECE3',
+      '--border': 'rgba(42, 92, 70, 0.18)',
+      '--border-soft': 'rgba(20, 34, 27, 0.10)',
+      '--border-mid': 'rgba(20, 34, 27, 0.18)',
+      '--accent-dim': 'rgba(46, 139, 98, 0.12)',
+      '--accent-glow': 'rgba(46, 139, 98, 0.22)',
+      '--accent-bright': '#47A879',
+      '--amber-dim': 'rgba(194, 134, 64, 0.16)',
+      '--red': '#C45A5A',
+      '--red-dim': 'rgba(196, 90, 90, 0.12)',
+      '--t4': '#8AA095',
+      '--brand': '#2E8B62',
+      '--text-primary': '#14221B',
+      '--text-secondary': '#355044',
+      '--text-muted': '#627A6E',
+      '--bg-page': '#F6F2E8',
+      '--bg-card': '#FFFFFF',
+      '--bg-input': '#F2F5EF',
+      '--border-light': 'rgba(20, 34, 27, 0.10)',
+      '--border-color': 'rgba(42, 92, 70, 0.18)'
+    };
+
+    const output = document.getElementById('token-output');
+
+    function applyTokens() {
+      tokenBindings.forEach((binding) => {
+        const input = document.getElementById(binding.inputId);
+        const valueLabel = document.getElementById(binding.valueId);
+        if (!input || !valueLabel) return;
+
+        const hex = input.value.toUpperCase();
+        valueLabel.textContent = hex;
+        document.documentElement.style.setProperty(binding.cssVar, hex);
+      });
+
+      Object.entries(derivedTokens).forEach(([cssVar, value]) => {
+        document.documentElement.style.setProperty(cssVar, value);
+      });
+
+      updateTokenOutput();
+    }
+
+    function updateTokenOutput() {
+      const tokenLines = [':root {'];
+
+      tokenBindings.forEach((binding) => {
+        const input = document.getElementById(binding.inputId);
+        tokenLines.push('  ' + binding.cssVar + ': ' + input.value.toUpperCase() + ';');
+      });
+
+      Object.entries(derivedTokens).forEach(([cssVar, value]) => {
+        tokenLines.push('  ' + cssVar + ': ' + value + ';');
+      });
+
+      tokenLines.push('}');
+      output.value = tokenLines.join('\n');
+    }
+
+    tokenBindings.forEach((binding) => {
+      const input = document.getElementById(binding.inputId);
+      if (!input) return;
+      input.addEventListener('input', applyTokens);
+    });
+
+    document.getElementById('reset-tokens-btn').addEventListener('click', () => {
+      tokenBindings.forEach((binding) => {
+        const input = document.getElementById(binding.inputId);
+        if (input && defaults[binding.cssVar]) {
+          input.value = defaults[binding.cssVar];
+        }
+      });
+      applyTokens();
+    });
+
+    document.getElementById('copy-tokens-btn').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(output.value);
+      } catch (error) {
+        output.select();
+        document.execCommand('copy');
+      }
+    });
+
+    document.getElementById('toggle-ai-btn').addEventListener('click', () => {
+      const aiBody = document.getElementById('ai-insights-content');
+      aiBody.classList.toggle('open');
+      aiBody.classList.toggle('collapsed');
+    });
+
+    const now = new Date();
+    const dateEl = document.getElementById('header-date');
+    dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    const hour = now.getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('dashboard-greeting').textContent = greeting;
+
+    applyTokens();
+  </script>
+</body>
+</html>

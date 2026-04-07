@@ -1,5 +1,24 @@
 const Task = require('../models/Task');
 const TaskCompletion = require('../models/TaskCompletion');
+const WeeklyPlan = require('../models/WeeklyPlan');
+const logger = require('../utils/logger');
+
+const toDateStr = (value = new Date()) => value.toISOString().split('T')[0];
+
+const getWeekStartDate = (inputDate) => {
+  const date = inputDate ? new Date(inputDate) : new Date();
+  const normalized = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const day = normalized.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  normalized.setUTCDate(normalized.getUTCDate() + diff);
+  return toDateStr(normalized);
+};
+
+const getWeekEndDate = (weekStartDate) => {
+  const start = new Date(`${weekStartDate}T00:00:00.000Z`);
+  start.setUTCDate(start.getUTCDate() + 6);
+  return toDateStr(start);
+};
 
 // @desc    Get daily progress over time
 // @route   GET /api/analytics/progress
@@ -28,25 +47,29 @@ const getDailyProgress = async (req, res) => {
     startDate.setDate(startDate.getDate() - days + 1);
 
     // Get all active tasks (for calculating totals)
-    const activeTasks = await Task.find({ userId, isActive: true });
-    const totalTasks = activeTasks.length;
+    const totalTasks = await Task.countDocuments({ userId, isActive: true });
 
     // Get all completions in the date range
     const startDateStr = startDate.toISOString().split('T')[0];
     const endDateStr = endDate.toISOString().split('T')[0];
 
-    const completions = await TaskCompletion.find({
-      userId,
-      date: { $gte: startDateStr, $lte: endDateStr },
-      completed: true
-    });
+    const completionCounts = await TaskCompletion.aggregate([
+      {
+        $match: {
+          userId,
+          date: { $gte: startDateStr, $lte: endDateStr },
+          completed: true
+        }
+      },
+      {
+        $group: {
+          _id: '$date',
+          completed: { $sum: 1 }
+        }
+      }
+    ]);
 
-    // Group completions by date
-    const completionsByDate = new Map();
-    completions.forEach(c => {
-      const count = completionsByDate.get(c.date) || 0;
-      completionsByDate.set(c.date, count + 1);
-    });
+    const completionsByDate = new Map(completionCounts.map((entry) => [entry._id, entry.completed]));
 
     // Generate data for each day in range
     const progressData = [];
@@ -75,7 +98,11 @@ const getDailyProgress = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get daily progress error:', error);
+    logger.error('Get daily progress error', {
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error fetching progress'
@@ -92,7 +119,7 @@ const getTaskHeatmap = async (req, res) => {
     const userId = req.user._id;
 
     // Verify task belongs to user
-    const task = await Task.findOne({ _id: taskId, userId });
+    const task = await Task.findOne({ _id: taskId, userId }).select('_id title').lean();
     if (!task) {
       return res.status(404).json({
         success: false,
@@ -111,7 +138,10 @@ const getTaskHeatmap = async (req, res) => {
     const completions = await TaskCompletion.find({
       taskId,
       date: { $gte: startDateStr, $lte: endDateStr }
-    }).sort({ date: 1 });
+    })
+      .select('date completed -_id')
+      .sort({ date: 1 })
+      .lean();
 
     // Generate heatmap data
     const heatmapData = completions.map(c => ({
@@ -130,7 +160,12 @@ const getTaskHeatmap = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get task heatmap error:', error);
+    logger.error('Get task heatmap error', {
+      taskId: req.params.taskId,
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error fetching heatmap'
@@ -162,19 +197,22 @@ const getStats = async (req, res) => {
       completed: true
     });
 
+    const completionDates = await TaskCompletion.distinct('date', {
+      userId,
+      completed: true,
+      date: { $lte: today }
+    });
+
+    const completionDateSet = new Set(completionDates);
+
     // Current streak (consecutive days)
     let streak = 0;
     const checkDate = new Date();
     
     while (true) {
       const dateStr = checkDate.toISOString().split('T')[0];
-      const dayCompletions = await TaskCompletion.countDocuments({
-        userId,
-        date: dateStr,
-        completed: true
-      });
-      
-      if (dayCompletions > 0) {
+
+      if (completionDateSet.has(dateStr)) {
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
       } else {
@@ -195,7 +233,11 @@ const getStats = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get stats error:', error);
+    logger.error('Get stats error', {
+      error: error.message,
+      stack: error.stack
+    });
+
     res.status(500).json({
       success: false,
       message: 'Server error fetching stats'
@@ -203,8 +245,164 @@ const getStats = async (req, res) => {
   }
 };
 
+// @desc    Get weekly plan and summary
+// @route   GET /api/analytics/weekly-plan
+// @access  Private
+const getWeeklyPlan = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const weekStartDate = getWeekStartDate(req.query.weekStartDate);
+    const weekEndDate = getWeekEndDate(weekStartDate);
+
+    const [weeklyPlan, activeTasks, completionRows] = await Promise.all([
+      WeeklyPlan.findOne({ userId, weekStartDate }).lean(),
+      Task.find({ userId, isActive: true }).select('_id title pausedUntil reminder').lean(),
+      TaskCompletion.find({
+        userId,
+        date: { $gte: weekStartDate, $lte: weekEndDate },
+        completed: true
+      }).select('taskId date completed -_id').lean()
+    ]);
+
+    const completionMap = completionRows.reduce((acc, row) => {
+      const key = String(row.taskId);
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    const totalCompletions = completionRows.length;
+    const activeTaskCount = activeTasks.length;
+    const completionRate = activeTaskCount > 0
+      ? Math.round((totalCompletions / (activeTaskCount * 7)) * 100)
+      : 0;
+
+    const recommendations = activeTasks
+      .map((task) => ({
+        taskId: task._id,
+        title: task.title,
+        completions: completionMap[String(task._id)] || 0
+      }))
+      .sort((a, b) => a.completions - b.completions)
+      .slice(0, 3)
+      .map((entry) => ({
+        taskId: entry.taskId,
+        title: entry.title,
+        note: entry.completions === 0
+          ? 'Try a 2-minute fallback version this week.'
+          : 'Schedule this habit earlier to protect consistency.'
+      }));
+
+    res.json({
+      success: true,
+      data: {
+        weekStartDate,
+        weekEndDate,
+        plan: weeklyPlan || null,
+        summary: {
+          totalCompletions,
+          activeTaskCount,
+          completionRate
+        },
+        recommendations
+      }
+    });
+  } catch (error) {
+    logger.error('Get weekly plan error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching weekly plan.'
+    });
+  }
+};
+
+// @desc    Save or update weekly plan
+// @route   PUT /api/analytics/weekly-plan
+// @access  Private
+const saveWeeklyPlan = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const {
+      weekStartDate,
+      focus = '',
+      priorities = [],
+      notes = '',
+      reflection = ''
+    } = req.body;
+
+    const normalizedWeekStart = getWeekStartDate(weekStartDate);
+
+    if (priorities.length > 0) {
+      const ownedTasks = await Task.countDocuments({
+        userId,
+        _id: { $in: priorities }
+      });
+
+      if (ownedTasks !== priorities.length) {
+        return res.status(403).json({
+          success: false,
+          message: 'Some priority tasks do not belong to this user.'
+        });
+      }
+    }
+
+    const updatedPlan = await WeeklyPlan.findOneAndUpdate(
+      { userId, weekStartDate: normalizedWeekStart },
+      {
+        $set: {
+          focus,
+          priorities,
+          notes,
+          reflection,
+          updatedAt: new Date()
+        },
+        $setOnInsert: {
+          userId,
+          weekStartDate: normalizedWeekStart,
+          createdAt: new Date()
+        }
+      },
+      {
+        upsert: true,
+        new: true
+      }
+    ).lean();
+
+    logger.audit('weekly_plan_saved', {
+      userId: String(userId),
+      weekStartDate: normalizedWeekStart,
+      prioritiesCount: priorities.length
+    });
+
+    res.json({
+      success: true,
+      message: 'Weekly plan saved successfully.',
+      data: {
+        plan: updatedPlan
+      }
+    });
+  } catch (error) {
+    logger.error('Save weekly plan error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error saving weekly plan.'
+    });
+  }
+};
+
 module.exports = {
   getDailyProgress,
   getTaskHeatmap,
-  getStats
+  getStats,
+  getWeeklyPlan,
+  saveWeeklyPlan
 };

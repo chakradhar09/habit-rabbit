@@ -155,6 +155,18 @@ const API = (() => {
      * @returns {object|null}
      */
     getUser,
+
+    /**
+     * Fetch authenticated user profile from API
+     * @returns {Promise<object>}
+     */
+    getMe: async () => {
+      const response = await request('/auth/me');
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+      }
+      return response;
+    },
     
     /**
      * Get current token
@@ -213,6 +225,68 @@ const API = (() => {
         method: 'DELETE'
       });
       return response;
+    },
+
+    /**
+     * Get starter packs for first-run onboarding
+     */
+    getStarterPacks: async () => {
+      const response = await request('/tasks/starter-packs');
+      return response;
+    },
+
+    /**
+     * Create starter habits for onboarding
+     */
+    setupOnboarding: async (payload) => {
+      const response = await request('/tasks/onboarding/setup', {
+        method: 'POST',
+        body: payload
+      });
+      return response;
+    },
+
+    /**
+     * Mark onboarding flow completed
+     */
+    completeOnboarding: async () => {
+      const response = await request('/tasks/onboarding/complete', {
+        method: 'PUT'
+      });
+      return response;
+    },
+
+    /**
+     * Apply AI skip suggestions
+     */
+    applySkips: async (skips) => {
+      const response = await request('/tasks/apply-skips', {
+        method: 'PUT',
+        body: { skips }
+      });
+      return response;
+    },
+
+    /**
+     * Apply AI fallback suggestions
+     */
+    applyFallbacks: async (fallbacks) => {
+      const response = await request('/tasks/apply-fallbacks', {
+        method: 'PUT',
+        body: { fallbacks }
+      });
+      return response;
+    },
+
+    /**
+     * Update reminder for a single task
+     */
+    updateReminder: async (taskId, enabled, time) => {
+      const response = await request(`/tasks/${taskId}/reminder`, {
+        method: 'PUT',
+        body: { enabled, time }
+      });
+      return response;
     }
   };
 
@@ -259,6 +333,26 @@ const API = (() => {
       const response = await request('/analytics/ai-insights', {
         method: 'POST',
         body: { context }
+      });
+      return response;
+    },
+
+    /**
+     * Get weekly planning document and summary
+     */
+    getWeeklyPlan: async (weekStartDate) => {
+      const suffix = weekStartDate ? `?weekStartDate=${encodeURIComponent(weekStartDate)}` : '';
+      const response = await request(`/analytics/weekly-plan${suffix}`);
+      return response;
+    },
+
+    /**
+     * Save weekly plan
+     */
+    saveWeeklyPlan: async (payload) => {
+      const response = await request('/analytics/weekly-plan', {
+        method: 'PUT',
+        body: payload
       });
       return response;
     }

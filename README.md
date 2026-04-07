@@ -20,6 +20,8 @@ A beautiful habit tracking web application with GitHub-style contribution heatma
 - **Delete Options** — Soft delete (keep history) or hard delete (remove everything)
 - **Responsive Design** — Works on mobile, tablet, and desktop
 - **JWT Authentication** — Secure register/login flow
+- **Rate Limited Auth + AI** — Abuse protection for login/register and AI insights
+- **Request Validation Layer** — Input schemas for write operations
 - **Optimistic UI** — Instant feedback on task completion (reverts on API failure)
 
 ---
@@ -55,7 +57,7 @@ npm install
 
 ```bash
 cp .env.example .env
-# Edit .env with your MongoDB URI and a JWT secret
+# Edit .env with your MongoDB URI, JWT secret, and frontend allowlist
 ```
 
 ### 3. (Optional) Seed Demo Data
@@ -131,10 +133,17 @@ habit-rabbit/
 ### Tasks (🔒 Auth required)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| GET | `/api/tasks/starter-packs` | Get onboarding starter packs |
+| POST | `/api/tasks/onboarding/setup` | Create starter habits for onboarding |
+| PUT | `/api/tasks/onboarding/complete` | Mark onboarding as completed |
 | POST | `/api/tasks` | Create habit |
 | GET  | `/api/tasks/today` | Today's tasks + completion status |
 | GET  | `/api/tasks` | All tasks |
+| PUT  | `/api/tasks/:id/reminder` | Save task reminder settings |
 | PUT  | `/api/tasks/:id/complete` | Toggle completion |
+| PUT  | `/api/tasks/apply-priorities` | Apply AI priority ordering |
+| PUT  | `/api/tasks/apply-skips` | Apply AI temporary pause actions |
+| PUT  | `/api/tasks/apply-fallbacks` | Apply AI fallback habit conversions |
 | DELETE | `/api/tasks/:id` | Delete (use `?deleteHistory=true` for hard delete) |
 
 ### Analytics (🔒 Auth required)
@@ -143,6 +152,9 @@ habit-rabbit/
 | GET | `/api/analytics/progress?range=7d` | Daily completion % (7d/30d/6m) |
 | GET | `/api/analytics/heatmap/:taskId` | 6-month heatmap for a habit |
 | GET | `/api/analytics/stats` | Total tasks, streak, completions |
+| GET | `/api/analytics/weekly-plan` | Weekly plan with summary + recommendations |
+| PUT | `/api/analytics/weekly-plan` | Save or update weekly plan |
+| POST | `/api/analytics/ai-insights` | AI-generated priorities + coaching tips |
 | GET | `/api/health` | Health check |
 
 ---
@@ -154,8 +166,10 @@ habit-rabbit/
 1. Push to GitHub
 2. Connect repo in [Railway](https://railway.app)
 3. Add MongoDB plugin (or use Atlas URI)
-4. Set environment variables: `MONGODB_URI`, `JWT_SECRET`, `NODE_ENV=production`
-5. Deploy — Railway auto-detects the `Procfile`
+4. Set environment variables:
+	`MONGODB_URI`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_URLS`, `JWT_ISSUER`, `JWT_AUDIENCE`
+5. Optional hardening vars: `MAX_LOGIN_ATTEMPTS`, `LOGIN_LOCKOUT_MINUTES`, `LOGIN_ATTEMPT_WINDOW_MINUTES`
+6. Deploy — Railway auto-detects the `Procfile`
 
 ### Render
 
@@ -173,6 +187,9 @@ habit-rabbit/
 | `npm start` | Start production server |
 | `npm run dev` | Start with nodemon (auto-reload) |
 | `npm run seed` | Seed demo user + 90 days of data |
+| `npm run verify:sprint1` | Run Sprint 1 verification suite |
+| `npm run verify:sprint2` | Run Sprint 2 verification suite |
+| `npm run verify:all` | Run Sprint 1 + Sprint 2 verification suites |
 
 ---
 

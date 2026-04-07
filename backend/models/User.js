@@ -15,6 +15,37 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 6
   },
+  onboarding: {
+    completed: {
+      type: Boolean,
+      default: false
+    },
+    completedAt: {
+      type: Date,
+      default: null
+    },
+    starterPack: {
+      type: String,
+      default: null,
+      trim: true
+    }
+  },
+  reminderPreferences: {
+    enabled: {
+      type: Boolean,
+      default: false
+    },
+    time: {
+      type: String,
+      default: '08:00',
+      match: [/^([01]\d|2[0-3]):([0-5]\d)$/, 'Reminder time must be HH:mm']
+    },
+    timezone: {
+      type: String,
+      default: 'UTC',
+      trim: true
+    }
+  },
   createdAt: {
     type: Date,
     default: Date.now

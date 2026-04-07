@@ -26,6 +26,35 @@ const taskSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  reminder: {
+    enabled: {
+      type: Boolean,
+      default: false
+    },
+    time: {
+      type: String,
+      default: '08:00',
+      match: [/^([01]\d|2[0-3]):([0-5]\d)$/, 'Reminder time must be HH:mm']
+    }
+  },
+  pausedUntil: {
+    type: String,
+    default: null
+  },
+  pauseReason: {
+    type: String,
+    default: null,
+    maxlength: [160, 'Pause reason cannot exceed 160 characters']
+  },
+  fallbackFromTitle: {
+    type: String,
+    default: null,
+    maxlength: [100, 'Fallback source title cannot exceed 100 characters']
+  },
+  fallbackAppliedAt: {
+    type: Date,
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now
