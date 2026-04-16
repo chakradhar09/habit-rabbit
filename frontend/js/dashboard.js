@@ -16,6 +16,7 @@ let currentUser = null;
 let starterPacks = [];
 let selectedStarterPackId = null;
 let weeklyPlanData = null;
+let isAiDrawerOpen = false;
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -41,7 +42,6 @@ const reorderTaskList = document.getElementById('reorder-task-list');
 const toastContainer = document.getElementById('toast-container');
 const taskSkeleton = document.getElementById('task-skeleton');
 const headerDate = document.getElementById('header-date');
-const dashboardGreeting = document.getElementById('dashboard-greeting');
 const habitsCard = document.getElementById('habits-card');
 const habitBadge = document.getElementById('habit-badge');
 const headerTodayCount = document.getElementById('header-today-count');
@@ -51,6 +51,9 @@ const headerStreakCount = document.getElementById('header-streak-count');
 const aiInsightsSection = document.getElementById('ai-insights-section');
 const aiInsightsContent = document.getElementById('ai-insights-content');
 const toggleAiBtn = document.getElementById('toggle-ai-btn');
+const aiCoachFab = document.getElementById('ai-coach-fab');
+const aiCoachDrawer = document.getElementById('ai-coach-drawer');
+const aiCoachBackdrop = document.getElementById('ai-coach-backdrop');
 const aiContextInput = document.getElementById('ai-context-input');
 const generateInsightsBtn = document.getElementById('generate-insights-btn');
 const aiInsightsResults = document.getElementById('ai-insights-results');
@@ -86,75 +89,44 @@ const weeklyRecommendations = document.getElementById('weekly-recommendations');
 const systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 let isSystemThemeListenerBound = false;
 
+const WARM_THEME_TOKENS = {
+  '--bg': '#FFFDF7',
+  '--bg2': '#FFFDF7',
+  '--surface': '#FFFFFF',
+  '--surface-2': '#FFFFFF',
+  '--surface-3': '#FFF8E1',
+  '--border': '#F1F1EF',
+  '--border-soft': '#F1F1EF',
+  '--border-mid': '#ECEBE6',
+  '--accent': '#F4C95D',
+  '--accent-dim': '#FFF4CC',
+  '--accent-glow': 'rgba(244, 201, 93, 0.24)',
+  '--accent-bright': '#E8BE52',
+  '--accent-contrast': '#1F1F1F',
+  '--amber': '#D8A73D',
+  '--amber-dim': 'rgba(244, 201, 93, 0.22)',
+  '--red': '#D26666',
+  '--red-dim': 'rgba(210, 102, 102, 0.12)',
+  '--t1': '#1F1F1F',
+  '--t2': '#6B7280',
+  '--t3': '#8B93A1',
+  '--t4': '#B4BAC5',
+  '--header-bg': 'rgba(255, 253, 247, 0.94)',
+  '--scroll-thumb': 'rgba(31, 31, 31, 0.16)',
+  '--brand': '#1F1F1F',
+  '--text-primary': '#1F1F1F',
+  '--text-secondary': '#6B7280',
+  '--text-muted': '#8B93A1',
+  '--bg-page': '#FFFDF7',
+  '--bg-card': '#FFFFFF',
+  '--bg-input': '#FFFFFF',
+  '--border-light': '#F1F1EF',
+  '--border-color': '#F1F1EF'
+};
+
 const THEME_TOKENS = {
-  dark: {
-    '--bg': '#0E1512',
-    '--bg2': '#111A16',
-    '--surface': '#1A2420',
-    '--surface-2': '#1F2B27',
-    '--surface-3': '#243028',
-    '--border': 'rgba(127, 212, 162, 0.10)',
-    '--border-soft': 'rgba(255, 255, 255, 0.06)',
-    '--border-mid': 'rgba(255, 255, 255, 0.09)',
-    '--accent': '#7FD4A2',
-    '--accent-dim': 'rgba(127, 212, 162, 0.12)',
-    '--accent-glow': 'rgba(127, 212, 162, 0.20)',
-    '--accent-bright': '#A3E4BE',
-    '--accent-contrast': '#0E1512',
-    '--amber': '#E8C07A',
-    '--amber-dim': 'rgba(232, 192, 122, 0.12)',
-    '--red': '#E87070',
-    '--red-dim': 'rgba(232, 112, 112, 0.12)',
-    '--t1': '#E8F0EB',
-    '--t2': '#8BA597',
-    '--t3': '#4A6355',
-    '--t4': '#2A3D32',
-    '--header-bg': 'rgba(14, 21, 18, 0.88)',
-    '--scroll-thumb': 'rgba(127, 212, 162, 0.32)',
-    '--brand': '#7FD4A2',
-    '--text-primary': '#E8F0EB',
-    '--text-secondary': '#8BA597',
-    '--text-muted': '#4A6355',
-    '--bg-page': '#0E1512',
-    '--bg-card': '#1A2420',
-    '--bg-input': '#1F2B27',
-    '--border-light': 'rgba(255, 255, 255, 0.07)',
-    '--border-color': 'rgba(127, 212, 162, 0.16)'
-  },
-  light: {
-    '--bg': '#F6F2E8',
-    '--bg2': '#EEE8DA',
-    '--surface': '#FFFFFF',
-    '--surface-2': '#F2F5EF',
-    '--surface-3': '#E7ECE3',
-    '--border': 'rgba(42, 92, 70, 0.18)',
-    '--border-soft': 'rgba(20, 34, 27, 0.10)',
-    '--border-mid': 'rgba(20, 34, 27, 0.18)',
-    '--accent': '#2E8B62',
-    '--accent-dim': 'rgba(46, 139, 98, 0.12)',
-    '--accent-glow': 'rgba(46, 139, 98, 0.22)',
-    '--accent-bright': '#47A879',
-    '--accent-contrast': '#F4FAF7',
-    '--amber': '#C28640',
-    '--amber-dim': 'rgba(194, 134, 64, 0.16)',
-    '--red': '#C45A5A',
-    '--red-dim': 'rgba(196, 90, 90, 0.12)',
-    '--t1': '#14221B',
-    '--t2': '#355044',
-    '--t3': '#627A6E',
-    '--t4': '#8AA095',
-    '--header-bg': 'rgba(246, 242, 232, 0.90)',
-    '--scroll-thumb': 'rgba(42, 92, 70, 0.28)',
-    '--brand': '#2E8B62',
-    '--text-primary': '#14221B',
-    '--text-secondary': '#355044',
-    '--text-muted': '#627A6E',
-    '--bg-page': '#F6F2E8',
-    '--bg-card': '#FFFFFF',
-    '--bg-input': '#F2F5EF',
-    '--border-light': 'rgba(20, 34, 27, 0.10)',
-    '--border-color': 'rgba(42, 92, 70, 0.18)'
-  }
+  dark: WARM_THEME_TOKENS,
+  light: WARM_THEME_TOKENS
 };
 
 // Initialize
@@ -166,10 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize theme
   initializeTheme();
 
-  if (aiInsightsContent && aiInsightsContent.classList.contains('open') && toggleAiBtn) {
-    const icon = toggleAiBtn.querySelector('svg');
-    if (icon) icon.style.transform = 'rotate(180deg)';
-  }
+  toggleAiSection(false);
   
   // Check authentication
   if (!API.auth.isAuthenticated()) {
@@ -258,8 +227,14 @@ function setupEventListeners() {
   });
 
   // AI Insights event listeners
+  if (aiCoachFab) {
+    aiCoachFab.addEventListener('click', () => toggleAiSection(true));
+  }
   if (toggleAiBtn) {
-    toggleAiBtn.addEventListener('click', toggleAiSection);
+    toggleAiBtn.addEventListener('click', () => toggleAiSection(false));
+  }
+  if (aiCoachBackdrop) {
+    aiCoachBackdrop.addEventListener('click', () => toggleAiSection(false));
   }
   if (generateInsightsBtn) {
     generateInsightsBtn.addEventListener('click', generateAIInsights);
@@ -287,6 +262,14 @@ function setupEventListeners() {
       });
     }
   }
+
+  document.addEventListener('keydown', handleGlobalKeydown);
+}
+
+function handleGlobalKeydown(event) {
+  if (event.key === 'Escape' && isAiDrawerOpen) {
+    toggleAiSection(false);
+  }
 }
 
 async function loadCurrentUser() {
@@ -310,40 +293,13 @@ function initializeDashboardHeader() {
       day: 'numeric'
     });
   }
-
-  if (dashboardGreeting) {
-    const hour = now.getHours();
-    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    dashboardGreeting.textContent = greeting;
-  }
 }
 
 function updateHabitListMaxHeight() {
   if (!habitsCard) return;
 
-  if (habitListResizeRaf) {
-    cancelAnimationFrame(habitListResizeRaf);
-  }
-
-  habitListResizeRaf = requestAnimationFrame(() => {
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-    const cardTop = habitsCard.getBoundingClientRect().top;
-    const formHeight = habitsCard.querySelector('.add-wrap')?.offsetHeight || 0;
-    const progressHeight = habitsCard.querySelector('.progress-section')?.offsetHeight || 0;
-    const headerHeight = habitsCard.querySelector('.card-head')?.offsetHeight || 0;
-    const body = habitsCard.querySelector('.card-body');
-    const bodyStyle = body ? window.getComputedStyle(body) : null;
-    const verticalPadding = bodyStyle
-      ? (parseFloat(bodyStyle.paddingTop) || 0) + (parseFloat(bodyStyle.paddingBottom) || 0)
-      : 0;
-    const footerGap = window.innerWidth <= 760 ? 16 : 28;
-    const reservedHeight = formHeight + progressHeight + headerHeight + verticalPadding + 24;
-    const computed = viewportHeight - cardTop - footerGap - reservedHeight;
-    const fallback = viewportHeight * (window.innerWidth <= 980 ? 0.42 : 0.5);
-    const safeHeight = Math.max(180, Math.min(computed > 0 ? computed : fallback, viewportHeight * 0.62));
-
-    habitsCard.style.setProperty('--habit-list-max-height', `${Math.round(safeHeight)}px`);
-  });
+  // Task list now flows naturally and relies on page scroll.
+  habitsCard.style.removeProperty('--habit-list-max-height');
 }
 
 function shouldShowOnboarding() {
@@ -547,24 +503,8 @@ function renderTasks() {
   // Add event listeners to task elements
   taskList.querySelectorAll('.task-card').forEach(card => {
     const taskId = card.dataset.taskId;
-    
-    // Checkbox click
-    card.querySelector('.task-checkbox').addEventListener('click', () => toggleTaskComplete(taskId));
-    
-    // Edit button
-    const editBtn = card.querySelector('.task-action-btn.edit');
-    if (editBtn) {
-      editBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openEditMode(taskId);
-      });
-    }
-    
-    // Delete button
-    card.querySelector('.task-action-btn.delete').addEventListener('click', (e) => {
-      e.stopPropagation();
-      openDeleteModal(taskId);
-    });
+
+    card.addEventListener('click', () => toggleTaskComplete(taskId));
   });
 
   // Update heatmap selector if analytics is visible
@@ -582,41 +522,9 @@ function renderTasks() {
 
 // Create task HTML
 function createTaskHTML(task) {
-  const streak = taskStreaks[task._id] || 0;
-  const streakClass = streak >= 7 ? 'hot' : '';
-  const reminderEnabled = task.reminder && task.reminder.enabled;
-  const reminderTime = reminderEnabled ? task.reminder.time : null;
-  const pauseBadge = task.isPaused
-    ? `<span class="task-paused-badge" title="Paused until ${escapeHtml(task.pausedUntil)}">⏸ ${escapeHtml(task.pausedUntil)}</span>`
-    : '';
-  const reminderBadge = reminderTime
-    ? `<span class="task-reminder" title="Reminder at ${escapeHtml(reminderTime)}">⏰ ${escapeHtml(reminderTime)}</span>`
-    : '';
-
   return `
     <div class="habit-item task-card ${task.completed ? 'completed' : ''}" data-task-id="${task._id}">
-      <button class="habit-check task-checkbox" aria-label="Toggle completion">
-        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      </button>
       <span class="habit-name task-title">${escapeHtml(task.title)}</span>
-      <div class="task-meta">
-        ${streak > 0 ? `<span class="habit-streak task-streak ${streakClass}" title="${streak} day streak">🔥 ${streak}d</span>` : ''}
-        ${reminderBadge}
-        ${pauseBadge}
-      </div>
-      <div class="task-actions">
-        <button class="habit-del task-action-btn delete" aria-label="Delete task">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <polyline points="3 6 5 6 21 6" />
-            <path d="M19 6l-1 14H6L5 6" />
-            <path d="M10 11v6" />
-            <path d="M14 11v6" />
-            <path d="M9 6V4h6v2" />
-          </svg>
-        </button>
-      </div>
     </div>
   `;
 }
@@ -655,7 +563,7 @@ async function handleAddTask(e) {
         const addBtn = addTaskForm.querySelector('button[type="submit"]');
         addBtn.textContent = 'Add';
         
-        showToast('Habit updated', 'success');
+        showToast('Task updated', 'success');
       }
     } catch (error) {
       showToast(error.message, 'error');
@@ -690,7 +598,7 @@ async function handleAddTask(e) {
       const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
       updateProgress({ completed, total, percentage });
       
-      showToast('New habit added', 'success');
+      showToast('New task added', 'success');
       loadStats();
       
       // Refresh progress chart and heatmap selector
@@ -740,28 +648,7 @@ async function toggleTaskComplete(taskId) {
       try {
         const streakResponse = await API.analytics.getHeatmap(taskId);
         if (streakResponse.success && streakResponse.data.heatmap) {
-          const updatedStreak = calculateStreakFromHeatmap(streakResponse.data.heatmap);
-          taskStreaks[taskId] = updatedStreak;
-          
-          // Update the streak display in the task card
-          const streakElement = taskCard.querySelector('.task-streak');
-          if (updatedStreak > 0) {
-            if (streakElement) {
-              streakElement.textContent = `🔥 ${updatedStreak}`;
-              streakElement.setAttribute('title', `${updatedStreak} day streak`);
-            } else {
-              // Add streak element if it doesn't exist
-              const taskMeta = taskCard.querySelector('.task-meta');
-              if (taskMeta) {
-                taskMeta.innerHTML = `<span class="task-streak" title="${updatedStreak} day streak">🔥 ${updatedStreak}</span>`;
-              }
-            }
-          } else {
-            // Remove streak element if streak is 0
-            if (streakElement) {
-              streakElement.remove();
-            }
-          }
+          taskStreaks[taskId] = calculateStreakFromHeatmap(streakResponse.data.heatmap);
         }
       } catch (streakError) {
         console.error('Failed to update streak:', streakError);
@@ -819,7 +706,7 @@ async function handleDelete(deleteHistory) {
       const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
       updateProgress({ completed, total, percentage });
       
-      showToast('Habit deleted', 'success');
+      showToast('Task deleted', 'success');
       loadStats();
       
       // Refresh progress chart and heatmap selector
@@ -831,7 +718,7 @@ async function handleDelete(deleteHistory) {
         selectedHeatmapTask = null;
         const heatmapContainer = document.getElementById('heatmap-container');
         if (heatmapContainer) {
-          heatmapContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Select a habit to view its completion history</p>';
+          heatmapContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Select a task to view its completion history</p>';
         }
       }
     }
@@ -1241,7 +1128,7 @@ async function saveWeeklyPlan() {
 
 // Initialize theme on page load
 function initializeTheme() {
-  const savedTheme = localStorage.getItem('habit_rabbit_theme') || 'dark';
+  const savedTheme = localStorage.getItem('habit_rabbit_theme') || 'light';
   applyTheme(savedTheme);
   
   // Set the correct radio button
@@ -1315,7 +1202,7 @@ function closeSettings() {
 // Render reorder task list
 function renderReorderList() {
   if (tasks.length === 0) {
-    reorderTaskList.innerHTML = '<p style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center;">No habits to reorder</p>';
+    reorderTaskList.innerHTML = '<p style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center;">No tasks to reorder</p>';
     return;
   }
   
@@ -1338,7 +1225,7 @@ function renderReminderSettings() {
   if (!reminderSettingsList) return;
 
   if (!tasks.length) {
-    reminderSettingsList.innerHTML = '<p style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center;">No habits available for reminders</p>';
+    reminderSettingsList.innerHTML = '<p style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center;">No tasks available for reminders</p>';
     return;
   }
 
@@ -1537,11 +1424,22 @@ function escapeHtml(text) {
 // ============================================
 
 // Toggle AI section collapse
-function toggleAiSection() {
-  const isOpen = aiInsightsContent.classList.toggle('open');
-  aiInsightsContent.classList.toggle('collapsed', !isOpen);
-  const icon = toggleAiBtn.querySelector('svg');
-  icon.style.transform = isOpen ? 'rotate(180deg)' : '';
+function toggleAiSection(forceState) {
+  if (!aiCoachDrawer || !aiCoachBackdrop) return;
+
+  const nextState = typeof forceState === 'boolean' ? forceState : !isAiDrawerOpen;
+  isAiDrawerOpen = nextState;
+
+  aiCoachDrawer.classList.toggle('open', nextState);
+  aiCoachBackdrop.classList.toggle('open', nextState);
+  document.body.classList.toggle('ai-drawer-open', nextState);
+
+  aiCoachDrawer.setAttribute('aria-hidden', String(!nextState));
+  aiCoachBackdrop.setAttribute('aria-hidden', String(!nextState));
+
+  if (aiCoachFab) {
+    aiCoachFab.setAttribute('aria-expanded', String(nextState));
+  }
 }
 
 // Generate AI Insights

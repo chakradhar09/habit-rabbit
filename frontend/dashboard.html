@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Track your daily habits and view progress analytics on Habit Rabbit.">
-  <meta name="theme-color" content="#0E1512">
+  <meta name="theme-color" content="#FFFDF7">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <title>Habit Rabbit - Dashboard</title>
   <link rel="stylesheet" href="css/dashboard.css">
@@ -26,7 +26,6 @@
   <div id="app" class="app hidden">
     <header class="header">
       <div class="header-logo">
-        <span class="rabbit">🐇</span>
         <span class="brand-name">Habit Rabbit</span>
       </div>
 
@@ -71,8 +70,7 @@
 
     <main class="main">
       <div class="page-title">
-        <h1 id="dashboard-greeting">Good morning</h1>
-        <p>Here's your habit snapshot for today.</p>
+        <h1>Today</h1>
       </div>
 
       <div class="stats-row">
@@ -102,13 +100,13 @@
       <div class="content-grid">
         <div id="habits-card" class="card habits-card">
           <div class="card-head">
-            <span class="card-title">Today's Habits</span>
+            <span class="card-title">Today's Tasks</span>
             <span class="card-badge" id="habit-badge">0 / 0</span>
           </div>
           <div class="card-body">
             <form id="add-task-form" class="add-wrap">
               <div class="add-input-wrap">
-                <input class="add-input" type="text" id="new-task-input" placeholder="Add a new habit..." maxlength="100" autocomplete="off">
+                <input class="add-input" type="text" id="new-task-input" placeholder="Add a new task..." maxlength="100" autocomplete="off">
                 <span id="char-counter" class="char-counter">0/100</span>
               </div>
               <button class="add-btn" type="submit">Add</button>
@@ -126,16 +124,13 @@
 
             <div id="task-skeleton" class="habits-list">
               <div class="habit-item skeleton-card">
-                <div class="habit-check skeleton-box"></div>
-                <div class="task-content"><span class="skeleton-line"></span></div>
+                <span class="skeleton-line"></span>
               </div>
               <div class="habit-item skeleton-card">
-                <div class="habit-check skeleton-box"></div>
-                <div class="task-content"><span class="skeleton-line"></span></div>
+                <span class="skeleton-line"></span>
               </div>
               <div class="habit-item skeleton-card">
-                <div class="habit-check skeleton-box"></div>
-                <div class="task-content"><span class="skeleton-line short"></span></div>
+                <span class="skeleton-line short"></span>
               </div>
             </div>
 
@@ -143,69 +138,9 @@
 
             <div id="empty-state" class="empty-state hidden">
               <div class="icon">🌱</div>
-              <p>No habits yet. Add your first one above.</p>
+              <p>No tasks yet. Add your first one above.</p>
             </div>
           </div>
-        </div>
-
-        <div class="sidebar">
-          <section id="ai-insights-section" class="card ai-coach-card">
-            <div class="card-body ai-coach-body">
-              <div class="ai-card-header">
-                <div class="ai-icon">🤖</div>
-                <span class="ai-title">AI Habit Coach</span>
-                <button id="toggle-ai-btn" class="ai-toggle" type="button" aria-label="Toggle AI coach">
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-              </div>
-
-              <p class="ai-helper-text">Get personalized priorities from your completion patterns and adapt your routine for busy days.</p>
-
-              <div class="ai-body open" id="ai-insights-content">
-                <textarea class="ai-context" id="ai-context-input" rows="3" placeholder="Optional: describe your current situation..."></textarea>
-                <button id="generate-insights-btn" class="ai-btn" type="button">
-                  <span class="btn-icon">⚡</span>
-                  <span class="btn-text">Get AI Insights</span>
-                  <span class="btn-spinner hidden">...</span>
-                </button>
-
-                <div id="ai-insights-empty" class="ai-insights-empty">
-                  <p>Click "Get AI Insights" to receive personalized suggestions based on your habit patterns.</p>
-                </div>
-
-                <div id="ai-insights-results" class="ai-insights-results hidden">
-                  <div class="ai-insight-card ai-summary">
-                    <h4 class="ai-card-title"><span class="ai-card-icon">📊</span> Overview</h4>
-                    <p id="ai-summary-text" class="ai-summary-text"></p>
-                  </div>
-
-                  <div class="ai-insight-card ai-priorities">
-                    <h4 class="ai-card-title"><span class="ai-card-icon">🎯</span> Suggested Priorities</h4>
-                    <p class="ai-card-description">Drag tasks to reorder, or click Apply to auto-sort by AI priority.</p>
-                    <div id="ai-priority-list" class="ai-priority-list"></div>
-                    <button id="apply-priorities-btn" class="ai-btn" type="button">Apply AI Priorities</button>
-                  </div>
-
-                  <div id="ai-skip-section" class="ai-insight-card ai-skip hidden">
-                    <h4 class="ai-card-title"><span class="ai-card-icon">⏸</span> Can Skip During Busy Times</h4>
-                    <div id="ai-skip-list" class="ai-suggestion-list"></div>
-                    <button id="apply-skips-btn" class="ai-btn ai-action-btn" type="button">Pause Suggested Habits</button>
-                  </div>
-
-                  <div id="ai-replace-section" class="ai-insight-card ai-replace hidden">
-                    <h4 class="ai-card-title"><span class="ai-card-icon">🔄</span> Consider Replacing</h4>
-                    <div id="ai-replace-list" class="ai-suggestion-list"></div>
-                    <button id="apply-fallbacks-btn" class="ai-btn ai-action-btn" type="button">Apply Fallback Conversions</button>
-                  </div>
-
-                  <div id="ai-tips-section" class="ai-insight-card ai-tips hidden">
-                    <h4 class="ai-card-title"><span class="ai-card-icon">💡</span> Tips</h4>
-                    <ul id="ai-tips-list" class="ai-tips-list"></ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
       </div>
 
@@ -312,6 +247,72 @@
         </div>
       </section>
     </main>
+
+    <button id="ai-coach-fab" class="ai-coach-fab" type="button" aria-label="Open AI Habit Coach" aria-controls="ai-coach-drawer" aria-expanded="false">
+      <span class="ai-coach-fab-icon">🤖</span>
+    </button>
+
+    <div id="ai-coach-backdrop" class="ai-coach-backdrop" aria-hidden="true"></div>
+
+    <aside id="ai-coach-drawer" class="ai-coach-drawer" role="dialog" aria-modal="true" aria-labelledby="ai-coach-title" aria-hidden="true">
+      <section id="ai-insights-section" class="card ai-coach-card">
+        <div class="card-body ai-coach-body">
+          <div class="ai-card-header">
+            <div class="ai-icon">🤖</div>
+            <span id="ai-coach-title" class="ai-title">AI Habit Coach</span>
+            <button id="toggle-ai-btn" class="ai-toggle ai-close-btn" type="button" aria-label="Close AI coach">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <p class="ai-helper-text">Get personalized priorities from your completion patterns and adapt your routine for busy days.</p>
+
+          <div class="ai-body open" id="ai-insights-content">
+            <textarea class="ai-context" id="ai-context-input" rows="3" placeholder="Optional: describe your current situation..."></textarea>
+            <button id="generate-insights-btn" class="ai-btn" type="button">
+              <span class="btn-icon">⚡</span>
+              <span class="btn-text">Get AI Insights</span>
+              <span class="btn-spinner hidden">...</span>
+            </button>
+
+            <div id="ai-insights-empty" class="ai-insights-empty">
+              <p>Click "Get AI Insights" to receive personalized suggestions based on your habit patterns.</p>
+            </div>
+
+            <div id="ai-insights-results" class="ai-insights-results hidden">
+              <div class="ai-insight-card ai-summary">
+                <h4 class="ai-card-title"><span class="ai-card-icon">📊</span> Overview</h4>
+                <p id="ai-summary-text" class="ai-summary-text"></p>
+              </div>
+
+              <div class="ai-insight-card ai-priorities">
+                <h4 class="ai-card-title"><span class="ai-card-icon">🎯</span> Suggested Priorities</h4>
+                <p class="ai-card-description">Drag tasks to reorder, or click Apply to auto-sort by AI priority.</p>
+                <div id="ai-priority-list" class="ai-priority-list"></div>
+                <button id="apply-priorities-btn" class="ai-btn" type="button">Apply AI Priorities</button>
+              </div>
+
+              <div id="ai-skip-section" class="ai-insight-card ai-skip hidden">
+                <h4 class="ai-card-title"><span class="ai-card-icon">⏸</span> Can Skip During Busy Times</h4>
+                <div id="ai-skip-list" class="ai-suggestion-list"></div>
+                <button id="apply-skips-btn" class="ai-btn ai-action-btn" type="button">Pause Suggested Habits</button>
+              </div>
+
+              <div id="ai-replace-section" class="ai-insight-card ai-replace hidden">
+                <h4 class="ai-card-title"><span class="ai-card-icon">🔄</span> Consider Replacing</h4>
+                <div id="ai-replace-list" class="ai-suggestion-list"></div>
+                <button id="apply-fallbacks-btn" class="ai-btn ai-action-btn" type="button">Apply Fallback Conversions</button>
+              </div>
+
+              <div id="ai-tips-section" class="ai-insight-card ai-tips hidden">
+                <h4 class="ai-card-title"><span class="ai-card-icon">💡</span> Tips</h4>
+                <ul id="ai-tips-list" class="ai-tips-list"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </aside>
 
     <div id="toast-container" class="toast-container"></div>
   </div>
