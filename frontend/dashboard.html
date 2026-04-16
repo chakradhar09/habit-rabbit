@@ -159,7 +159,7 @@
               <canvas id="progress-chart"></canvas>
               <div id="chart-empty-state" class="chart-empty-state hidden">
                 <span class="chart-empty-icon">📈</span>
-                <p>No progress data yet. Complete some habits to see your trends.</p>
+                <p>No progress data yet. Complete some tasks to see your trends.</p>
               </div>
             </div>
 
@@ -184,8 +184,8 @@
               <div class="heatmap-legend">
                 <span class="legend-label">Less</span>
                 <span class="legend-color" style="background: var(--surface-2);"></span>
-                <span class="legend-color" style="background: rgba(127, 212, 162, 0.25);"></span>
-                <span class="legend-color" style="background: rgba(127, 212, 162, 0.55);"></span>
+                <span class="legend-color" style="background: rgba(244, 201, 93, 0.28);"></span>
+                <span class="legend-color" style="background: rgba(244, 201, 93, 0.58);"></span>
                 <span class="legend-color" style="background: var(--accent);"></span>
                 <span class="legend-color missed" style="background: rgba(232, 112, 112, 0.40);"></span>
                 <span class="legend-label">More</span>
@@ -211,7 +211,7 @@
               <span class="weekly-summary-value" id="weekly-summary-count">0</span>
             </div>
             <div class="weekly-summary-card">
-              <span class="weekly-summary-label">Active Habits</span>
+              <span class="weekly-summary-label">Active Tasks</span>
               <span class="weekly-summary-value" id="weekly-summary-active">0</span>
             </div>
           </div>
@@ -364,13 +364,13 @@
 
         <div class="settings-section">
           <h4 class="settings-section-title">Task Management</h4>
-          <p class="settings-section-description">Drag and drop to reorder your habits</p>
+          <p class="settings-section-description">Drag and drop to reorder your tasks</p>
           <div id="reorder-task-list" class="reorder-task-list"></div>
         </div>
 
         <div class="settings-section">
           <h4 class="settings-section-title">Reminders</h4>
-          <p class="settings-section-description">Enable reminders and choose a time for each habit.</p>
+          <p class="settings-section-description">Enable reminders and choose a time for each task.</p>
           <div id="reminder-settings-list" class="reorder-task-list"></div>
         </div>
       </div>
@@ -384,15 +384,15 @@
         <h3>Welcome to Habit Rabbit</h3>
       </div>
       <div class="modal-body">
-        <p>Create three starter habits to begin your first streak.</p>
+        <p>Create three starter tasks to begin your first streak.</p>
         <div id="starter-pack-list" class="starter-pack-list"></div>
         <label class="weekly-field" for="onboarding-custom-habits">
-          <span>Optional extra habits (comma separated)</span>
+          <span>Optional extra tasks (comma separated)</span>
           <input id="onboarding-custom-habits" type="text" maxlength="300" placeholder="Example: Drink water, Read 10 pages">
         </label>
       </div>
       <div class="modal-actions">
-        <button id="onboarding-continue-btn" class="btn btn-secondary" type="button">Create Starter Habits</button>
+        <button id="onboarding-continue-btn" class="btn btn-secondary" type="button">Create Starter Tasks</button>
       </div>
     </div>
   </div>

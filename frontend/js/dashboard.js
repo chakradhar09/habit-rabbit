@@ -382,7 +382,7 @@ async function completeOnboardingFlow() {
     });
 
     if (!setupResponse.success) {
-      throw new Error(setupResponse.message || 'Failed to create starter habits.');
+      throw new Error(setupResponse.message || 'Failed to create starter tasks.');
     }
 
     await API.tasks.completeOnboarding();
@@ -390,12 +390,12 @@ async function completeOnboardingFlow() {
     await Promise.all([loadTodaysTasks(), loadStats(), loadWeeklyPlan()]);
 
     closeOnboardingModal();
-    showToast('Starter habits created. You are ready to go!', 'success');
+    showToast('Starter tasks created. You are ready to go!', 'success');
   } catch (error) {
     showToast(error.message || 'Failed to complete onboarding.', 'error');
   } finally {
     onboardingContinueBtn.disabled = false;
-    onboardingContinueBtn.textContent = 'Create Starter Habits';
+    onboardingContinueBtn.textContent = 'Create Starter Tasks';
   }
 }
 
@@ -1023,7 +1023,7 @@ function renderWeeklyPriorityOptions(selectedTaskIds = []) {
   if (!weeklyPriorityList) return;
 
   if (!tasks.length) {
-    weeklyPriorityList.innerHTML = '<p style="color: var(--text-muted); font-size: 12px;">Add habits to build your weekly plan.</p>';
+    weeklyPriorityList.innerHTML = '<p style="color: var(--text-muted); font-size: 12px;">Add tasks to build your weekly plan.</p>';
     return;
   }
 
@@ -1493,7 +1493,7 @@ function renderAIInsights() {
     aiSkipSection.classList.remove('hidden');
     aiSkipList.innerHTML = aiInsights.skipSuggestions.map(skip => {
       const task = tasks.find(t => t._id === skip.taskId);
-      const habitName = task ? task.title : skip.currentHabit || 'Unknown habit';
+      const habitName = task ? task.title : skip.currentHabit || 'Unknown task';
       return `
         <div class="ai-suggestion-item">
           <span class="ai-suggestion-habit">${escapeHtml(habitName)}</span>
@@ -1510,7 +1510,7 @@ function renderAIInsights() {
     aiReplaceSection.classList.remove('hidden');
     aiReplaceList.innerHTML = aiInsights.replacementSuggestions.map(replace => {
       const task = tasks.find(t => t._id === replace.taskId);
-      const habitName = task ? task.title : replace.currentHabit || 'Unknown habit';
+      const habitName = task ? task.title : replace.currentHabit || 'Unknown task';
       return `
         <div class="ai-suggestion-item">
           <span class="ai-suggestion-habit">${escapeHtml(habitName)}</span>
@@ -1563,7 +1563,7 @@ async function applyAISkips() {
     showToast(error.message || 'Failed to apply skip suggestions.', 'error');
   } finally {
     applySkipsBtn.disabled = false;
-    applySkipsBtn.textContent = 'Pause Suggested Habits';
+    applySkipsBtn.textContent = 'Pause Suggested Tasks';
   }
 }
 

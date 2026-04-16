@@ -279,7 +279,7 @@ body::after {
 
 .page-title p {
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--t2);
 }
 
@@ -885,11 +885,11 @@ body.ai-drawer-open .ai-coach-fab {
 .hm-cell.l0,
 .mini-hm-cell.l0 { background: var(--surface-2); }
 .hm-cell.l1,
-.mini-hm-cell.l1 { background: rgba(127, 212, 162, 0.25); }
+.mini-hm-cell.l1 { background: rgba(244, 201, 93, 0.25); }
 .hm-cell.l2,
-.mini-hm-cell.l2 { background: rgba(127, 212, 162, 0.50); }
+.mini-hm-cell.l2 { background: rgba(244, 201, 93, 0.5); }
 .hm-cell.l3,
-.mini-hm-cell.l3 { background: rgba(127, 212, 162, 0.75); }
+.mini-hm-cell.l3 { background: rgba(244, 201, 93, 0.75); }
 .hm-cell.l4,
 .mini-hm-cell.l4 { background: var(--accent); }
 
@@ -937,7 +937,7 @@ body.ai-drawer-open .ai-coach-fab {
 .ai-title {
   font-family: var(--font-d);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--t1);
   flex: 1;
 }
@@ -1000,7 +1000,7 @@ body.ai-drawer-open .ai-coach-fab {
   border-radius: var(--r);
   color: var(--accent);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
   display: flex;
@@ -1010,7 +1010,7 @@ body.ai-drawer-open .ai-coach-fab {
 }
 
 .ai-btn:hover {
-  background: rgba(127, 212, 162, 0.18);
+  background: var(--surface-3);
 }
 
 .ai-action-btn {
@@ -1128,7 +1128,7 @@ body.ai-drawer-open .ai-coach-fab {
 }
 
 .ai-priority-badge.high { color: #FFB0B0; background: rgba(232, 112, 112, 0.2); }
-.ai-priority-badge.medium { color: #BCEFD0; background: rgba(127, 212, 162, 0.2); }
+.ai-priority-badge.medium { color: #8B6A1E; background: rgba(244, 201, 93, 0.26); }
 .ai-priority-badge.low { color: #8BA597; background: rgba(139, 165, 151, 0.16); }
 
 .ai-suggestion-habit {
@@ -1344,7 +1344,7 @@ body.ai-drawer-open .ai-coach-fab {
 .starter-pack-title {
   color: var(--t1);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 6px;
 }
 
@@ -1388,7 +1388,7 @@ body.ai-drawer-open .ai-coach-fab {
 .analytics-title {
   font-family: var(--font-d);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   flex: 1;
 }
 
@@ -1408,7 +1408,7 @@ body.ai-drawer-open .ai-coach-fab {
   background: transparent;
   color: var(--t3);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -1556,7 +1556,7 @@ body.ai-drawer-open .ai-coach-fab {
   border-radius: var(--r);
   border: 1px solid var(--border-soft);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   background: var(--surface);
   color: var(--t2);
@@ -1681,7 +1681,7 @@ body.ai-drawer-open .ai-coach-fab {
 .theme-option input:checked + .theme-card {
   border-color: var(--accent);
   color: var(--accent);
-  background: rgba(127, 212, 162, 0.12);
+  background: var(--accent-dim);
 }
 
 .reorder-task-list {
