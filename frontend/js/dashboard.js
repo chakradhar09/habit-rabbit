@@ -38,6 +38,7 @@ const deleteModal = document.getElementById('delete-modal');
 const deleteTaskTitle = document.getElementById('delete-task-title');
 const settingsModal = document.getElementById('settings-modal');
 const settingsCloseBtn = document.getElementById('settings-close-btn');
+const settingsBody = settingsModal ? settingsModal.querySelector('.settings-body') : null;
 const reorderTaskList = document.getElementById('reorder-task-list');
 const toastContainer = document.getElementById('toast-container');
 const taskSkeleton = document.getElementById('task-skeleton');
@@ -929,18 +930,20 @@ function renderHeatmap(data) {
   // Generate last 91 days (13 weeks)
   const totalDays = 91;
   const days = [];
+  const completionByDate = new Map((data || []).map((entry) => [entry.date, entry.completed]));
   const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
   
   for (let i = totalDays - 1; i >= 0; i--) {
     const date = new Date(today);
-    date.setDate(date.getDate() - i);
+    date.setUTCDate(today.getUTCDate() - i);
     const dateStr = date.toISOString().split('T')[0];
-    
-    const completion = data.find(d => d.date === dateStr);
+
+    const completion = completionByDate.get(dateStr);
     days.push({
       date: dateStr,
-      dayOfWeek: date.getDay(), // 0=Sun .. 6=Sat
-      completed: completion ? completion.completed : null,
+      dayOfWeek: date.getUTCDay(), // 0=Sun .. 6=Sat
+      completed: completion === undefined ? null : completion,
       dateObj: date
     });
   }
@@ -966,11 +969,11 @@ function renderHeatmap(data) {
 
   // Render grid (columns = weeks, rows = days of week)
   grid.innerHTML = '';
-  grid.style.gridTemplateColumns = `repeat(${weeks.length}, 1fr)`;
+  grid.style.gridTemplateColumns = `repeat(${weeks.length}, 14px)`;
   
-  // We need to output row by row (Sun row, Mon row, ..., Sat row) for CSS grid
-  for (let row = 0; row < 7; row++) {
-    for (let col = 0; col < weeks.length; col++) {
+  // Output cells column-by-column to match CSS grid-auto-flow: column
+  for (let col = 0; col < weeks.length; col++) {
+    for (let row = 0; row < 7; row++) {
       const day = weeks[col][row];
       if (!day) {
         grid.innerHTML += '<div class="heatmap-day empty"></div>';
@@ -982,7 +985,13 @@ function renderHeatmap(data) {
           className += ' missed';
         }
         const label = formatDate(day.date);
-        grid.innerHTML += `<div class="${className}" data-date="${label}" title="${label}${day.completed === true ? ' Done' : day.completed === false ? ' Missed' : ''}"></div>`;
+        const statusText = day.completed === true
+          ? 'Done'
+          : day.completed === false
+            ? 'Missed'
+            : 'Not logged';
+        const tooltip = `${label} ${statusText}`;
+        grid.innerHTML += `<div class="${className}" data-date="${day.date}" title="${tooltip}" aria-label="${tooltip}"></div>`;
       }
     }
   }
@@ -994,16 +1003,16 @@ function renderHeatmap(data) {
     // Find the first valid day in this week
     const validDay = week.find(d => d !== null);
     if (validDay) {
-      const month = validDay.dateObj.getMonth();
+      const month = validDay.dateObj.getUTCMonth();
       if (month !== lastMonth) {
-        months.push({ colIdx, label: validDay.dateObj.toLocaleDateString('en-US', { month: 'short' }) });
+        months.push({ colIdx, label: validDay.dateObj.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }) });
         lastMonth = month;
       }
     }
   });
 
   monthLabels.innerHTML = '';
-  monthLabels.style.gridTemplateColumns = `repeat(${weeks.length}, 1fr)`;
+  monthLabels.style.gridTemplateColumns = `repeat(${weeks.length}, 14px)`;
   for (let col = 0; col < weeks.length; col++) {
     const monthEntry = months.find(m => m.colIdx === col);
     monthLabels.innerHTML += `<span class="month-label">${monthEntry ? monthEntry.label : ''}</span>`;
@@ -1192,6 +1201,9 @@ function openSettings() {
   renderReminderSettings();
   
   settingsModal.classList.remove('hidden');
+  if (settingsBody) {
+    settingsBody.scrollTop = 0;
+  }
 }
 
 // Close settings modal
@@ -1381,8 +1393,24 @@ function showToast(message, type = 'success') {
 
 // Helper: Format date
 function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (typeof dateStr === 'string') {
+    const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (match) {
+      const utcDate = new Date(`${dateStr}T00:00:00.000Z`);
+      return utcDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC'
+      });
+    }
+  }
+
+  const fallbackDate = new Date(dateStr);
+  if (Number.isNaN(fallbackDate.getTime())) {
+    return '';
+  }
+
+  return fallbackDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function toRgba(color, alpha) {

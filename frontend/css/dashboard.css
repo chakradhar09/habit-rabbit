@@ -1551,6 +1551,19 @@ body.ai-drawer-open .ai-coach-fab {
   display: inline-block;
 }
 
+.legend-color.none {
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+}
+
+.legend-color.done {
+  background: var(--accent);
+}
+
+.legend-color.missed {
+  background: rgba(232, 112, 112, 0.40);
+}
+
 .btn {
   padding: 9px 14px;
   border-radius: var(--r);
@@ -1589,6 +1602,7 @@ body.ai-drawer-open .ai-coach-fab {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .modal-backdrop {
@@ -1630,6 +1644,10 @@ body.ai-drawer-open .ai-coach-fab {
 
 .settings-modal-content {
   width: min(680px, 94vw);
+  max-height: min(820px, calc(100dvh - 36px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .modal-close-btn {
@@ -1645,6 +1663,25 @@ body.ai-drawer-open .ai-coach-fab {
 .settings-body {
   display: grid;
   gap: 20px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.settings-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.settings-body::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+}
+
+.settings-body::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .settings-section-title {
