@@ -5,7 +5,8 @@ const {
   getTaskHeatmap,
   getStats,
   getWeeklyPlan,
-  saveWeeklyPlan
+  saveWeeklyPlan,
+  streamWeeklyPlan
 } = require('../controllers/analyticsController');
 const { getAIInsights } = require('../controllers/aiInsightsController');
 const authMiddleware = require('../middleware/authMiddleware');
@@ -23,6 +24,7 @@ router.use(authMiddleware);
 router.get('/progress', getDailyProgress);
 router.get('/heatmap/:taskId', validateObjectIdParam('taskId'), getTaskHeatmap);
 router.get('/stats', getStats);
+router.get('/weekly-plan/stream', streamWeeklyPlan);
 router.get('/weekly-plan', getWeeklyPlan);
 router.put('/weekly-plan', validateWeeklyPlanPayload, saveWeeklyPlan);
 
