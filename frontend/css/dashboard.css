@@ -1,30 +1,30 @@
 /* Habit Rabbit Dashboard - Scratch-aligned UI */
 
 :root {
-  --bg: #FFFDF7;
-  --bg2: #FFFDF7;
-  --surface: #FFFFFF;
-  --surface-2: #FFFFFF;
-  --surface-3: #FFF8E1;
+  --bg: #0E1512;
+  --bg2: #111A16;
+  --surface: #1A2420;
+  --surface-2: #1F2B27;
+  --surface-3: #26342F;
 
-  --border: #F1F1EF;
-  --border-soft: #F1F1EF;
-  --border-mid: #ECEBE6;
+  --border: #2A3D32;
+  --border-soft: rgba(255, 255, 255, 0.09);
+  --border-mid: #31463B;
 
-  --accent: #F4C95D;
-  --accent-dim: #FFF4CC;
-  --accent-glow: rgba(244, 201, 93, 0.24);
-  --accent-bright: #E8BE52;
+  --accent: #7FD4A2;
+  --accent-dim: rgba(127, 212, 162, 0.14);
+  --accent-glow: rgba(127, 212, 162, 0.26);
+  --accent-bright: #A3E4BE;
 
-  --amber: #D8A73D;
-  --amber-dim: rgba(244, 201, 93, 0.22);
-  --red: #D26666;
-  --red-dim: rgba(210, 102, 102, 0.12);
+  --amber: #E8C07A;
+  --amber-dim: rgba(232, 192, 122, 0.20);
+  --red: #E87070;
+  --red-dim: rgba(232, 112, 112, 0.16);
 
-  --t1: #1F1F1F;
-  --t2: #6B7280;
-  --t3: #8B93A1;
-  --t4: #B4BAC5;
+  --t1: #E8F0EB;
+  --t2: #8BA597;
+  --t3: #4A6355;
+  --t4: #2A3D32;
 
   --font-d: 'Inter', 'Roboto', system-ui, sans-serif;
   --font-b: 'Inter', 'Roboto', system-ui, sans-serif;
@@ -36,19 +36,19 @@
   --r-xl: 18px;
 
   --header-h: 64px;
-  --header-bg: rgba(255, 253, 247, 0.94);
-  --accent-contrast: #1F1F1F;
-  --scroll-thumb: rgba(31, 31, 31, 0.16);
+  --header-bg: rgba(14, 21, 18, 0.90);
+  --accent-contrast: #0E1512;
+  --scroll-thumb: rgba(232, 240, 235, 0.20);
 
-  --brand: #1F1F1F;
-  --text-primary: #1F1F1F;
-  --text-secondary: #6B7280;
-  --text-muted: #8B93A1;
-  --bg-page: #FFFDF7;
-  --bg-card: #FFFFFF;
-  --bg-input: #FFFFFF;
-  --border-light: #F1F1EF;
-  --border-color: #F1F1EF;
+  --brand: #E8F0EB;
+  --text-primary: #E8F0EB;
+  --text-secondary: #8BA597;
+  --text-muted: #4A6355;
+  --bg-page: #0E1512;
+  --bg-card: #1A2420;
+  --bg-input: #1F2B27;
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-color: #2A3D32;
 }
 
 *, *::before, *::after {
@@ -147,7 +147,17 @@ body::after {
 .header-logo {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.header-logo .brand-mark {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  background: var(--brand);
+  -webkit-mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
+  mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
   flex-shrink: 0;
 }
 
@@ -781,8 +791,12 @@ body::after {
 }
 
 .ai-coach-fab-icon {
-  font-size: 18px;
-  line-height: 1;
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  background: currentColor;
+  -webkit-mask: url('../assets/ai-rabbit-coach.svg') center / contain no-repeat;
+  mask: url('../assets/ai-rabbit-coach.svg') center / contain no-repeat;
 }
 
 body.ai-drawer-open {
@@ -930,8 +944,16 @@ body.ai-drawer-open .ai-coach-fab {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
   flex-shrink: 0;
+}
+
+.ai-icon-mark {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  background: var(--accent);
+  -webkit-mask: url('../assets/ai-rabbit-coach.svg') center / contain no-repeat;
+  mask: url('../assets/ai-rabbit-coach.svg') center / contain no-repeat;
 }
 
 .ai-title {
@@ -1302,6 +1324,36 @@ body.ai-drawer-open .ai-coach-fab {
   font-size: 12px;
 }
 
+.weekly-live-status {
+  color: var(--t3);
+  font-size: 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-2);
+  padding: 3px 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--font-m);
+}
+
+.weekly-live-status.is-live {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.weekly-live-status.is-syncing {
+  color: var(--amber);
+  border-color: var(--amber);
+  background: var(--amber-dim);
+}
+
+.weekly-live-status.is-offline {
+  color: var(--red);
+  border-color: var(--red);
+  background: var(--red-dim);
+}
+
 .weekly-recommendations {
   border: 1px dashed var(--border);
   border-radius: var(--r-sm);
@@ -1314,44 +1366,6 @@ body.ai-drawer-open .ai-coach-fab {
 .weekly-recommendation-item {
   color: var(--t2);
   font-size: 12px;
-}
-
-.onboarding-modal-content {
-  width: min(620px, 94vw);
-}
-
-.starter-pack-list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 10px 0 14px;
-}
-
-.starter-pack-item {
-  border: 1px solid var(--border-soft);
-  border-radius: var(--r-sm);
-  padding: 10px;
-  background: var(--surface-2);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.starter-pack-item.active {
-  border-color: var(--accent);
-  background: var(--accent-dim);
-}
-
-.starter-pack-title {
-  color: var(--t1);
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.starter-pack-preview {
-  color: var(--t2);
-  font-size: 11px;
-  line-height: 1.45;
 }
 
 .reminder-item {
@@ -1551,6 +1565,19 @@ body.ai-drawer-open .ai-coach-fab {
   display: inline-block;
 }
 
+.legend-color.none {
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+}
+
+.legend-color.done {
+  background: var(--accent);
+}
+
+.legend-color.missed {
+  background: rgba(232, 112, 112, 0.40);
+}
+
 .btn {
   padding: 9px 14px;
   border-radius: var(--r);
@@ -1589,6 +1616,7 @@ body.ai-drawer-open .ai-coach-fab {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .modal-backdrop {
@@ -1630,6 +1658,10 @@ body.ai-drawer-open .ai-coach-fab {
 
 .settings-modal-content {
   width: min(680px, 94vw);
+  max-height: min(820px, calc(100dvh - 36px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .modal-close-btn {
@@ -1645,6 +1677,25 @@ body.ai-drawer-open .ai-coach-fab {
 .settings-body {
   display: grid;
   gap: 20px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.settings-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.settings-body::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+}
+
+.settings-body::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .settings-section-title {
@@ -1873,10 +1924,6 @@ body.ai-drawer-open .ai-coach-fab {
   }
 
   .weekly-plan-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .starter-pack-list {
     grid-template-columns: 1fr;
   }
 

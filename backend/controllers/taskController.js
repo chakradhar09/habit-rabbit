@@ -2,6 +2,10 @@ const Task = require('../models/Task');
 const TaskCompletion = require('../models/TaskCompletion');
 const User = require('../models/User');
 const logger = require('../utils/logger');
+const {
+  getWeekStartDateISO,
+  emitWeeklyPlanUpdate
+} = require('../utils/weeklyPlanRealtime');
 
 const STARTER_PACKS = [
   {
@@ -33,6 +37,13 @@ const getDateOffset = (days = 0) => {
 };
 
 const isTaskPaused = (task, dateStr) => Boolean(task.pausedUntil && task.pausedUntil >= dateStr);
+
+const notifyWeeklyPlanChange = (userId, reason, dateValue) => {
+  emitWeeklyPlanUpdate(String(userId), {
+    weekStartDate: getWeekStartDateISO(dateValue),
+    reason
+  });
+};
 
 // @desc    Create new task
 // @route   POST /api/tasks
@@ -66,6 +77,8 @@ const createTask = async (req, res) => {
       taskId: String(task._id),
       title: task.title
     });
+
+    notifyWeeklyPlanChange(req.user._id, 'tasks-updated');
 
     res.status(201).json({
       success: true,
@@ -214,6 +227,8 @@ const toggleCompletion = async (req, res) => {
       });
     }
 
+    notifyWeeklyPlanChange(userId, 'tasks-updated', today);
+
     res.json({
       success: true,
       message: completion.completed ? 'Task marked as completed' : 'Task marked as incomplete',
@@ -277,6 +292,8 @@ const deleteTask = async (req, res) => {
         taskTitle: task.title
       });
     }
+
+    notifyWeeklyPlanChange(userId, 'tasks-updated');
 
     res.json({
       success: true,
@@ -545,6 +562,8 @@ const setupOnboarding = async (req, res) => {
       createdTaskCount: createdTasks.length
     });
 
+    notifyWeeklyPlanChange(userId, 'tasks-updated');
+
     res.status(201).json({
       success: true,
       message: 'Starter habits created successfully.',
@@ -649,6 +668,8 @@ const applyAISkips = async (req, res) => {
       itemCount: skips.length
     });
 
+    notifyWeeklyPlanChange(userId, 'tasks-updated');
+
     res.json({
       success: true,
       message: 'AI skip suggestions applied successfully.'
@@ -708,6 +729,8 @@ const applyAIFallbacks = async (req, res) => {
       userId: String(userId),
       itemCount: fallbacks.length
     });
+
+    notifyWeeklyPlanChange(userId, 'tasks-updated');
 
     res.json({
       success: true,

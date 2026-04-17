@@ -228,35 +228,6 @@ const API = (() => {
     },
 
     /**
-     * Get starter packs for first-run onboarding
-     */
-    getStarterPacks: async () => {
-      const response = await request('/tasks/starter-packs');
-      return response;
-    },
-
-    /**
-     * Create starter habits for onboarding
-     */
-    setupOnboarding: async (payload) => {
-      const response = await request('/tasks/onboarding/setup', {
-        method: 'POST',
-        body: payload
-      });
-      return response;
-    },
-
-    /**
-     * Mark onboarding flow completed
-     */
-    completeOnboarding: async () => {
-      const response = await request('/tasks/onboarding/complete', {
-        method: 'PUT'
-      });
-      return response;
-    },
-
-    /**
      * Apply AI skip suggestions
      */
     applySkips: async (skips) => {
@@ -355,6 +326,20 @@ const API = (() => {
         body: payload
       });
       return response;
+    },
+
+    /**
+     * Open realtime stream for weekly plan updates
+     * @returns {EventSource}
+     */
+    openWeeklyPlanStream: () => {
+      const token = getToken();
+      if (!token) {
+        throw new Error('No auth token available for weekly stream.');
+      }
+
+      const streamUrl = `${CONFIG.BASE_URL}/analytics/weekly-plan/stream?token=${encodeURIComponent(token)}`;
+      return new EventSource(streamUrl);
     }
   };
 

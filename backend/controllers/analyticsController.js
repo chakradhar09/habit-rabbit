@@ -2,6 +2,10 @@ const Task = require('../models/Task');
 const TaskCompletion = require('../models/TaskCompletion');
 const WeeklyPlan = require('../models/WeeklyPlan');
 const logger = require('../utils/logger');
+const {
+  registerWeeklyPlanStreamClient,
+  emitWeeklyPlanUpdate
+} = require('../utils/weeklyPlanRealtime');
 
 const toDateStr = (value = new Date()) => value.toISOString().split('T')[0];
 
@@ -18,6 +22,28 @@ const getWeekEndDate = (weekStartDate) => {
   const start = new Date(`${weekStartDate}T00:00:00.000Z`);
   start.setUTCDate(start.getUTCDate() + 6);
   return toDateStr(start);
+};
+
+// @desc    Stream weekly plan update events via SSE
+// @route   GET /api/analytics/weekly-plan/stream
+// @access  Private
+const streamWeeklyPlan = (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+
+  if (typeof res.flushHeaders === 'function') {
+    res.flushHeaders();
+  }
+
+  res.write(': connected\n\n');
+
+  const disconnect = registerWeeklyPlanStreamClient(req.user._id, res);
+
+  req.on('close', () => {
+    disconnect();
+  });
 };
 
 // @desc    Get daily progress over time
@@ -378,6 +404,11 @@ const saveWeeklyPlan = async (req, res) => {
       prioritiesCount: priorities.length
     });
 
+    emitWeeklyPlanUpdate(userId, {
+      weekStartDate: normalizedWeekStart,
+      reason: 'plan-saved'
+    });
+
     res.json({
       success: true,
       message: 'Weekly plan saved successfully.',
@@ -404,5 +435,6 @@ module.exports = {
   getTaskHeatmap,
   getStats,
   getWeeklyPlan,
-  saveWeeklyPlan
+  saveWeeklyPlan,
+  streamWeeklyPlan
 };

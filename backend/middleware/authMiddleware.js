@@ -12,17 +12,26 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // Get token from header
+    // Get token from header (default)
     const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const tokenFromHeader = authHeader && authHeader.startsWith('Bearer ')
+      ? authHeader.split(' ')[1]
+      : null;
+
+    // EventSource cannot send custom auth headers, so allow query token for stream endpoint only.
+    const isWeeklyStreamRequest = req.method === 'GET' && req.path === '/weekly-plan/stream';
+    const tokenFromQuery = isWeeklyStreamRequest && typeof req.query.token === 'string'
+      ? req.query.token.trim()
+      : null;
+
+    const token = tokenFromHeader || tokenFromQuery;
+
+    if (!token) {
       return res.status(401).json({ 
         success: false, 
         message: 'Access denied. No token provided.' 
       });
     }
-
-    const token = authHeader.split(' ')[1];
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET, {

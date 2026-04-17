@@ -1,28 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Track your daily habits and view progress analytics on Habit Rabbit.">
-  <meta name="theme-color" content="#FFFDF7">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <title>Habit Rabbit - Dashboard</title>
-  <link rel="stylesheet" href="css/dashboard.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <div id="loading-screen" class="loading-screen">
-    <div class="loader">
-      <span class="loader-icon">🐇</span>
-      <p>Loading your tasks...</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Track your daily habits and view progress analytics on Habit Rabbit."
+    />
+    <meta name="theme-color" content="#0E1512" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <title>Habit Rabbit - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div id="loading-screen" class="loading-screen">
+      <div class="loader">
+        <span class="loader-icon">🐇</span>
+        <p>Loading your habits...</p>
+      </div>
     </div>
-  </div>
 
+<<<<<<< HEAD
   <div id="app" class="app hidden">
     <header class="header">
       <div class="header-logo">
@@ -59,203 +66,416 @@
       <div class="page-title">
         <h2>Today's Tasks</h2>
       </div>
+=======
+    <div id="app" class="app hidden">
+      <header class="header">
+        <div class="header-logo">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-name">Habit Rabbit</span>
+        </div>
 
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon green">✓</div>
-          <div class="stat-info">
-            <div class="stat-val" id="stat-today">0</div>
-            <div class="stat-label">Today's Done</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon amber">🔥</div>
-          <div class="stat-info">
-            <div class="stat-val" id="stat-streak">0</div>
-            <div class="stat-label">Day Streak</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">★</div>
-          <div class="stat-info">
-            <div class="stat-val" id="stat-total">0</div>
-            <div class="stat-label">Total Done</div>
-          </div>
-        </div>
-      </div>
+        <div class="header-date" id="header-date"></div>
 
-      <div class="content-grid">
-        <div id="habits-card" class="card habits-card">
+        <div class="header-spacer"></div>
+>>>>>>> 9713d1cb99ac786c10922fb82eaea966c64d12f0
+
+        <div class="header-stats">
+          <div class="hstat">
+            <span class="hstat-icon">✓</span>
+            <span class="hstat-val" id="header-today-count">0</span>
+            <span class="hstat-label">today</span>
+          </div>
+          <div class="hstat accent">
+            <span class="hstat-icon">🔥</span>
+            <span class="hstat-val" id="header-streak-count">0</span>
+            <span class="hstat-label">day streak</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button id="toggle-analytics-btn" class="hbtn" type="button">
+            <span class="btn-icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </span>
+            <span class="btn-text">Analytics</span>
+          </button>
+          <button id="settings-btn" class="hbtn" type="button">
+            <span class="btn-icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                />
+              </svg>
+            </span>
+            <span class="btn-text">Settings</span>
+          </button>
+          <button id="logout-btn" class="hbtn" type="button">
+            <span class="btn-icon">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </span>
+            <span class="btn-text">Sign Out</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="page-title">
+          <h1 id="dashboard-greeting">Good morning</h1>
+          <p>Here's your habit snapshot for today.</p>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon green">✓</div>
+            <div class="stat-info">
+              <div class="stat-val" id="stat-today">0</div>
+              <div class="stat-label">Today's Done</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">🔥</div>
+            <div class="stat-info">
+              <div class="stat-val" id="stat-streak">0</div>
+              <div class="stat-label">Day Streak</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">★</div>
+            <div class="stat-info">
+              <div class="stat-val" id="stat-total">0</div>
+              <div class="stat-label">Total Done</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div id="habits-card" class="card habits-card">
+            <div class="card-head">
+              <span class="card-title">Today's Habits</span>
+              <span class="card-badge" id="habit-badge">0 / 0</span>
+            </div>
+            <div class="card-body">
+              <form id="add-task-form" class="add-wrap">
+                <div class="add-input-wrap">
+                  <input
+                    class="add-input"
+                    type="text"
+                    id="new-task-input"
+                    placeholder="Add a new habit..."
+                    maxlength="100"
+                    autocomplete="off"
+                  />
+                  <span id="char-counter" class="char-counter">0/100</span>
+                </div>
+                <button class="add-btn" type="submit">Add</button>
+              </form>
+
+              <div class="progress-section">
+                <div class="progress-meta">
+                  <span class="progress-label">Today's Progress</span>
+                  <span class="progress-count" id="progress-text">0 / 0</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div
+                    class="progress-bar-fill"
+                    id="progress-fill"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <div id="task-skeleton" class="habits-list">
+                <div class="habit-item skeleton-card">
+                  <div class="habit-check skeleton-box"></div>
+                  <div class="task-content">
+                    <span class="skeleton-line"></span>
+                  </div>
+                </div>
+                <div class="habit-item skeleton-card">
+                  <div class="habit-check skeleton-box"></div>
+                  <div class="task-content">
+                    <span class="skeleton-line"></span>
+                  </div>
+                </div>
+                <div class="habit-item skeleton-card">
+                  <div class="habit-check skeleton-box"></div>
+                  <div class="task-content">
+                    <span class="skeleton-line short"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="task-list" class="habits-list hidden"></div>
+
+              <div id="empty-state" class="empty-state hidden">
+                <div class="icon">🌱</div>
+                <p>No habits yet. Add your first one above.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section id="analytics-section" class="analytics-section hidden">
+          <div class="analytics-inner">
+            <div class="analytics-head">
+              <span class="analytics-title">Analytics</span>
+              <div class="range-tabs">
+                <button
+                  class="range-tab analytics-tab active"
+                  data-range="7d"
+                  type="button"
+                >
+                  7 Days
+                </button>
+                <button
+                  class="range-tab analytics-tab"
+                  data-range="30d"
+                  type="button"
+                >
+                  30 Days
+                </button>
+                <button
+                  class="range-tab analytics-tab"
+                  data-range="6m"
+                  type="button"
+                >
+                  6 Months
+                </button>
+              </div>
+            </div>
+            <div class="analytics-body">
+              <div class="chart-wrap">
+                <canvas id="progress-chart"></canvas>
+                <div id="chart-empty-state" class="chart-empty-state hidden">
+                  <span class="chart-empty-icon">📈</span>
+                  <p>
+                    No progress data yet. Complete some habits to see your
+                    trends.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="card-title"
+                style="
+                  margin-bottom: 10px;
+                  font-family: var(--font-d);
+                  font-size: 13px;
+                "
+              >
+                Completion Heatmap - Last 3 Months
+              </div>
+              <div id="heatmap-task-selector" class="heatmap-selector"></div>
+              <div id="heatmap-container" class="heatmap-container hidden">
+                <div class="heatmap-calendar">
+                  <div class="heatmap-weekday-labels">
+                    <span></span>
+                    <span>Mon</span>
+                    <span></span>
+                    <span>Wed</span>
+                    <span></span>
+                    <span>Fri</span>
+                    <span></span>
+                  </div>
+                  <div class="heatmap-scroll-area">
+                    <div
+                      id="heatmap-month-labels"
+                      class="heatmap-month-labels"
+                    ></div>
+                    <div id="heatmap-grid" class="heatmap-grid"></div>
+                  </div>
+                </div>
+                <div class="heatmap-legend">
+                  <span class="legend-label">Not logged</span>
+                  <span class="legend-color none" aria-hidden="true"></span>
+                  <span class="legend-label">Done</span>
+                  <span class="legend-color done" aria-hidden="true"></span>
+                  <span class="legend-label">Missed</span>
+                  <span class="legend-color missed" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="weekly-plan-section" class="weekly-plan-section card">
           <div class="card-head">
-            <span class="card-title">Today's Tasks</span>
-            <span class="card-badge" id="habit-badge">0 / 0</span>
+            <span class="card-title">Weekly Plan and Review</span>
+            <span class="card-badge" id="weekly-plan-week-label"
+              >This Week</span
+            >
           </div>
-          <div class="card-body">
-            <form id="add-task-form" class="add-wrap">
-              <div class="add-input-wrap">
-                <input class="add-input" type="text" id="new-task-input" placeholder="Add a new task..." maxlength="100" autocomplete="off">
-                <span id="char-counter" class="char-counter">0/100</span>
+          <div class="card-body weekly-plan-body">
+            <div class="weekly-plan-summary">
+              <div class="weekly-summary-card">
+                <span class="weekly-summary-label">Completion Rate</span>
+                <span class="weekly-summary-value" id="weekly-summary-rate"
+                  >0%</span
+                >
               </div>
-              <button class="add-btn" type="submit">Add</button>
-            </form>
-
-            <div class="progress-section">
-              <div class="progress-meta">
-                <span class="progress-label">Today's Progress</span>
-                <span class="progress-count" id="progress-text">0 / 0</span>
+              <div class="weekly-summary-card">
+                <span class="weekly-summary-label">Completions</span>
+                <span class="weekly-summary-value" id="weekly-summary-count"
+                  >0</span
+                >
               </div>
-              <div class="progress-bar-track">
-                <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
-              </div>
-            </div>
-
-            <div id="task-skeleton" class="habits-list">
-              <div class="habit-item skeleton-card">
-                <span class="skeleton-line"></span>
-              </div>
-              <div class="habit-item skeleton-card">
-                <span class="skeleton-line"></span>
-              </div>
-              <div class="habit-item skeleton-card">
-                <span class="skeleton-line short"></span>
+              <div class="weekly-summary-card">
+                <span class="weekly-summary-label">Active Habits</span>
+                <span class="weekly-summary-value" id="weekly-summary-active"
+                  >0</span
+                >
               </div>
             </div>
 
-            <div id="task-list" class="habits-list hidden"></div>
+            <div class="weekly-plan-grid">
+              <label class="weekly-field">
+                <span>Focus for the Week</span>
+                <input
+                  id="weekly-focus-input"
+                  type="text"
+                  maxlength="240"
+                  placeholder="What is your primary focus this week?"
+                />
+              </label>
 
-            <div id="empty-state" class="empty-state hidden">
-              <div class="icon">🌱</div>
-              <p>No tasks yet. Add your first one above.</p>
+              <div class="weekly-field">
+                <span>Priority Habits</span>
+                <div
+                  id="weekly-priority-list"
+                  class="weekly-priority-list"
+                ></div>
+              </div>
+
+              <label class="weekly-field">
+                <span>Planning Notes</span>
+                <textarea
+                  id="weekly-notes-input"
+                  rows="3"
+                  maxlength="800"
+                  placeholder="Add quick planning notes..."
+                ></textarea>
+              </label>
+
+              <label class="weekly-field">
+                <span>Reflection</span>
+                <textarea
+                  id="weekly-reflection-input"
+                  rows="3"
+                  maxlength="800"
+                  placeholder="Capture what worked and what to improve..."
+                ></textarea>
+              </label>
             </div>
+
+            <div class="weekly-plan-footer">
+              <button id="save-weekly-plan-btn" class="add-btn" type="button">
+                Save Weekly Plan
+              </button>
+              <span
+                id="weekly-live-status"
+                class="weekly-live-status is-offline"
+                aria-live="polite"
+                >Offline</span
+              >
+              <span id="weekly-plan-status" class="weekly-plan-status"
+                >Not saved yet</span
+              >
+            </div>
+
+            <div
+              id="weekly-recommendations"
+              class="weekly-recommendations hidden"
+            ></div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
 
-      <section id="analytics-section" class="analytics-section hidden">
-        <div class="analytics-inner">
-          <div class="analytics-head">
-            <span class="analytics-title">Analytics</span>
-            <div class="range-tabs">
-              <button class="range-tab analytics-tab active" data-range="7d" type="button">7 Days</button>
-              <button class="range-tab analytics-tab" data-range="30d" type="button">30 Days</button>
-              <button class="range-tab analytics-tab" data-range="6m" type="button">6 Months</button>
-            </div>
-          </div>
-          <div class="analytics-body">
-            <div class="chart-wrap">
-              <canvas id="progress-chart"></canvas>
-              <div id="chart-empty-state" class="chart-empty-state hidden">
-                <span class="chart-empty-icon">📈</span>
-                <p>No progress data yet. Complete some tasks to see your trends.</p>
-              </div>
-            </div>
+      <div id="toast-container" class="toast-container"></div>
+    </div>
 
-            <div class="card-title" style="margin-bottom:10px; font-family:var(--font-d); font-size:13px;">Completion Heatmap - Last 3 Months</div>
-            <div id="heatmap-task-selector" class="heatmap-selector"></div>
-            <div id="heatmap-container" class="heatmap-container hidden">
-              <div class="heatmap-calendar">
-                <div class="heatmap-weekday-labels">
-                  <span></span>
-                  <span>Mon</span>
-                  <span></span>
-                  <span>Wed</span>
-                  <span></span>
-                  <span>Fri</span>
-                  <span></span>
-                </div>
-                <div class="heatmap-scroll-area">
-                  <div id="heatmap-month-labels" class="heatmap-month-labels"></div>
-                  <div id="heatmap-grid" class="heatmap-grid"></div>
-                </div>
-              </div>
-              <div class="heatmap-legend">
-                <span class="legend-label">Less</span>
-                <span class="legend-color" style="background: var(--surface-2);"></span>
-                <span class="legend-color" style="background: rgba(244, 201, 93, 0.28);"></span>
-                <span class="legend-color" style="background: rgba(244, 201, 93, 0.58);"></span>
-                <span class="legend-color" style="background: var(--accent);"></span>
-                <span class="legend-color missed" style="background: rgba(232, 112, 112, 0.40);"></span>
-                <span class="legend-label">More</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="weekly-plan-section" class="weekly-plan-section card">
-        <div class="card-head">
-          <span class="card-title">Weekly Plan and Review</span>
-          <span class="card-badge" id="weekly-plan-week-label">This Week</span>
-        </div>
-        <div class="card-body weekly-plan-body">
-          <div class="weekly-plan-summary">
-            <div class="weekly-summary-card">
-              <span class="weekly-summary-label">Completion Rate</span>
-              <span class="weekly-summary-value" id="weekly-summary-rate">0%</span>
-            </div>
-            <div class="weekly-summary-card">
-              <span class="weekly-summary-label">Completions</span>
-              <span class="weekly-summary-value" id="weekly-summary-count">0</span>
-            </div>
-            <div class="weekly-summary-card">
-              <span class="weekly-summary-label">Active Tasks</span>
-              <span class="weekly-summary-value" id="weekly-summary-active">0</span>
-            </div>
-          </div>
-
-          <div class="weekly-plan-grid">
-            <label class="weekly-field">
-              <span>Focus for the Week</span>
-              <input id="weekly-focus-input" type="text" maxlength="240" placeholder="What is your primary focus this week?">
-            </label>
-
-            <div class="weekly-field">
-              <span>Priority Tasks</span>
-              <div id="weekly-priority-list" class="weekly-priority-list"></div>
-            </div>
-
-            <label class="weekly-field">
-              <span>Planning Notes</span>
-              <textarea id="weekly-notes-input" rows="3" maxlength="800" placeholder="Add quick planning notes..."></textarea>
-            </label>
-
-            <label class="weekly-field">
-              <span>Reflection</span>
-              <textarea id="weekly-reflection-input" rows="3" maxlength="800" placeholder="Capture what worked and what to improve..."></textarea>
-            </label>
-          </div>
-
-          <div class="weekly-plan-footer">
-            <button id="save-weekly-plan-btn" class="add-btn" type="button">Save Weekly Plan</button>
-            <span id="weekly-plan-status" class="weekly-plan-status">Not saved yet</span>
-          </div>
-
-          <div id="weekly-recommendations" class="weekly-recommendations hidden"></div>
-        </div>
-      </section>
-    </main>
-
-    <button id="ai-coach-fab" class="ai-coach-fab" type="button" aria-label="Open AI Habit Coach" aria-controls="ai-coach-drawer" aria-expanded="false">
-      <span class="ai-coach-fab-icon">🤖</span>
+    <button
+      id="ai-coach-fab"
+      class="ai-coach-fab"
+      type="button"
+      aria-label="Open AI Habit Coach"
+      aria-expanded="false"
+    >
+      <span class="ai-coach-fab-icon" aria-hidden="true"></span>
     </button>
 
-    <div id="ai-coach-backdrop" class="ai-coach-backdrop" aria-hidden="true"></div>
+    <div
+      id="ai-coach-backdrop"
+      class="ai-coach-backdrop"
+      aria-hidden="true"
+    ></div>
 
-    <aside id="ai-coach-drawer" class="ai-coach-drawer" role="dialog" aria-modal="true" aria-labelledby="ai-coach-title" aria-hidden="true">
+    <aside id="ai-coach-drawer" class="ai-coach-drawer" aria-hidden="true">
       <section id="ai-insights-section" class="card ai-coach-card">
         <div class="card-body ai-coach-body">
           <div class="ai-card-header">
-            <div class="ai-icon">🤖</div>
-            <span id="ai-coach-title" class="ai-title">AI Habit Coach</span>
-            <button id="toggle-ai-btn" class="ai-toggle ai-close-btn" type="button" aria-label="Close AI coach">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <div class="ai-icon">
+              <span class="ai-icon-mark" aria-hidden="true"></span>
+            </div>
+            <span class="ai-title">AI Habit Coach</span>
+            <button
+              id="toggle-ai-btn"
+              class="ai-toggle ai-close-btn"
+              type="button"
+              aria-label="Collapse AI coach"
+            >
+              <svg
+                width="12"
+                height="12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </button>
           </div>
 
-          <p class="ai-helper-text">Get personalized priorities from your completion patterns and adapt your routine for busy days.</p>
+          <p class="ai-helper-text">
+            Get personalized priorities from your completion patterns and adapt
+            your routine for busy days.
+          </p>
 
           <div class="ai-body open" id="ai-insights-content">
-            <textarea class="ai-context" id="ai-context-input" rows="3" placeholder="Optional: describe your current situation..."></textarea>
+            <textarea
+              class="ai-context"
+              id="ai-context-input"
+              rows="3"
+              placeholder="Optional: describe your current situation..."
+            ></textarea>
             <button id="generate-insights-btn" class="ai-btn" type="button">
               <span class="btn-icon">⚡</span>
               <span class="btn-text">Get AI Insights</span>
@@ -263,36 +483,69 @@
             </button>
 
             <div id="ai-insights-empty" class="ai-insights-empty">
-              <p>Click "Get AI Insights" to receive personalized suggestions based on your habit patterns.</p>
+              <p>
+                Click "Get AI Insights" to receive personalized suggestions
+                based on your habit patterns.
+              </p>
             </div>
 
             <div id="ai-insights-results" class="ai-insights-results hidden">
               <div class="ai-insight-card ai-summary">
-                <h4 class="ai-card-title"><span class="ai-card-icon">📊</span> Overview</h4>
+                <h4 class="ai-card-title">
+                  <span class="ai-card-icon">📊</span> Overview
+                </h4>
                 <p id="ai-summary-text" class="ai-summary-text"></p>
               </div>
 
               <div class="ai-insight-card ai-priorities">
-                <h4 class="ai-card-title"><span class="ai-card-icon">🎯</span> Suggested Priorities</h4>
-                <p class="ai-card-description">Drag tasks to reorder, or click Apply to auto-sort by AI priority.</p>
+                <h4 class="ai-card-title">
+                  <span class="ai-card-icon">🎯</span> Suggested Priorities
+                </h4>
+                <p class="ai-card-description">
+                  Drag tasks to reorder, or click Apply to auto-sort by AI
+                  priority.
+                </p>
                 <div id="ai-priority-list" class="ai-priority-list"></div>
-                <button id="apply-priorities-btn" class="ai-btn" type="button">Apply AI Priorities</button>
+                <button id="apply-priorities-btn" class="ai-btn" type="button">
+                  Apply AI Priorities
+                </button>
               </div>
 
               <div id="ai-skip-section" class="ai-insight-card ai-skip hidden">
-                <h4 class="ai-card-title"><span class="ai-card-icon">⏸</span> Can Skip During Busy Times</h4>
+                <h4 class="ai-card-title">
+                  <span class="ai-card-icon">⏸</span> Can Skip During Busy Times
+                </h4>
                 <div id="ai-skip-list" class="ai-suggestion-list"></div>
-                <button id="apply-skips-btn" class="ai-btn ai-action-btn" type="button">Pause Suggested Tasks</button>
+                <button
+                  id="apply-skips-btn"
+                  class="ai-btn ai-action-btn"
+                  type="button"
+                >
+                  Pause Suggested Habits
+                </button>
               </div>
 
-              <div id="ai-replace-section" class="ai-insight-card ai-replace hidden">
-                <h4 class="ai-card-title"><span class="ai-card-icon">🔄</span> Consider Replacing</h4>
+              <div
+                id="ai-replace-section"
+                class="ai-insight-card ai-replace hidden"
+              >
+                <h4 class="ai-card-title">
+                  <span class="ai-card-icon">🔄</span> Consider Replacing
+                </h4>
                 <div id="ai-replace-list" class="ai-suggestion-list"></div>
-                <button id="apply-fallbacks-btn" class="ai-btn ai-action-btn" type="button">Apply Fallback Conversions</button>
+                <button
+                  id="apply-fallbacks-btn"
+                  class="ai-btn ai-action-btn"
+                  type="button"
+                >
+                  Apply Fallback Conversions
+                </button>
               </div>
 
               <div id="ai-tips-section" class="ai-insight-card ai-tips hidden">
-                <h4 class="ai-card-title"><span class="ai-card-icon">💡</span> Tips</h4>
+                <h4 class="ai-card-title">
+                  <span class="ai-card-icon">💡</span> Tips
+                </h4>
                 <ul id="ai-tips-list" class="ai-tips-list"></ul>
               </div>
             </div>
@@ -301,90 +554,96 @@
       </section>
     </aside>
 
-    <div id="toast-container" class="toast-container"></div>
-  </div>
-
-  <div id="delete-modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Delete Task</h3>
-      </div>
-      <div class="modal-body">
-        <p>How would you like to delete "<span id="delete-task-title"></span>"?</p>
-      </div>
-      <div class="modal-actions">
-        <button id="delete-soft-btn" class="btn btn-secondary" type="button">Keep History</button>
-        <button id="delete-hard-btn" class="btn btn-danger" type="button">Delete All</button>
-        <button id="delete-cancel-btn" class="btn btn-ghost" type="button">Cancel</button>
+    <div id="delete-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Delete Habit</h3>
+        </div>
+        <div class="modal-body">
+          <p>
+            How would you like to delete "<span id="delete-task-title"></span>"?
+          </p>
+        </div>
+        <div class="modal-actions">
+          <button id="delete-soft-btn" class="btn btn-secondary" type="button">
+            Keep History
+          </button>
+          <button id="delete-hard-btn" class="btn btn-danger" type="button">
+            Delete All
+          </button>
+          <button id="delete-cancel-btn" class="btn btn-ghost" type="button">
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="settings-modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content settings-modal-content">
-      <div class="modal-header">
-        <h3>Settings</h3>
-        <button id="settings-close-btn" class="modal-close-btn" type="button" aria-label="Close settings">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="modal-body settings-body">
-        <div class="settings-section">
-          <h4 class="settings-section-title">Appearance</h4>
-          <div class="theme-switcher">
-            <label class="theme-option">
-              <input type="radio" name="theme" value="light" checked>
-              <div class="theme-card"><span>Light</span></div>
-            </label>
-            <label class="theme-option">
-              <input type="radio" name="theme" value="dark">
-              <div class="theme-card"><span>Dark</span></div>
-            </label>
-            <label class="theme-option">
-              <input type="radio" name="theme" value="system">
-              <div class="theme-card"><span>System</span></div>
-            </label>
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content settings-modal-content">
+        <div class="modal-header">
+          <h3>Settings</h3>
+          <button
+            id="settings-close-btn"
+            class="modal-close-btn"
+            type="button"
+            aria-label="Close settings"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body settings-body">
+          <div class="settings-section">
+            <h4 class="settings-section-title">Appearance</h4>
+            <div class="theme-switcher">
+              <label class="theme-option">
+                <input type="radio" name="theme" value="light" />
+                <div class="theme-card"><span>Light</span></div>
+              </label>
+              <label class="theme-option">
+                <input type="radio" name="theme" value="dark" checked />
+                <div class="theme-card"><span>Dark</span></div>
+              </label>
+              <label class="theme-option">
+                <input type="radio" name="theme" value="system" />
+                <div class="theme-card"><span>System</span></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h4 class="settings-section-title">Task Management</h4>
+            <p class="settings-section-description">
+              Drag and drop to reorder your habits
+            </p>
+            <div id="reorder-task-list" class="reorder-task-list"></div>
+          </div>
+
+          <div class="settings-section">
+            <h4 class="settings-section-title">Reminders</h4>
+            <p class="settings-section-description">
+              Enable reminders and choose a time for each habit.
+            </p>
+            <div id="reminder-settings-list" class="reorder-task-list"></div>
           </div>
         </div>
-
-        <div class="settings-section">
-          <h4 class="settings-section-title">Task Management</h4>
-          <p class="settings-section-description">Drag and drop to reorder your tasks</p>
-          <div id="reorder-task-list" class="reorder-task-list"></div>
-        </div>
-
-        <div class="settings-section">
-          <h4 class="settings-section-title">Reminders</h4>
-          <p class="settings-section-description">Enable reminders and choose a time for each task.</p>
-          <div id="reminder-settings-list" class="reorder-task-list"></div>
-        </div>
       </div>
     </div>
-  </div>
 
-  <div id="onboarding-modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content onboarding-modal-content">
-      <div class="modal-header">
-        <h3>Welcome to Habit Rabbit</h3>
-      </div>
-      <div class="modal-body">
-        <p>Create three starter tasks to begin your first streak.</p>
-        <div id="starter-pack-list" class="starter-pack-list"></div>
-        <label class="weekly-field" for="onboarding-custom-habits">
-          <span>Optional extra tasks (comma separated)</span>
-          <input id="onboarding-custom-habits" type="text" maxlength="300" placeholder="Example: Drink water, Read 10 pages">
-        </label>
-      </div>
-      <div class="modal-actions">
-        <button id="onboarding-continue-btn" class="btn btn-secondary" type="button">Create Starter Tasks</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/api.js"></script>
-  <script src="js/dashboard.js"></script>
-</body>
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+  </body>
 </html>

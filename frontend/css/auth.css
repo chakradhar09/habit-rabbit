@@ -93,7 +93,15 @@ body::after {
   margin-bottom: 72px;
 }
 
-.brand-logo-icon { font-size: 26px; line-height: 1; }
+.brand-logo-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  background: var(--t1);
+  -webkit-mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
+  mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
+  flex-shrink: 0;
+}
 
 .brand-logo-name {
   font-family: var(--font-d);

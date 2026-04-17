@@ -12,11 +12,11 @@ let currentRange = '7d';
 let aiInsights = null; // AI-generated insights
 let aiTaskMetrics = null; // Task metrics from AI analysis
 let habitListResizeRaf = null;
-let currentUser = null;
-let starterPacks = [];
-let selectedStarterPackId = null;
 let weeklyPlanData = null;
 let isAiDrawerOpen = false;
+let weeklyPlanEventSource = null;
+let weeklyPlanRefreshTimer = null;
+let weeklyRealtimeReconnectTimer = null;
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -38,6 +38,7 @@ const deleteModal = document.getElementById('delete-modal');
 const deleteTaskTitle = document.getElementById('delete-task-title');
 const settingsModal = document.getElementById('settings-modal');
 const settingsCloseBtn = document.getElementById('settings-close-btn');
+const settingsBody = settingsModal ? settingsModal.querySelector('.settings-body') : null;
 const reorderTaskList = document.getElementById('reorder-task-list');
 const toastContainer = document.getElementById('toast-container');
 const taskSkeleton = document.getElementById('task-skeleton');
@@ -69,10 +70,6 @@ const aiTipsList = document.getElementById('ai-tips-list');
 const applyPrioritiesBtn = document.getElementById('apply-priorities-btn');
 const applySkipsBtn = document.getElementById('apply-skips-btn');
 const applyFallbacksBtn = document.getElementById('apply-fallbacks-btn');
-const onboardingModal = document.getElementById('onboarding-modal');
-const starterPackList = document.getElementById('starter-pack-list');
-const onboardingCustomHabitsInput = document.getElementById('onboarding-custom-habits');
-const onboardingContinueBtn = document.getElementById('onboarding-continue-btn');
 const reminderSettingsList = document.getElementById('reminder-settings-list');
 const weeklyPlanWeekLabel = document.getElementById('weekly-plan-week-label');
 const weeklySummaryRate = document.getElementById('weekly-summary-rate');
@@ -85,11 +82,47 @@ const weeklyReflectionInput = document.getElementById('weekly-reflection-input')
 const saveWeeklyPlanBtn = document.getElementById('save-weekly-plan-btn');
 const weeklyPlanStatus = document.getElementById('weekly-plan-status');
 const weeklyRecommendations = document.getElementById('weekly-recommendations');
+const weeklyLiveStatus = document.getElementById('weekly-live-status');
 
 const systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 let isSystemThemeListenerBound = false;
 
-const WARM_THEME_TOKENS = {
+const DARK_THEME_TOKENS = {
+  '--bg': '#0E1512',
+  '--bg2': '#111A16',
+  '--surface': '#1A2420',
+  '--surface-2': '#1F2B27',
+  '--surface-3': '#26342F',
+  '--border': '#2A3D32',
+  '--border-soft': 'rgba(255, 255, 255, 0.09)',
+  '--border-mid': '#31463B',
+  '--accent': '#7FD4A2',
+  '--accent-dim': 'rgba(127, 212, 162, 0.14)',
+  '--accent-glow': 'rgba(127, 212, 162, 0.26)',
+  '--accent-bright': '#A3E4BE',
+  '--accent-contrast': '#0E1512',
+  '--amber': '#E8C07A',
+  '--amber-dim': 'rgba(232, 192, 122, 0.20)',
+  '--red': '#E87070',
+  '--red-dim': 'rgba(232, 112, 112, 0.16)',
+  '--t1': '#E8F0EB',
+  '--t2': '#8BA597',
+  '--t3': '#4A6355',
+  '--t4': '#2A3D32',
+  '--header-bg': 'rgba(14, 21, 18, 0.90)',
+  '--scroll-thumb': 'rgba(232, 240, 235, 0.20)',
+  '--brand': '#E8F0EB',
+  '--text-primary': '#E8F0EB',
+  '--text-secondary': '#8BA597',
+  '--text-muted': '#4A6355',
+  '--bg-page': '#0E1512',
+  '--bg-card': '#1A2420',
+  '--bg-input': '#1F2B27',
+  '--border-light': 'rgba(255, 255, 255, 0.08)',
+  '--border-color': '#2A3D32'
+};
+
+const LIGHT_THEME_TOKENS = {
   '--bg': '#FFFDF7',
   '--bg2': '#FFFDF7',
   '--surface': '#FFFFFF',
@@ -125,8 +158,8 @@ const WARM_THEME_TOKENS = {
 };
 
 const THEME_TOKENS = {
-  dark: WARM_THEME_TOKENS,
-  light: WARM_THEME_TOKENS
+  dark: DARK_THEME_TOKENS,
+  light: LIGHT_THEME_TOKENS
 };
 
 // Initialize
@@ -149,16 +182,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     // Load initial data
     await Promise.all([
-      loadCurrentUser(),
       loadTodaysTasks(),
       loadStats(),
       loadWeeklyPlan()
     ]);
-
-    if (shouldShowOnboarding()) {
-      await loadStarterPacks();
-      openOnboardingModal();
-    }
 
     // Show app
     loadingScreen.classList.add('hidden');
@@ -173,6 +200,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Setup event listeners
   setupEventListeners();
+  startWeeklyPlanRealtimeStream();
+  window.addEventListener('beforeunload', stopWeeklyPlanRealtimeStream);
 });
 
 // Event Listeners Setup
@@ -251,17 +280,6 @@ function setupEventListeners() {
   if (saveWeeklyPlanBtn) {
     saveWeeklyPlanBtn.addEventListener('click', saveWeeklyPlan);
   }
-  if (onboardingContinueBtn) {
-    onboardingContinueBtn.addEventListener('click', completeOnboardingFlow);
-  }
-  if (onboardingModal) {
-    const backdrop = onboardingModal.querySelector('.modal-backdrop');
-    if (backdrop) {
-      backdrop.addEventListener('click', (event) => {
-        event.preventDefault();
-      });
-    }
-  }
 
   document.addEventListener('keydown', handleGlobalKeydown);
 }
@@ -269,17 +287,6 @@ function setupEventListeners() {
 function handleGlobalKeydown(event) {
   if (event.key === 'Escape' && isAiDrawerOpen) {
     toggleAiSection(false);
-  }
-}
-
-async function loadCurrentUser() {
-  try {
-    const response = await API.auth.getMe();
-    if (response.success) {
-      currentUser = response.data.user;
-    }
-  } catch (error) {
-    console.error('Failed to load current user:', error);
   }
 }
 
@@ -301,103 +308,6 @@ function updateHabitListMaxHeight() {
 
   // Task list now flows naturally and relies on page scroll.
   habitsCard.style.removeProperty('--habit-list-max-height');
-}
-
-function shouldShowOnboarding() {
-  if (!currentUser || !currentUser.onboarding) return false;
-  const isCompleted = Boolean(currentUser.onboarding.completed);
-  return !isCompleted && tasks.length < 3;
-}
-
-async function loadStarterPacks() {
-  try {
-    const response = await API.tasks.getStarterPacks();
-    if (response.success) {
-      starterPacks = response.data.starterPacks || [];
-      selectedStarterPackId = starterPacks[0]?.id || null;
-      renderStarterPacks();
-    }
-  } catch (error) {
-    console.error('Failed to load starter packs:', error);
-    showToast('Failed to load starter packs', 'error');
-  }
-}
-
-function renderStarterPacks() {
-  if (!starterPackList) return;
-
-  if (!starterPacks.length) {
-    starterPackList.innerHTML = '<p style="color: var(--t3); font-size: 12px;">Starter packs are unavailable right now.</p>';
-    return;
-  }
-
-  starterPackList.innerHTML = starterPacks.map((pack) => `
-    <button
-      class="starter-pack-item ${selectedStarterPackId === pack.id ? 'active' : ''}"
-      data-pack-id="${pack.id}"
-      type="button"
-      aria-label="Select ${escapeHtml(pack.label)}"
-    >
-      <div class="starter-pack-title">${escapeHtml(pack.label)}</div>
-      <div class="starter-pack-preview">${pack.habits.map((habit) => escapeHtml(habit)).join(' • ')}</div>
-    </button>
-  `).join('');
-
-  starterPackList.querySelectorAll('.starter-pack-item').forEach((button) => {
-    button.addEventListener('click', () => {
-      selectedStarterPackId = button.dataset.packId;
-      renderStarterPacks();
-    });
-  });
-}
-
-function openOnboardingModal() {
-  if (!onboardingModal) return;
-  onboardingModal.classList.remove('hidden');
-}
-
-function closeOnboardingModal() {
-  if (!onboardingModal) return;
-  onboardingModal.classList.add('hidden');
-}
-
-async function completeOnboardingFlow() {
-  if (!selectedStarterPackId) {
-    showToast('Select a starter pack first.', 'error');
-    return;
-  }
-
-  onboardingContinueBtn.disabled = true;
-  onboardingContinueBtn.textContent = 'Creating...';
-
-  try {
-    const customHabits = onboardingCustomHabitsInput.value
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .slice(0, 5);
-
-    const setupResponse = await API.tasks.setupOnboarding({
-      packId: selectedStarterPackId,
-      customHabits
-    });
-
-    if (!setupResponse.success) {
-      throw new Error(setupResponse.message || 'Failed to create starter tasks.');
-    }
-
-    await API.tasks.completeOnboarding();
-    await loadCurrentUser();
-    await Promise.all([loadTodaysTasks(), loadStats(), loadWeeklyPlan()]);
-
-    closeOnboardingModal();
-    showToast('Starter tasks created. You are ready to go!', 'success');
-  } catch (error) {
-    showToast(error.message || 'Failed to complete onboarding.', 'error');
-  } finally {
-    onboardingContinueBtn.disabled = false;
-    onboardingContinueBtn.textContent = 'Create Starter Tasks';
-  }
 }
 
 // Load today's tasks
@@ -928,18 +838,20 @@ function renderHeatmap(data) {
   // Generate last 91 days (13 weeks)
   const totalDays = 91;
   const days = [];
+  const completionByDate = new Map((data || []).map((entry) => [entry.date, entry.completed]));
   const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
   
   for (let i = totalDays - 1; i >= 0; i--) {
     const date = new Date(today);
-    date.setDate(date.getDate() - i);
+    date.setUTCDate(today.getUTCDate() - i);
     const dateStr = date.toISOString().split('T')[0];
-    
-    const completion = data.find(d => d.date === dateStr);
+
+    const completion = completionByDate.get(dateStr);
     days.push({
       date: dateStr,
-      dayOfWeek: date.getDay(), // 0=Sun .. 6=Sat
-      completed: completion ? completion.completed : null,
+      dayOfWeek: date.getUTCDay(), // 0=Sun .. 6=Sat
+      completed: completion === undefined ? null : completion,
       dateObj: date
     });
   }
@@ -965,11 +877,11 @@ function renderHeatmap(data) {
 
   // Render grid (columns = weeks, rows = days of week)
   grid.innerHTML = '';
-  grid.style.gridTemplateColumns = `repeat(${weeks.length}, 1fr)`;
+  grid.style.gridTemplateColumns = `repeat(${weeks.length}, 14px)`;
   
-  // We need to output row by row (Sun row, Mon row, ..., Sat row) for CSS grid
-  for (let row = 0; row < 7; row++) {
-    for (let col = 0; col < weeks.length; col++) {
+  // Output cells column-by-column to match CSS grid-auto-flow: column
+  for (let col = 0; col < weeks.length; col++) {
+    for (let row = 0; row < 7; row++) {
       const day = weeks[col][row];
       if (!day) {
         grid.innerHTML += '<div class="heatmap-day empty"></div>';
@@ -981,7 +893,13 @@ function renderHeatmap(data) {
           className += ' missed';
         }
         const label = formatDate(day.date);
-        grid.innerHTML += `<div class="${className}" data-date="${label}" title="${label}${day.completed === true ? ' Done' : day.completed === false ? ' Missed' : ''}"></div>`;
+        const statusText = day.completed === true
+          ? 'Done'
+          : day.completed === false
+            ? 'Missed'
+            : 'Not logged';
+        const tooltip = `${label} ${statusText}`;
+        grid.innerHTML += `<div class="${className}" data-date="${day.date}" title="${tooltip}" aria-label="${tooltip}"></div>`;
       }
     }
   }
@@ -993,16 +911,16 @@ function renderHeatmap(data) {
     // Find the first valid day in this week
     const validDay = week.find(d => d !== null);
     if (validDay) {
-      const month = validDay.dateObj.getMonth();
+      const month = validDay.dateObj.getUTCMonth();
       if (month !== lastMonth) {
-        months.push({ colIdx, label: validDay.dateObj.toLocaleDateString('en-US', { month: 'short' }) });
+        months.push({ colIdx, label: validDay.dateObj.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }) });
         lastMonth = month;
       }
     }
   });
 
   monthLabels.innerHTML = '';
-  monthLabels.style.gridTemplateColumns = `repeat(${weeks.length}, 1fr)`;
+  monthLabels.style.gridTemplateColumns = `repeat(${weeks.length}, 14px)`;
   for (let col = 0; col < weeks.length; col++) {
     const monthEntry = months.find(m => m.colIdx === col);
     monthLabels.innerHTML += `<span class="month-label">${monthEntry ? monthEntry.label : ''}</span>`;
@@ -1123,11 +1041,128 @@ async function saveWeeklyPlan() {
   }
 }
 
+function setWeeklyRealtimeStatus(text, state = 'offline') {
+  if (!weeklyLiveStatus) return;
+
+  weeklyLiveStatus.textContent = text;
+  weeklyLiveStatus.classList.remove('is-live', 'is-syncing', 'is-offline');
+
+  if (state === 'live') {
+    weeklyLiveStatus.classList.add('is-live');
+    return;
+  }
+
+  if (state === 'syncing') {
+    weeklyLiveStatus.classList.add('is-syncing');
+    return;
+  }
+
+  weeklyLiveStatus.classList.add('is-offline');
+}
+
+function scheduleWeeklyRealtimeRefresh() {
+  if (weeklyPlanRefreshTimer) {
+    return;
+  }
+
+  setWeeklyRealtimeStatus('Syncing', 'syncing');
+
+  weeklyPlanRefreshTimer = setTimeout(async () => {
+    weeklyPlanRefreshTimer = null;
+    try {
+      await Promise.all([loadTodaysTasks(), loadStats(), loadWeeklyPlan()]);
+      setWeeklyRealtimeStatus('Live', 'live');
+    } catch (error) {
+      setWeeklyRealtimeStatus('Offline', 'offline');
+    }
+  }, 220);
+}
+
+function handleWeeklyRealtimeUpdate(event) {
+  try {
+    const payload = JSON.parse(event.data || '{}');
+    const currentWeekStart = getCurrentWeekStartDate();
+
+    if (payload.weekStartDate && payload.weekStartDate !== currentWeekStart) {
+      return;
+    }
+
+    scheduleWeeklyRealtimeRefresh();
+  } catch (error) {
+    console.warn('Invalid weekly realtime event payload', error);
+  }
+}
+
+function queueWeeklyRealtimeReconnect() {
+  if (weeklyRealtimeReconnectTimer) {
+    return;
+  }
+
+  weeklyRealtimeReconnectTimer = setTimeout(() => {
+    weeklyRealtimeReconnectTimer = null;
+    startWeeklyPlanRealtimeStream();
+  }, 3000);
+}
+
+function stopWeeklyPlanRealtimeStream() {
+  if (weeklyRealtimeReconnectTimer) {
+    clearTimeout(weeklyRealtimeReconnectTimer);
+    weeklyRealtimeReconnectTimer = null;
+  }
+
+  if (weeklyPlanRefreshTimer) {
+    clearTimeout(weeklyPlanRefreshTimer);
+    weeklyPlanRefreshTimer = null;
+  }
+
+  if (weeklyPlanEventSource) {
+    weeklyPlanEventSource.close();
+    weeklyPlanEventSource = null;
+  }
+}
+
+function startWeeklyPlanRealtimeStream() {
+  if (!weeklyPlanWeekLabel || !window.EventSource) {
+    setWeeklyRealtimeStatus('Offline', 'offline');
+    return;
+  }
+
+  stopWeeklyPlanRealtimeStream();
+
+  try {
+    setWeeklyRealtimeStatus('Connecting', 'syncing');
+    weeklyPlanEventSource = API.analytics.openWeeklyPlanStream();
+
+    weeklyPlanEventSource.onopen = () => {
+      setWeeklyRealtimeStatus('Live', 'live');
+    };
+
+    weeklyPlanEventSource.addEventListener('weekly-plan-updated', handleWeeklyRealtimeUpdate);
+
+    weeklyPlanEventSource.onerror = () => {
+      if (weeklyPlanEventSource) {
+        weeklyPlanEventSource.close();
+        weeklyPlanEventSource = null;
+      }
+
+      setWeeklyRealtimeStatus('Reconnecting', 'offline');
+      queueWeeklyRealtimeReconnect();
+    };
+  } catch (error) {
+    console.error('Failed to start weekly realtime stream:', error);
+    setWeeklyRealtimeStatus('Offline', 'offline');
+    queueWeeklyRealtimeReconnect();
+  }
+}
+
 // ===== Settings & Theme Management =====
 
 // Initialize theme on page load
 function initializeTheme() {
-  const savedTheme = localStorage.getItem('habit_rabbit_theme') || 'light';
+  const savedTheme = localStorage.getItem('habit_rabbit_theme') || 'dark';
+  if (!localStorage.getItem('habit_rabbit_theme')) {
+    localStorage.setItem('habit_rabbit_theme', 'dark');
+  }
   applyTheme(savedTheme);
   
   // Set the correct radio button
@@ -1182,6 +1217,10 @@ function applyResolvedTheme(themeName) {
   });
 
   root.setAttribute('data-theme', themeName);
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) {
+    themeMeta.setAttribute('content', themeName === 'light' ? '#FFFDF7' : '#0E1512');
+  }
 }
 
 // Open settings modal
@@ -1191,6 +1230,9 @@ function openSettings() {
   renderReminderSettings();
   
   settingsModal.classList.remove('hidden');
+  if (settingsBody) {
+    settingsBody.scrollTop = 0;
+  }
 }
 
 // Close settings modal
@@ -1380,8 +1422,24 @@ function showToast(message, type = 'success') {
 
 // Helper: Format date
 function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (typeof dateStr === 'string') {
+    const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (match) {
+      const utcDate = new Date(`${dateStr}T00:00:00.000Z`);
+      return utcDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC'
+      });
+    }
+  }
+
+  const fallbackDate = new Date(dateStr);
+  if (Number.isNaN(fallbackDate.getTime())) {
+    return '';
+  }
+
+  return fallbackDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function toRgba(color, alpha) {
