@@ -1537,6 +1537,7 @@ body.ai-drawer-open .ai-coach-fab {
   height: 14px;
   border-radius: 3px;
   background: var(--surface-2);
+  border: 1px solid transparent;
   transition: all 0.15s;
 }
 
@@ -1576,6 +1577,39 @@ body.ai-drawer-open .ai-coach-fab {
 
 .legend-color.missed {
   background: rgba(232, 112, 112, 0.40);
+}
+
+:root[data-theme='light'] .heatmap-weekday-labels span,
+:root[data-theme='light'] .month-label,
+:root[data-theme='light'] .legend-label {
+  color: #6D7786;
+}
+
+:root[data-theme='light'] .heatmap-day {
+  background: #F3EFE4;
+  border-color: #DED5C4;
+}
+
+:root[data-theme='light'] .heatmap-day.empty {
+  background: transparent;
+  border-color: transparent;
+}
+
+:root[data-theme='light'] .heatmap-day.completed,
+:root[data-theme='light'] .legend-color.done {
+  background: #E5BC56;
+  border-color: #D3A241;
+}
+
+:root[data-theme='light'] .heatmap-day.missed,
+:root[data-theme='light'] .legend-color.missed {
+  background: #E7B6BE;
+  border-color: #CF909B;
+}
+
+:root[data-theme='light'] .legend-color.none {
+  background: #F3EFE4;
+  border-color: #DED5C4;
 }
 
 .btn {
