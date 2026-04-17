@@ -7,13 +7,13 @@
       name="description"
       content="Track your daily habits and view progress analytics on Habit Rabbit."
     />
-    <meta name="theme-color" content="#0E1512" />
+    <meta name="theme-color" content="#FFFFFF" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
@@ -32,85 +32,39 @@
     <div id="app" class="app hidden">
       <header class="header">
         <div class="header-logo">
-          <span class="brand-mark" aria-hidden="true"></span>
           <span class="brand-name">Habit Rabbit</span>
         </div>
 
-        <div class="header-date" id="header-date"></div>
-
         <div class="header-spacer"></div>
 
-        <div class="header-stats">
-          <div class="hstat">
-            <span class="hstat-icon">✓</span>
-            <span class="hstat-val" id="header-today-count">0</span>
-            <span class="hstat-label">today</span>
-          </div>
-          <div class="hstat accent">
-            <span class="hstat-icon">🔥</span>
-            <span class="hstat-val" id="header-streak-count">0</span>
-            <span class="hstat-label">day streak</span>
-          </div>
-        </div>
-
         <div class="header-actions">
-          <button id="toggle-analytics-btn" class="hbtn" type="button">
-            <span class="btn-icon">
-              <svg
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-            </span>
-            <span class="btn-text">Analytics</span>
-          </button>
-          <button id="settings-btn" class="hbtn" type="button">
-            <span class="btn-icon">
-              <svg
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="12" cy="12" r="3" />
-                <path
-                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-                />
-              </svg>
-            </span>
-            <span class="btn-text">Settings</span>
-          </button>
-          <button id="logout-btn" class="hbtn" type="button">
-            <span class="btn-icon">
-              <svg
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            </span>
-            <span class="btn-text">Sign Out</span>
-          </button>
+          <button id="toggle-analytics-btn" class="hbtn" type="button">Analytics</button>
+          <button id="settings-btn" class="hbtn" type="button">Settings</button>
+          <button id="logout-btn" class="hbtn" type="button">Logout</button>
         </div>
       </header>
 
       <main class="main">
+        <section class="planner-top">
+          <div class="date-section">
+            <h1>Today</h1>
+            <p id="header-date" class="today-date">Tuesday, 13 Feb 2026</p>
+          </div>
+
+          <div class="minimal-stats" aria-label="Daily summary">
+            <div class="minimal-stat">
+              <span class="minimal-stat-label">Total streak</span>
+              <span class="minimal-stat-value" id="header-streak-count">0</span>
+            </div>
+            <div class="minimal-stat">
+              <span class="minimal-stat-label">Tasks done today</span>
+              <span class="minimal-stat-value" id="header-today-count">0</span>
+            </div>
+          </div>
+        </section>
+
         <div class="page-title">
-          <h1 id="dashboard-greeting">Good morning</h1>
-          <p>Here's your habit snapshot for today.</p>
+          <h2>Today's Tasks</h2>
         </div>
 
         <div class="stats-row">
@@ -140,7 +94,7 @@
         <div class="content-grid">
           <div id="habits-card" class="card habits-card">
             <div class="card-head">
-              <span class="card-title">Today's Habits</span>
+              <span class="card-title">Today's Tasks</span>
               <span class="card-badge" id="habit-badge">0 / 0</span>
             </div>
             <div class="card-body">
@@ -150,7 +104,7 @@
                     class="add-input"
                     type="text"
                     id="new-task-input"
-                    placeholder="Add a new habit..."
+                    placeholder="Add a new task..."
                     maxlength="100"
                     autocomplete="off"
                   />
@@ -198,7 +152,7 @@
 
               <div id="empty-state" class="empty-state hidden">
                 <div class="icon">🌱</div>
-                <p>No habits yet. Add your first one above.</p>
+                <p>No tasks yet. Add your first one above.</p>
               </div>
             </div>
           </div>
