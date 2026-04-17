@@ -29,16 +29,42 @@
       </div>
     </div>
 
-    <div id="app" class="app hidden">
-      <header class="header">
-        <div class="header-logo">
-          <span class="brand-mark" aria-hidden="true"></span>
-          <span class="brand-name">Habit Rabbit</span>
+  <div id="app" class="app hidden">
+    <header class="header">
+      <div class="header-logo">
+        <span class="brand-name">Habit Rabbit</span>
+      </div>
+      <div class="header-spacer"></div>
+
+      <div class="header-actions">
+        <button id="toggle-analytics-btn" class="hbtn" type="button">Analytics</button>
+        <button id="settings-btn" class="hbtn" type="button">Settings</button>
+        <button id="logout-btn" class="hbtn" type="button">Logout</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="planner-top">
+        <div class="date-section">
+          <h1>Today</h1>
+          <p id="header-date" class="today-date">Tuesday, 13 Feb 2026</p>
         </div>
 
-        <div class="header-date" id="header-date"></div>
+        <div class="minimal-stats" aria-label="Daily summary">
+          <div class="minimal-stat">
+            <span class="minimal-stat-label">Total streak</span>
+            <span class="minimal-stat-value" id="header-streak-count">0</span>
+          </div>
+          <div class="minimal-stat">
+            <span class="minimal-stat-label">Tasks done today</span>
+            <span class="minimal-stat-value" id="header-today-count">0</span>
+          </div>
+        </div>
+      </section>
 
-        <div class="header-spacer"></div>
+      <div class="page-title">
+        <h2>Today's Tasks</h2>
+      </div>
 
         <div class="header-stats">
           <div class="hstat">
