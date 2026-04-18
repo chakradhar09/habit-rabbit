@@ -514,3 +514,94 @@ input {
     font-size: 26px;
   }
 }
+
+@media (max-width: 768px) {
+  .auth-layout {
+    width: min(720px, calc(100% - 24px));
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .brand-panel,
+  .auth-container {
+    width: 100%;
+  }
+
+  .brand-headline {
+    font-size: clamp(28px, 8vw, 38px);
+    line-height: 1.12;
+  }
+
+  .brand-desc {
+    font-size: 14px;
+  }
+
+  .auth-tabs {
+    gap: 6px;
+  }
+
+  .tab-btn,
+  .btn,
+  .form-group input {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 10px 0;
+  }
+
+  .auth-layout {
+    width: calc(100% - 16px);
+    gap: 12px;
+  }
+
+  .brand-panel,
+  .auth-container {
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .brand-logo {
+    margin-bottom: 16px;
+  }
+
+  .brand-logo-name {
+    font-size: 17px;
+  }
+
+  .brand-headline {
+    font-size: clamp(24px, 9vw, 32px);
+  }
+
+  .brand-headline-line1 {
+    font-size: 0.9em;
+  }
+
+  .brand-stats {
+    gap: 10px;
+  }
+
+  .brand-stat-val {
+    font-size: 24px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .tab-btn {
+    font-size: 13px;
+    padding: 9px 8px;
+  }
+
+  .footer-text {
+    font-size: 11px;
+  }
+}

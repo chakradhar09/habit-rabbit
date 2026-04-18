@@ -2323,3 +2323,303 @@ body::after {
   }
 }
 
+/* Final responsive overrides (tablet/mobile) */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+    height: auto;
+    min-height: 64px;
+    padding: 10px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .header-logo {
+    width: 100%;
+  }
+
+  .header-logo .brand-name {
+    font-size: 32px;
+    line-height: 1.1;
+  }
+
+  .header-spacer {
+    display: none;
+  }
+
+  .header-actions {
+    width: 100%;
+    margin-left: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .hbtn {
+    min-height: 44px;
+    padding: 10px 8px;
+    font-size: 13px;
+    justify-content: center;
+  }
+
+  .main {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding-top: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 28px;
+  }
+
+  .planner-top {
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .date-section h1 {
+    font-size: 32px;
+  }
+
+  .today-date {
+    font-size: 13px;
+  }
+
+  .minimal-stats {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    justify-content: stretch;
+  }
+
+  .minimal-stat {
+    min-width: 0;
+    width: 100%;
+    padding: 12px;
+  }
+
+  .minimal-stat-label {
+    font-size: 11px;
+  }
+
+  .minimal-stat-value {
+    font-size: 18px;
+  }
+
+  .page-title h2 {
+    font-size: 16px;
+  }
+
+  .content-grid,
+  .card,
+  .card.habits-card,
+  .analytics-inner,
+  .weekly-plan-section {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .card.habits-card {
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 2px 10px rgba(31, 31, 31, 0.06);
+    padding: 0;
+  }
+
+  .habits-card .card-body {
+    padding: 0;
+  }
+
+  .add-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .add-input {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .add-btn {
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  .habits-list {
+    gap: 10px;
+  }
+
+  .habit-item,
+  .task-card {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 14px;
+    border-radius: 10px;
+  }
+
+  .task-title {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .task-delete-btn {
+    opacity: 1;
+    color: #EF4444;
+    width: 32px;
+    height: 32px;
+    right: 8px;
+  }
+
+  .analytics-head {
+    padding: 14px 14px;
+    gap: 8px;
+  }
+
+  .analytics-title {
+    width: 100%;
+    flex-basis: 100%;
+    font-size: 14px;
+  }
+
+  .range-tabs {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .range-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .range-tab {
+    min-height: 36px;
+    white-space: nowrap;
+  }
+
+  .analytics-body {
+    padding: 14px;
+  }
+
+  .chart-wrap {
+    height: 220px;
+    margin-bottom: 16px;
+  }
+
+  .heatmap-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .weekly-plan-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .weekly-summary-value {
+    font-size: 20px;
+  }
+
+  .weekly-plan-footer .btn,
+  .modal-actions .btn,
+  .btn {
+    min-height: 44px;
+  }
+
+  .toast-container {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .toast {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 8px 12px;
+  }
+
+  .header-logo .brand-name {
+    font-size: 26px;
+  }
+
+  .header-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .hbtn {
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .main {
+    padding-top: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 20px;
+  }
+
+  .date-section h1 {
+    font-size: 28px;
+  }
+
+  .today-date {
+    font-size: 12px;
+  }
+
+  .minimal-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .minimal-stat {
+    padding: 11px;
+  }
+
+  .minimal-stat-value {
+    font-size: 17px;
+  }
+
+  .task-title {
+    font-size: 14px;
+  }
+
+  .task-delete-btn {
+    right: 6px;
+  }
+
+  .weekly-plan-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .weekly-summary-value {
+    font-size: 18px;
+  }
+
+  .analytics-body,
+  .analytics-head,
+  .card-body,
+  .modal-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .chart-wrap {
+    height: 200px;
+  }
+}
+
