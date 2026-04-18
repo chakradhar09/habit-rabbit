@@ -11,10 +11,10 @@
   --border-soft: #F1F1EF;
   --border-mid: #ECEBE6;
 
-  --accent: #F4C95D;
+  --accent: #F5A623;
   --accent-dim: #FFF4CC;
-  --accent-glow: rgba(244, 201, 93, 0.24);
-  --accent-bright: #E8BE52;
+  --accent-glow: rgba(245, 166, 35, 0.24);
+  --accent-bright: #E89A19;
 
   --amber: #D8A73D;
   --amber-dim: rgba(244, 201, 93, 0.22);
@@ -580,15 +580,46 @@ body::after {
 .habit-item.completed,
 .task-card.completed {
   opacity: 1;
-  background: #E8F5E9;
-  border-color: #D9EAD9;
+  background: #DFF5E1;
+  border-color: #CFE7D2;
 }
 
 .habit-item.completed .habit-name,
 .task-card.completed .task-title {
   text-decoration: line-through;
-  color: #426B46;
-  opacity: 0.82;
+  color: #4B5563;
+  opacity: 0.88;
+}
+
+.task-delete-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #9CA3AF;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.18s ease, color 0.18s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.task-card:hover .task-delete-btn {
+  opacity: 1;
+  color: #EF4444;
+}
+
+.task-delete-btn:hover {
+  color: #DC2626;
 }
 
 .habit-check,

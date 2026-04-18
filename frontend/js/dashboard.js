@@ -131,13 +131,13 @@ const LIGHT_THEME_TOKENS = {
   '--border': '#F1F1EF',
   '--border-soft': '#F1F1EF',
   '--border-mid': '#ECEBE6',
-  '--accent': '#F4C95D',
+  '--accent': '#F5A623',
   '--accent-dim': '#FFF4CC',
-  '--accent-glow': 'rgba(244, 201, 93, 0.24)',
-  '--accent-bright': '#E8BE52',
+  '--accent-glow': 'rgba(245, 166, 35, 0.24)',
+  '--accent-bright': '#E89A19',
   '--accent-contrast': '#1F1F1F',
-  '--amber': '#D8A73D',
-  '--amber-dim': 'rgba(244, 201, 93, 0.22)',
+  '--amber': '#D98E1D',
+  '--amber-dim': 'rgba(245, 166, 35, 0.22)',
   '--red': '#D26666',
   '--red-dim': 'rgba(210, 102, 102, 0.12)',
   '--t1': '#1F1F1F',
@@ -415,7 +415,20 @@ function renderTasks() {
   taskList.querySelectorAll('.task-card').forEach(card => {
     const taskId = card.dataset.taskId;
 
-    card.addEventListener('click', () => toggleTaskComplete(taskId));
+    card.addEventListener('click', (e) => {
+      // Don't toggle complete if delete button was clicked
+      if (e.target.classList.contains('task-delete-btn')) return;
+      toggleTaskComplete(taskId);
+    });
+
+    // Delete button handler
+    const deleteBtn = card.querySelector('.task-delete-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDeleteModal(taskId);
+      });
+    }
   });
 
   // Update heatmap selector if analytics is visible
@@ -436,6 +449,7 @@ function createTaskHTML(task) {
   return `
     <div class="habit-item task-card ${task.completed ? 'completed' : ''}" data-task-id="${task._id}">
       <span class="habit-name task-title">${escapeHtml(task.title)}</span>
+      <button class="task-delete-btn" type="button" title="Delete task" data-task-id="${task._id}">×</button>
     </div>
   `;
 }
@@ -591,6 +605,10 @@ function openDeleteModal(taskId) {
   if (task) {
     deleteTaskTitle.textContent = task.title;
     deleteModal.classList.remove('hidden');
+    // Scroll modal into view
+    setTimeout(() => {
+      deleteModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
   }
 }
 
@@ -647,6 +665,10 @@ function toggleAnalytics() {
     toggleAnalyticsBtn.classList.add('active');
     loadProgressChart('7d');
     renderHeatmapSelector();
+    // Smooth scroll to analytics section
+    setTimeout(() => {
+      analyticsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   } else {
     analyticsSection.classList.add('hidden');
     toggleAnalyticsBtn.classList.remove('active');
