@@ -18,6 +18,7 @@ let weeklyPlanEventSource = null;
 let weeklyPlanRefreshTimer = null;
 let weeklyRealtimeReconnectTimer = null;
 let showAnalytics = false;
+let mobileAnalyticsObserver = null;
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -36,6 +37,11 @@ const analysisBtn = document.getElementById('analysis-btn');
 const analyticsSection = document.getElementById('analytics-section');
 const analyticsMountParent = analyticsSection ? analyticsSection.parentElement : null;
 const analyticsMountAnchor = analyticsSection ? document.createComment('analytics-section-anchor') : null;
+const mobileMenuWrap = document.getElementById('mobile-menu-wrap');
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenuDropdown = document.getElementById('mobile-menu-dropdown');
+const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 const dashboardSectionButtons = Array.from(document.querySelectorAll('.dashboard-section-btn'));
 const dashboardPanels = {
   today: document.getElementById('dashboard-panel-today'),
@@ -98,6 +104,7 @@ const weeklyRecommendations = document.getElementById('weekly-recommendations');
 const weeklyLiveStatus = document.getElementById('weekly-live-status');
 
 const systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const mobileViewportMediaQuery = window.matchMedia('(max-width: 768px)');
 let isSystemThemeListenerBound = false;
 
 const DARK_THEME_TOKENS = {
@@ -215,6 +222,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Setup event listeners
   setupEventListeners();
   setAnalyticsVisibility(false);
+  initializeMobileDashboardUX();
+
+  if (mobileViewportMediaQuery) {
+    mobileViewportMediaQuery.addEventListener('change', handleMobileViewportChange);
+  }
 
   startWeeklyPlanRealtimeStream();
   window.addEventListener('beforeunload', stopWeeklyPlanRealtimeStream);
@@ -251,6 +263,24 @@ function setupEventListeners() {
   if (analysisBtn) {
     analysisBtn.addEventListener('click', handleAnalysisButtonClick);
   }
+
+  // Mobile overflow menu
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+  }
+  if (mobileSettingsBtn) {
+    mobileSettingsBtn.addEventListener('click', () => {
+      closeMobileMenu();
+      openSettings();
+    });
+  }
+  if (mobileLogoutBtn) {
+    mobileLogoutBtn.addEventListener('click', () => {
+      closeMobileMenu();
+      handleLogout();
+    });
+  }
+  document.addEventListener('click', handleDocumentClick);
 
   // Settings
   settingsBtn.addEventListener('click', openSettings);
@@ -319,9 +349,17 @@ function handleGlobalKeydown(event) {
   if (event.key === 'Escape' && isAiDrawerOpen) {
     toggleAiSection(false);
   }
+
+  if (event.key === 'Escape') {
+    closeMobileMenu();
+  }
 }
 
 function handleAnalysisButtonClick() {
+  if (isMobileViewport()) {
+    return;
+  }
+
   const nextVisible = !showAnalytics;
 
   if (nextVisible && !isTodayPanelActive()) {
@@ -329,6 +367,97 @@ function handleAnalysisButtonClick() {
   }
 
   setAnalyticsVisibility(nextVisible, { scrollIntoView: nextVisible });
+}
+
+function isMobileViewport() {
+  return !!mobileViewportMediaQuery && mobileViewportMediaQuery.matches;
+}
+
+function initializeMobileDashboardUX() {
+  if (isMobileViewport()) {
+    startMobileAnalyticsObserver();
+    setAnalyticsVisibility(false);
+  } else {
+    stopMobileAnalyticsObserver();
+  }
+}
+
+function handleMobileViewportChange(event) {
+  if (event.matches) {
+    setAnalyticsVisibility(false);
+    startMobileAnalyticsObserver();
+  } else {
+    closeMobileMenu();
+    stopMobileAnalyticsObserver();
+    setAnalyticsVisibility(false);
+  }
+}
+
+function startMobileAnalyticsObserver() {
+  if (!analyticsSection || !habitsCard || mobileAnalyticsObserver) {
+    return;
+  }
+
+  mobileAnalyticsObserver = new IntersectionObserver((entries) => {
+    const [entry] = entries;
+    if (!entry || !isMobileViewport()) return;
+
+    if (!isTodayPanelActive()) {
+      setAnalyticsVisibility(false);
+      return;
+    }
+
+    const scrolledPastTasks = entry.boundingClientRect.bottom <= 0;
+    setAnalyticsVisibility(scrolledPastTasks, { animate: scrolledPastTasks });
+  }, {
+    threshold: [0, 1]
+  });
+
+  mobileAnalyticsObserver.observe(habitsCard);
+}
+
+function stopMobileAnalyticsObserver() {
+  if (!mobileAnalyticsObserver) {
+    return;
+  }
+
+  mobileAnalyticsObserver.disconnect();
+  mobileAnalyticsObserver = null;
+}
+
+function toggleMobileMenu(event) {
+  if (!mobileMenuDropdown || !mobileMenuBtn) {
+    return;
+  }
+
+  event.stopPropagation();
+  const isOpen = !mobileMenuDropdown.classList.contains('hidden');
+  if (isOpen) {
+    closeMobileMenu();
+    return;
+  }
+
+  mobileMenuDropdown.classList.remove('hidden');
+  mobileMenuBtn.setAttribute('aria-expanded', 'true');
+}
+
+function closeMobileMenu() {
+  if (!mobileMenuDropdown || !mobileMenuBtn) {
+    return;
+  }
+
+  mobileMenuDropdown.classList.add('hidden');
+  mobileMenuBtn.setAttribute('aria-expanded', 'false');
+}
+
+function handleDocumentClick(event) {
+  if (!mobileMenuWrap || !mobileMenuDropdown || mobileMenuDropdown.classList.contains('hidden')) {
+    return;
+  }
+
+  if (!mobileMenuWrap.contains(event.target)) {
+    closeMobileMenu();
+  }
 }
 
 function initializeDashboardHeader() {
@@ -365,7 +494,7 @@ function updateAnalysisButtonState() {
   analysisBtn.setAttribute('aria-pressed', String(showAnalytics));
 }
 
-function setAnalyticsVisibility(visible, { scrollIntoView = false } = {}) {
+function setAnalyticsVisibility(visible, { scrollIntoView = false, animate = false } = {}) {
   const shouldShow = Boolean(visible);
   showAnalytics = shouldShow;
 
@@ -377,6 +506,14 @@ function setAnalyticsVisibility(visible, { scrollIntoView = false } = {}) {
   if (shouldShow) {
     if (!analyticsSection.isConnected) {
       analyticsMountParent.insertBefore(analyticsSection, analyticsMountAnchor.nextSibling);
+    }
+
+    if (animate) {
+      analyticsSection.classList.remove('mobile-analytics-reveal');
+      void analyticsSection.offsetWidth;
+      analyticsSection.classList.add('mobile-analytics-reveal');
+    } else {
+      analyticsSection.classList.remove('mobile-analytics-reveal');
     }
 
     loadProgressChart(currentRange);

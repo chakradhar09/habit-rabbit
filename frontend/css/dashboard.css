@@ -281,6 +281,55 @@ body::after {
   margin-left: 8px;
 }
 
+.mobile-menu-wrap {
+  display: none;
+  position: relative;
+}
+
+.mobile-menu-btn {
+  border: 1px solid var(--border-soft);
+  background: var(--surface);
+  color: var(--t1);
+  border-radius: 10px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.mobile-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+  padding: 6px;
+  min-width: 132px;
+  z-index: 140;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.mobile-menu-item {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: #1F2937;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.mobile-menu-item:hover {
+  background: #F3F4F6;
+}
+
 .hbtn {
   padding: 7px 14px;
   background: var(--surface);
@@ -361,6 +410,22 @@ body::after {
 
 .dashboard-panel.is-active {
   display: block;
+}
+
+.analytics-section.mobile-analytics-reveal {
+  animation: analyticsMobileReveal 220ms ease-out both;
+}
+
+@keyframes analyticsMobileReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #dashboard-panel-weekly .weekly-plan-section {
@@ -2504,11 +2569,13 @@ body::after {
     min-height: 64px;
     padding: 10px 16px;
     gap: 10px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .header-logo {
-    width: 100%;
+    width: auto;
+    min-width: 0;
+    flex: 1;
   }
 
   .header-logo {
@@ -2529,11 +2596,22 @@ body::after {
   }
 
   .header-actions {
-    width: 100%;
+    width: auto;
     margin-left: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  #analysis-btn,
+  #settings-btn,
+  #logout-btn {
+    display: none;
+  }
+
+  .mobile-menu-wrap {
+    display: block;
   }
 
   .hbtn {
@@ -2739,7 +2817,7 @@ body::after {
   }
 
   .header-actions {
-    grid-template-columns: 1fr;
+    width: auto;
   }
 
   .hbtn {
