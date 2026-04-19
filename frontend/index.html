@@ -8,6 +8,9 @@
       content="Build better habits with Habit Rabbit - track daily habits, visualize streaks, and keep your momentum."
     />
     <meta name="theme-color" content="#FFFFFF" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0E1512" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -21,6 +24,21 @@
     />
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <title>Habit Rabbit - Sign In</title>
+    <script>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem('habit_rabbit_theme') || 'system';
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = storedTheme === 'system'
+            ? (prefersDark ? 'dark' : 'light')
+            : (storedTheme === 'light' ? 'light' : 'dark');
+          document.documentElement.setAttribute('data-theme', resolvedTheme);
+        } catch (error) {
+          var fallbackDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.setAttribute('data-theme', fallbackDark ? 'dark' : 'light');
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="css/auth.css" />
   </head>
   <body>

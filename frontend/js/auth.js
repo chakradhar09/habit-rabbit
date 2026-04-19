@@ -4,10 +4,62 @@
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const THEME_STORAGE_KEY = 'habit_rabbit_theme';
+  const systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  let isSystemThemeListenerBound = false;
+
+  initializeTheme();
+
   // Redirect if already logged in
   if (API.auth.isAuthenticated()) {
     window.location.href = 'dashboard.html';
     return;
+  }
+
+  function initializeTheme() {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const preferredTheme = storedTheme || 'system';
+
+    if (!storedTheme) {
+      localStorage.setItem(THEME_STORAGE_KEY, 'system');
+    }
+
+    applyTheme(preferredTheme);
+  }
+
+  function applyTheme(theme) {
+    if (theme === 'system') {
+      applyResolvedTheme(systemThemeMediaQuery.matches ? 'dark' : 'light');
+
+      if (!isSystemThemeListenerBound) {
+        systemThemeMediaQuery.addEventListener('change', (event) => {
+          if (localStorage.getItem(THEME_STORAGE_KEY) === 'system') {
+            applyResolvedTheme(event.matches ? 'dark' : 'light');
+          }
+        });
+        isSystemThemeListenerBound = true;
+      }
+
+      return;
+    }
+
+    applyResolvedTheme(theme);
+  }
+
+  function applyResolvedTheme(themeName) {
+    const resolvedTheme = themeName === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
+    document.documentElement.style.colorScheme = resolvedTheme;
+
+    const themeColor = resolvedTheme === 'light' ? '#FFFFFF' : '#0E1512';
+    document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+      meta.setAttribute('content', themeColor);
+    });
+
+    const appleStatusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (appleStatusMeta) {
+      appleStatusMeta.setAttribute('content', resolvedTheme === 'light' ? 'default' : 'black-translucent');
+    }
   }
 
   // DOM Elements

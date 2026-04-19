@@ -1,4 +1,5 @@
 const path = require('path');
+const http = require('http');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
@@ -130,16 +131,47 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  logger.info('Habit Rabbit server started', {
-    port: PORT,
-    apiUrl: `http://localhost:${PORT}/api`,
-    frontendUrl: `http://localhost:${PORT}`,
-    isProduction,
-    allowedOrigins
-  });
-});
+const DEFAULT_PORT = Number(process.env.PORT) || 5000;
+const MAX_PORT_RETRIES = isProduction ? 0 : 10;
 
-server.keepAliveTimeout = 65000;
-server.headersTimeout = 66000;
+const applyServerTimeouts = (serverInstance) => {
+  serverInstance.keepAliveTimeout = 65000;
+  serverInstance.headersTimeout = 66000;
+};
+
+const startServer = (port, retriesLeft = MAX_PORT_RETRIES) => {
+  const server = http.createServer(app);
+
+  server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE' && retriesLeft > 0) {
+      const nextPort = port + 1;
+      logger.warn('Port is in use, retrying on next port', {
+        occupiedPort: port,
+        nextPort
+      });
+      startServer(nextPort, retriesLeft - 1);
+      return;
+    }
+
+    logger.error('Server failed to start', {
+      port,
+      code: error.code,
+      error: error.message
+    });
+    process.exit(1);
+  });
+
+  server.listen(port, () => {
+    logger.info('Habit Rabbit server started', {
+      port,
+      apiUrl: `http://localhost:${port}/api`,
+      frontendUrl: `http://localhost:${port}`,
+      isProduction,
+      allowedOrigins
+    });
+  });
+
+  applyServerTimeouts(server);
+};
+
+startServer(DEFAULT_PORT);

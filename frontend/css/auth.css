@@ -1,4 +1,4 @@
-/* Habit Rabbit Auth - Light minimal theme aligned with dashboard */
+/* Habit Rabbit Auth - Theme-aware login styles aligned with dashboard */
 
 :root {
   --bg: #FFFFFF;
@@ -13,6 +13,7 @@
   --accent-glow: rgba(245, 166, 35, 0.22);
 
   --success: #DFF5E1;
+  --success-border: #BFE7C6;
   --success-text: #4B5563;
   --blue-soft: #E9EEFF;
 
@@ -29,6 +30,82 @@
   --r: 10px;
   --r-lg: 14px;
   --r-xl: 16px;
+
+  --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --brand-highlight: #6EBB82;
+
+  --streak-empty: #F3F4F6;
+  --streak-done: #6EE7B7;
+  --streak-part: #BDEFD0;
+  --streak-miss: #FBCACA;
+
+  --tab-active-bg: #FFFFFF;
+  --tab-active-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+
+  --input-bg: #FFFFFF;
+  --input-border: #E5E7EB;
+  --input-placeholder: #9CA3AF;
+
+  --btn-primary-bg: #F5A623;
+  --btn-primary-hover: #F8B84A;
+  --btn-primary-text: #1F2937;
+  --btn-primary-glow: 0 0 20px rgba(245, 166, 35, 0.22);
+
+  --loader-track: rgba(31, 41, 55, 0.28);
+  --loader-head: #1F2937;
+
+  --error-bg: rgba(232, 112, 112, 0.12);
+  --error-border: rgba(232, 112, 112, 0.22);
+  --error-text: #B45353;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0E1512;
+  --surface: #1A2420;
+  --surface-soft: #1F2B27;
+  --surface-accent: #26342F;
+  --border: #2A3D32;
+  --border-soft: rgba(255, 255, 255, 0.08);
+
+  --accent: #7FD4A2;
+  --accent-bright: #A3E4BE;
+  --accent-glow: rgba(127, 212, 162, 0.26);
+
+  --success: rgba(127, 212, 162, 0.14);
+  --success-border: rgba(127, 212, 162, 0.36);
+  --success-text: #CFE8DA;
+
+  --t1: #E8F0EB;
+  --t2: #8BA597;
+  --t3: #6F8B7B;
+  --t4: #4A6355;
+
+  --panel-shadow: 0 18px 36px rgba(0, 0, 0, 0.38);
+  --brand-highlight: #7FD4A2;
+
+  --streak-empty: #2A3D32;
+  --streak-done: #7FD4A2;
+  --streak-part: #5FA780;
+  --streak-miss: #B06A6A;
+
+  --tab-active-bg: #26342F;
+  --tab-active-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+
+  --input-bg: #1F2B27;
+  --input-border: #31463B;
+  --input-placeholder: #6F8B7B;
+
+  --btn-primary-bg: #7FD4A2;
+  --btn-primary-hover: #A3E4BE;
+  --btn-primary-text: #0E1512;
+  --btn-primary-glow: 0 0 22px rgba(127, 212, 162, 0.30);
+
+  --loader-track: rgba(14, 21, 18, 0.25);
+  --loader-head: #0E1512;
+
+  --error-bg: rgba(232, 112, 112, 0.18);
+  --error-border: rgba(232, 112, 112, 0.30);
+  --error-text: #FFB6B6;
 }
 
 *, *::before, *::after {
@@ -76,7 +153,7 @@ input {
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: var(--r-xl);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--panel-shadow);
 }
 
 .brand-panel {
@@ -135,7 +212,7 @@ input {
 
 .brand-headline em {
   font-style: normal;
-  color: #6EBB82;
+  color: var(--brand-highlight);
 }
 
 .brand-desc {
@@ -169,19 +246,19 @@ input {
 .streak-dot {
   aspect-ratio: 1;
   border-radius: 3px;
-  background: #F3F4F6;
+  background: var(--streak-empty);
 }
 
 .streak-dot.done {
-  background: #6EE7B7;
+  background: var(--streak-done);
 }
 
 .streak-dot.part {
-  background: #BDEFD0;
+  background: var(--streak-part);
 }
 
 .streak-dot.miss {
-  background: #FBCACA;
+  background: var(--streak-miss);
 }
 
 .brand-stats {
@@ -262,9 +339,9 @@ input {
 }
 
 .tab-btn.active {
-  background: #FFFFFF;
+  background: var(--tab-active-bg);
   color: var(--t1);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--tab-active-shadow);
 }
 
 .tab-btn:hover:not(.active) {
@@ -306,8 +383,8 @@ input {
 .form-group input {
   width: 100%;
   padding: 12px 14px;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: var(--r);
   color: var(--t1);
   font-size: 15px;
@@ -317,7 +394,7 @@ input {
 }
 
 .form-group input::placeholder {
-  color: #9CA3AF;
+  color: var(--input-placeholder);
 }
 
 .form-group input:focus {
@@ -362,13 +439,13 @@ input {
 }
 
 .btn-primary {
-  background: #F5A623;
-  color: #1F2937;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #F8B84A;
-  box-shadow: 0 0 20px rgba(245, 166, 35, 0.22);
+  background: var(--btn-primary-hover);
+  box-shadow: var(--btn-primary-glow);
   transform: translateY(-1px);
 }
 
@@ -393,8 +470,8 @@ input {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 2px solid rgba(31, 41, 55, 0.28);
-  border-top-color: #1F2937;
+  border: 2px solid var(--loader-track);
+  border-top-color: var(--loader-head);
   border-radius: 50%;
   display: none;
   animation: spin 0.7s linear infinite;
@@ -427,14 +504,14 @@ input {
 }
 
 .auth-message.error {
-  background: rgba(232, 112, 112, 0.12);
-  border-color: rgba(232, 112, 112, 0.22);
-  color: #B45353;
+  background: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--error-text);
 }
 
 .auth-message.success {
-  background: #DFF5E1;
-  border-color: #BFE7C6;
+  background: var(--success);
+  border-color: var(--success-border);
   color: var(--success-text);
 }
 

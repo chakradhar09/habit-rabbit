@@ -31,7 +31,11 @@ const statToday = document.getElementById('stat-today');
 const statStreak = document.getElementById('stat-streak');
 const statTotal = document.getElementById('stat-total');
 const analyticsSection = document.getElementById('analytics-section');
-const toggleAnalyticsBtn = document.getElementById('toggle-analytics-btn');
+const dashboardSectionButtons = Array.from(document.querySelectorAll('.dashboard-section-btn'));
+const dashboardPanels = {
+  today: document.getElementById('dashboard-panel-today'),
+  weekly: document.getElementById('dashboard-panel-weekly')
+};
 const settingsBtn = document.getElementById('settings-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const deleteModal = document.getElementById('delete-modal');
@@ -200,6 +204,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Setup event listeners
   setupEventListeners();
+
+  if (analyticsSection) {
+    loadProgressChart(currentRange);
+    renderHeatmapSelector();
+  }
+
   startWeeklyPlanRealtimeStream();
   window.addEventListener('beforeunload', stopWeeklyPlanRealtimeStream);
 });
@@ -231,8 +241,8 @@ function setupEventListeners() {
     radio.addEventListener('change', (e) => handleThemeChange(e.target.value));
   });
 
-  // Toggle analytics
-  toggleAnalyticsBtn.addEventListener('click', toggleAnalytics);
+  // Section switcher
+  setupDashboardSectionSwitch();
 
   // Analytics tabs
   document.querySelectorAll('.analytics-tab').forEach(tab => {
@@ -308,6 +318,48 @@ function updateHabitListMaxHeight() {
 
   // Task list now flows naturally and relies on page scroll.
   habitsCard.style.removeProperty('--habit-list-max-height');
+}
+
+function isTodayPanelActive() {
+  return !dashboardPanels.today || dashboardPanels.today.classList.contains('is-active');
+}
+
+function setupDashboardSectionSwitch() {
+  if (!dashboardSectionButtons.length) {
+    return;
+  }
+
+  dashboardSectionButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      activateDashboardPanel(button.dataset.dashboardPanel);
+    });
+  });
+}
+
+function activateDashboardPanel(panelKey) {
+  if (!dashboardPanels[panelKey]) {
+    return;
+  }
+
+  dashboardSectionButtons.forEach((button) => {
+    const isActive = button.dataset.dashboardPanel === panelKey;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-selected', String(isActive));
+  });
+
+  Object.entries(dashboardPanels).forEach(([key, panel]) => {
+    if (!panel) return;
+    panel.classList.toggle('is-active', key === panelKey);
+  });
+
+  if (panelKey === 'today' && analyticsSection) {
+    loadProgressChart(currentRange);
+    renderHeatmapSelector();
+
+    if (selectedHeatmapTask) {
+      loadHeatmap(selectedHeatmapTask);
+    }
+  }
 }
 
 // Load today's tasks
@@ -439,7 +491,7 @@ function renderTasks() {
   });
 
   // Update heatmap selector if analytics is visible
-  if (!analyticsSection.classList.contains('hidden')) {
+  if (analyticsSection && isTodayPanelActive()) {
     renderHeatmapSelector();
   }
 
@@ -670,25 +722,6 @@ async function handleDelete(deleteHistory) {
   }
 }
 
-// Toggle analytics section
-function toggleAnalytics() {
-  const isHidden = analyticsSection.classList.contains('hidden');
-  
-  if (isHidden) {
-    analyticsSection.classList.remove('hidden');
-    toggleAnalyticsBtn.classList.add('active');
-    loadProgressChart('7d');
-    renderHeatmapSelector();
-    // Smooth scroll to analytics section
-    setTimeout(() => {
-      analyticsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  } else {
-    analyticsSection.classList.add('hidden');
-    toggleAnalyticsBtn.classList.remove('active');
-  }
-}
-
 // Handle range change
 function handleRangeChange(range) {
   currentRange = range;
@@ -700,6 +733,10 @@ function handleRangeChange(range) {
 
 // Load progress chart
 async function loadProgressChart(range) {
+  if (!analyticsSection) {
+    return;
+  }
+
   try {
     const response = await API.analytics.getProgress(range);
     if (response.success) {
@@ -829,6 +866,8 @@ function renderProgressChart(data) {
 // Render heatmap selector
 function renderHeatmapSelector() {
   const selector = document.getElementById('heatmap-task-selector');
+  if (!selector) return;
+
   selector.innerHTML = tasks.map(task => `
     <button class="heatmap-task-btn ${selectedHeatmapTask === task._id ? 'active' : ''}" 
             data-task-id="${task._id}">
@@ -1196,16 +1235,16 @@ function startWeeklyPlanRealtimeStream() {
 // Initialize theme on page load
 function initializeTheme() {
   const storedTheme = localStorage.getItem('habit_rabbit_theme');
-  const savedTheme = storedTheme || 'dark';
+  const savedTheme = storedTheme || 'system';
 
   if (!localStorage.getItem('habit_rabbit_theme')) {
-    localStorage.setItem('habit_rabbit_theme', 'dark');
+    localStorage.setItem('habit_rabbit_theme', 'system');
   }
 
   applyTheme(savedTheme);
   
   // Set the correct radio button
-  const radio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`) || document.querySelector('input[name="theme"][value="dark"]');
+  const radio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`) || document.querySelector('input[name="theme"][value="system"]');
   if (radio) radio.checked = true;
 }
 
@@ -1214,7 +1253,7 @@ function handleThemeChange(theme) {
   localStorage.setItem('habit_rabbit_theme', theme);
   applyTheme(theme);
 
-  if (!analyticsSection.classList.contains('hidden')) {
+  if (analyticsSection && isTodayPanelActive()) {
     loadProgressChart(currentRange);
   }
 
@@ -1233,7 +1272,7 @@ function applyTheme(theme) {
         if (localStorage.getItem('habit_rabbit_theme') === 'system') {
           applyResolvedTheme(e.matches ? 'dark' : 'light');
 
-          if (!analyticsSection.classList.contains('hidden')) {
+          if (analyticsSection && isTodayPanelActive()) {
             loadProgressChart(currentRange);
           }
         }
