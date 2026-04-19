@@ -17,6 +17,7 @@ let isAiDrawerOpen = false;
 let weeklyPlanEventSource = null;
 let weeklyPlanRefreshTimer = null;
 let weeklyRealtimeReconnectTimer = null;
+let showAnalytics = false;
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -31,7 +32,10 @@ const progressText = document.getElementById('progress-text');
 const statToday = document.getElementById('stat-today');
 const statStreak = document.getElementById('stat-streak');
 const statTotal = document.getElementById('stat-total');
+const analysisBtn = document.getElementById('analysis-btn');
 const analyticsSection = document.getElementById('analytics-section');
+const analyticsMountParent = analyticsSection ? analyticsSection.parentElement : null;
+const analyticsMountAnchor = analyticsSection ? document.createComment('analytics-section-anchor') : null;
 const dashboardSectionButtons = Array.from(document.querySelectorAll('.dashboard-section-btn'));
 const dashboardPanels = {
   today: document.getElementById('dashboard-panel-today'),
@@ -52,6 +56,10 @@ const habitsCard = document.getElementById('habits-card');
 const habitBadge = document.getElementById('habit-badge');
 const headerTodayCount = document.getElementById('header-today-count');
 const headerStreakCount = document.getElementById('header-streak-count');
+
+if (analyticsSection && analyticsMountParent && analyticsMountAnchor) {
+  analyticsMountParent.insertBefore(analyticsMountAnchor, analyticsSection);
+}
 
 // AI Insights DOM Elements
 const aiInsightsSection = document.getElementById('ai-insights-section');
@@ -206,11 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Setup event listeners
   setupEventListeners();
-
-  if (analyticsSection) {
-    loadProgressChart(currentRange);
-    renderHeatmapSelector();
-  }
+  setAnalyticsVisibility(false);
 
   startWeeklyPlanRealtimeStream();
   window.addEventListener('beforeunload', stopWeeklyPlanRealtimeStream);
@@ -242,6 +246,11 @@ function setupEventListeners() {
 
   // Logout
   logoutBtn.addEventListener('click', handleLogout);
+
+  // Analysis
+  if (analysisBtn) {
+    analysisBtn.addEventListener('click', handleAnalysisButtonClick);
+  }
 
   // Settings
   settingsBtn.addEventListener('click', openSettings);
@@ -312,6 +321,16 @@ function handleGlobalKeydown(event) {
   }
 }
 
+function handleAnalysisButtonClick() {
+  const nextVisible = !showAnalytics;
+
+  if (nextVisible && !isTodayPanelActive()) {
+    activateDashboardPanel('today', { keepAnalytics: true });
+  }
+
+  setAnalyticsVisibility(nextVisible, { scrollIntoView: nextVisible });
+}
+
 function initializeDashboardHeader() {
   const now = new Date();
 
@@ -336,6 +355,49 @@ function isTodayPanelActive() {
   return !dashboardPanels.today || dashboardPanels.today.classList.contains('is-active');
 }
 
+function isAnalyticsVisible() {
+  return showAnalytics && !!analyticsSection && analyticsSection.isConnected;
+}
+
+function updateAnalysisButtonState() {
+  if (!analysisBtn) return;
+  analysisBtn.classList.toggle('active', showAnalytics);
+  analysisBtn.setAttribute('aria-pressed', String(showAnalytics));
+}
+
+function setAnalyticsVisibility(visible, { scrollIntoView = false } = {}) {
+  const shouldShow = Boolean(visible);
+  showAnalytics = shouldShow;
+
+  if (!analyticsSection || !analyticsMountParent || !analyticsMountAnchor) {
+    updateAnalysisButtonState();
+    return;
+  }
+
+  if (shouldShow) {
+    if (!analyticsSection.isConnected) {
+      analyticsMountParent.insertBefore(analyticsSection, analyticsMountAnchor.nextSibling);
+    }
+
+    loadProgressChart(currentRange);
+    renderHeatmapSelector();
+
+    if (selectedHeatmapTask) {
+      loadHeatmap(selectedHeatmapTask);
+    }
+
+    if (scrollIntoView) {
+      requestAnimationFrame(() => {
+        analyticsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  } else if (analyticsSection.isConnected) {
+    analyticsSection.remove();
+  }
+
+  updateAnalysisButtonState();
+}
+
 function setupDashboardSectionSwitch() {
   if (!dashboardSectionButtons.length) {
     return;
@@ -348,9 +410,13 @@ function setupDashboardSectionSwitch() {
   });
 }
 
-function activateDashboardPanel(panelKey) {
+function activateDashboardPanel(panelKey, { keepAnalytics = false } = {}) {
   if (!dashboardPanels[panelKey]) {
     return;
+  }
+
+  if (!keepAnalytics) {
+    setAnalyticsVisibility(false);
   }
 
   dashboardSectionButtons.forEach((button) => {
@@ -364,7 +430,7 @@ function activateDashboardPanel(panelKey) {
     panel.classList.toggle('is-active', key === panelKey);
   });
 
-  if (panelKey === 'today' && analyticsSection) {
+  if (panelKey === 'today' && isAnalyticsVisible()) {
     loadProgressChart(currentRange);
     renderHeatmapSelector();
 
@@ -503,7 +569,7 @@ function renderTasks() {
   });
 
   // Update heatmap selector if analytics is visible
-  if (analyticsSection && isTodayPanelActive()) {
+  if (isAnalyticsVisible() && isTodayPanelActive()) {
     renderHeatmapSelector();
   }
 
@@ -598,8 +664,10 @@ async function handleAddTask(e) {
       loadStats();
       
       // Refresh progress chart and heatmap selector
-      loadProgressChart(currentRange);
-      renderHeatmapSelector();
+      if (isAnalyticsVisible() && isTodayPanelActive()) {
+        loadProgressChart(currentRange);
+        renderHeatmapSelector();
+      }
     }
   } catch (error) {
     showToast(error.message, 'error');
@@ -656,10 +724,12 @@ async function toggleTaskComplete(taskId) {
       loadStats();
       
       // Refresh progress chart with current range
-      loadProgressChart(currentRange);
+      if (isAnalyticsVisible() && isTodayPanelActive()) {
+        loadProgressChart(currentRange);
+      }
       
       // Refresh heatmap if a task is selected
-      if (selectedHeatmapTask) {
+      if (isAnalyticsVisible() && selectedHeatmapTask) {
         loadHeatmap(selectedHeatmapTask);
       }
 
@@ -717,8 +787,10 @@ async function handleDelete(deleteHistory) {
       loadStats();
       
       // Refresh progress chart and heatmap selector
-      loadProgressChart(currentRange);
-      renderHeatmapSelector();
+      if (isAnalyticsVisible() && isTodayPanelActive()) {
+        loadProgressChart(currentRange);
+        renderHeatmapSelector();
+      }
       
       // Clear selected heatmap if the deleted task was selected
       if (selectedHeatmapTask === deleteTaskId) {
@@ -745,7 +817,7 @@ function handleRangeChange(range) {
 
 // Load progress chart
 async function loadProgressChart(range) {
-  if (!analyticsSection) {
+  if (!isAnalyticsVisible()) {
     return;
   }
 
@@ -937,14 +1009,14 @@ function renderHeatmap(data) {
     const completion = completionByDate.get(dateStr);
     days.push({
       date: dateStr,
-      dayOfWeek: date.getDay(), // 0=Sun .. 6=Sat
+      dayOfWeek: (date.getDay() + 6) % 7, // 0=Mon .. 6=Sun
       completed: completion === undefined ? null : completion,
       dateObj: date
     });
   }
 
-  // Build columns (weeks). Each column = 7 rows (Sun-Sat)
-  // Pad the first week so it starts on Sunday
+  // Build columns (weeks). Each column = 7 rows (Mon-Sun)
+  // Pad the first week so it starts on Monday
   const firstDay = days[0];
   const padStart = firstDay.dayOfWeek; // number of empty cells before first day
   
@@ -964,7 +1036,7 @@ function renderHeatmap(data) {
 
   // Render grid (columns = weeks, rows = days of week)
   grid.innerHTML = '';
-  grid.style.gridTemplateColumns = `repeat(${weeks.length}, 14px)`;
+  grid.style.setProperty('--heatmap-columns', String(weeks.length));
   
   // Output cells column-by-column to match CSS grid-auto-flow: column
   for (let col = 0; col < weeks.length; col++) {
@@ -985,7 +1057,7 @@ function renderHeatmap(data) {
           : day.completed === false
             ? 'Missed'
             : 'Not logged';
-        const tooltip = `${label} ${statusText}`;
+        const tooltip = `${label} - ${statusText}`;
         grid.innerHTML += `<div class="${className}" data-date="${day.date}" title="${tooltip}" aria-label="${tooltip}"></div>`;
       }
     }
@@ -1007,7 +1079,7 @@ function renderHeatmap(data) {
   });
 
   monthLabels.innerHTML = '';
-  monthLabels.style.gridTemplateColumns = `repeat(${weeks.length}, 14px)`;
+  monthLabels.style.setProperty('--heatmap-columns', String(weeks.length));
   for (let col = 0; col < weeks.length; col++) {
     const monthEntry = months.find(m => m.colIdx === col);
     monthLabels.innerHTML += `<span class="month-label">${monthEntry ? monthEntry.label : ''}</span>`;
@@ -1265,7 +1337,7 @@ function handleThemeChange(theme) {
   localStorage.setItem('habit_rabbit_theme', theme);
   applyTheme(theme);
 
-  if (analyticsSection && isTodayPanelActive()) {
+  if (isAnalyticsVisible() && isTodayPanelActive()) {
     loadProgressChart(currentRange);
   }
 
@@ -1284,7 +1356,7 @@ function applyTheme(theme) {
         if (localStorage.getItem('habit_rabbit_theme') === 'system') {
           applyResolvedTheme(e.matches ? 'dark' : 'light');
 
-          if (analyticsSection && isTodayPanelActive()) {
+          if (isAnalyticsVisible() && isTodayPanelActive()) {
             loadProgressChart(currentRange);
           }
         }
