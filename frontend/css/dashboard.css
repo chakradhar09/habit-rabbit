@@ -139,17 +139,6 @@ body::after {
   place-items: center;
 }
 
-.loader-trace-halo {
-  position: absolute;
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
-  filter: blur(5px);
-  opacity: 0.72;
-  animation: loaderHaloPulse 2.3s ease-in-out infinite;
-}
-
 .loader-logo-trace {
   width: 84px;
   height: 84px;
@@ -183,21 +172,6 @@ body::after {
   100% {
     stroke-dashoffset: var(--loader-path-length);
     opacity: 0.24;
-  }
-}
-
-@keyframes loaderHaloPulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.56;
-  }
-  55% {
-    transform: scale(1.14);
-    opacity: 0.9;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.56;
   }
 }
 
