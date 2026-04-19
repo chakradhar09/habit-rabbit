@@ -7,20 +7,35 @@ const {
   emitWeeklyPlanUpdate
 } = require('../utils/weeklyPlanRealtime');
 
-const toDateStr = (value = new Date()) => value.toISOString().split('T')[0];
+const toDateStr = (value = new Date()) => {
+  const date = value instanceof Date ? value : new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const parseDateOnly = (inputDate) => {
+  if (typeof inputDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(inputDate)) {
+    const [year, month, day] = inputDate.split('-').map((part) => Number(part));
+    return new Date(year, month - 1, day, 12, 0, 0, 0);
+  }
+
+  return new Date(inputDate);
+};
 
 const getWeekStartDate = (inputDate) => {
-  const date = inputDate ? new Date(inputDate) : new Date();
-  const normalized = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  const day = normalized.getUTCDay();
+  const date = inputDate ? parseDateOnly(inputDate) : new Date();
+  const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
+  const day = normalized.getDay();
   const diff = day === 0 ? -6 : 1 - day;
-  normalized.setUTCDate(normalized.getUTCDate() + diff);
+  normalized.setDate(normalized.getDate() + diff);
   return toDateStr(normalized);
 };
 
 const getWeekEndDate = (weekStartDate) => {
-  const start = new Date(`${weekStartDate}T00:00:00.000Z`);
-  start.setUTCDate(start.getUTCDate() + 6);
+  const start = parseDateOnly(weekStartDate);
+  start.setDate(start.getDate() + 6);
   return toDateStr(start);
 };
 
@@ -28,6 +43,15 @@ const getWeekEndDate = (weekStartDate) => {
 // @route   GET /api/analytics/weekly-plan/stream
 // @access  Private
 const streamWeeklyPlan = (req, res) => {
+  if (req.socket) {
+    req.socket.setTimeout(0);
+  }
+
+  if (res.socket) {
+    res.socket.setTimeout(0);
+    res.socket.setKeepAlive(true);
+  }
+
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache, no-transform');
   res.setHeader('Connection', 'keep-alive');
@@ -76,8 +100,8 @@ const getDailyProgress = async (req, res) => {
     const totalTasks = await Task.countDocuments({ userId, isActive: true });
 
     // Get all completions in the date range
-    const startDateStr = startDate.toISOString().split('T')[0];
-    const endDateStr = endDate.toISOString().split('T')[0];
+    const startDateStr = toDateStr(startDate);
+    const endDateStr = toDateStr(endDate);
 
     const completionCounts = await TaskCompletion.aggregate([
       {
@@ -102,7 +126,7 @@ const getDailyProgress = async (req, res) => {
     const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
-      const dateStr = currentDate.toISOString().split('T')[0];
+      const dateStr = toDateStr(currentDate);
       const completed = completionsByDate.get(dateStr) || 0;
       const percentage = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
 
@@ -158,8 +182,8 @@ const getTaskHeatmap = async (req, res) => {
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 6);
 
-    const startDateStr = startDate.toISOString().split('T')[0];
-    const endDateStr = endDate.toISOString().split('T')[0];
+    const startDateStr = toDateStr(startDate);
+    const endDateStr = toDateStr(endDate);
 
     const completions = await TaskCompletion.find({
       taskId,
@@ -205,7 +229,7 @@ const getTaskHeatmap = async (req, res) => {
 const getStats = async (req, res) => {
   try {
     const userId = req.user._id;
-    const today = new Date().toISOString().split('T')[0];
+    const today = toDateStr(new Date());
 
     // Total active tasks
     const totalTasks = await Task.countDocuments({ userId, isActive: true });
@@ -236,7 +260,7 @@ const getStats = async (req, res) => {
     const checkDate = new Date();
     
     while (true) {
-      const dateStr = checkDate.toISOString().split('T')[0];
+      const dateStr = toDateStr(checkDate);
 
       if (completionDateSet.has(dateStr)) {
         streak++;

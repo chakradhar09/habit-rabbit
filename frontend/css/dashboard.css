@@ -2623,3 +2623,70 @@ body::after {
   }
 }
 
+/* Dark theme corrective overrides for late light hardcoded blocks */
+:root[data-theme="dark"] .header {
+  border-bottom: 1px solid var(--border-mid);
+  background: linear-gradient(180deg, rgba(14, 21, 18, 0.96), rgba(14, 21, 18, 0.88));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+:root[data-theme="dark"] .header-logo .brand-name {
+  color: var(--accent);
+}
+
+:root[data-theme="dark"] .hbtn {
+  background: var(--surface-2);
+  border: 1px solid var(--border-mid);
+  color: var(--t2);
+}
+
+:root[data-theme="dark"] .hbtn:hover,
+:root[data-theme="dark"] .hbtn.active {
+  background: var(--surface-3);
+  border-color: var(--accent-glow);
+  color: var(--t1);
+}
+
+:root[data-theme="dark"] .add-input {
+  background: var(--surface-2);
+  border-color: var(--border-mid);
+  color: var(--t1);
+}
+
+:root[data-theme="dark"] .add-input::placeholder {
+  color: var(--t3);
+}
+
+:root[data-theme="dark"] .habit-item,
+:root[data-theme="dark"] .task-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-mid);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+:root[data-theme="dark"] .habit-item:hover,
+:root[data-theme="dark"] .task-card:hover {
+  background: var(--surface-3);
+  border-color: var(--accent-glow);
+}
+
+:root[data-theme="dark"] .habit-item.completed,
+:root[data-theme="dark"] .task-card.completed {
+  background: rgba(127, 212, 162, 0.14);
+  border-color: rgba(127, 212, 162, 0.4);
+}
+
+:root[data-theme="dark"] .habit-item.completed .habit-name,
+:root[data-theme="dark"] .task-card.completed .task-title {
+  color: var(--t2);
+}
+
+:root[data-theme="dark"] .task-delete-btn {
+  color: var(--t3);
+}
+
+:root[data-theme="dark"] .task-card:hover .task-delete-btn {
+  color: #ff9b9b;
+}
+

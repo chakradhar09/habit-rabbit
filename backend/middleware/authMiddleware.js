@@ -19,7 +19,16 @@ const authMiddleware = async (req, res, next) => {
       : null;
 
     // EventSource cannot send custom auth headers, so allow query token for stream endpoint only.
-    const isWeeklyStreamRequest = req.method === 'GET' && req.path === '/weekly-plan/stream';
+    const requestPath = typeof req.path === 'string' ? req.path : '';
+    const originalPath = typeof req.originalUrl === 'string'
+      ? req.originalUrl.split('?')[0]
+      : '';
+    const isWeeklyStreamRequest = req.method === 'GET' && (
+      requestPath === '/weekly-plan/stream'
+      || requestPath.endsWith('/weekly-plan/stream')
+      || originalPath.endsWith('/api/analytics/weekly-plan/stream')
+      || originalPath.endsWith('/weekly-plan/stream')
+    );
     const tokenFromQuery = isWeeklyStreamRequest && typeof req.query.token === 'string'
       ? req.query.token.trim()
       : null;

@@ -352,6 +352,14 @@ async function loadTaskStreaks() {
   await Promise.all(streakPromises);
 }
 
+function toLocalDateStr(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // Calculate current streak from heatmap data
 function calculateStreakFromHeatmap(heatmapData) {
   if (!heatmapData || heatmapData.length === 0) return 0;
@@ -362,12 +370,11 @@ function calculateStreakFromHeatmap(heatmapData) {
   );
   
   let streak = 0;
-  const today = new Date().toISOString().split('T')[0];
   let checkDate = new Date();
   
   // Count consecutive completed days going backwards from today
   for (let i = 0; i < 365; i++) { // Safety limit
-    const dateStr = checkDate.toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(checkDate);
     const dayData = sortedData.find(d => d.date === dateStr);
     
     if (dayData && dayData.completed === true) {
@@ -558,7 +565,9 @@ async function toggleTaskComplete(taskId) {
   const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
   const wasCompleted = task.completed;
   task.completed = !task.completed;
-  taskCard.classList.toggle('completed');
+  if (taskCard) {
+    taskCard.classList.toggle('completed');
+  }
 
   try {
     const response = await API.tasks.toggleComplete(taskId);
@@ -589,11 +598,16 @@ async function toggleTaskComplete(taskId) {
       if (selectedHeatmapTask) {
         loadHeatmap(selectedHeatmapTask);
       }
+
+      // Keep weekly plan/review in sync in the same tab even if SSE reconnects late.
+      scheduleWeeklyRealtimeRefresh();
     }
   } catch (error) {
     // Revert on error
     task.completed = wasCompleted;
-    taskCard.classList.toggle('completed');
+    if (taskCard) {
+      taskCard.classList.toggle('completed');
+    }
     showToast(error.message, 'error');
   }
 }
@@ -862,17 +876,17 @@ function renderHeatmap(data) {
   const days = [];
   const completionByDate = new Map((data || []).map((entry) => [entry.date, entry.completed]));
   const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
   
   for (let i = totalDays - 1; i >= 0; i--) {
     const date = new Date(today);
-    date.setUTCDate(today.getUTCDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
+    date.setDate(today.getDate() - i);
+    const dateStr = toLocalDateStr(date);
 
     const completion = completionByDate.get(dateStr);
     days.push({
       date: dateStr,
-      dayOfWeek: date.getUTCDay(), // 0=Sun .. 6=Sat
+      dayOfWeek: date.getDay(), // 0=Sun .. 6=Sat
       completed: completion === undefined ? null : completion,
       dateObj: date
     });
@@ -933,9 +947,9 @@ function renderHeatmap(data) {
     // Find the first valid day in this week
     const validDay = week.find(d => d !== null);
     if (validDay) {
-      const month = validDay.dateObj.getUTCMonth();
+      const month = validDay.dateObj.getMonth();
       if (month !== lastMonth) {
-        months.push({ colIdx, label: validDay.dateObj.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }) });
+        months.push({ colIdx, label: validDay.dateObj.toLocaleDateString('en-US', { month: 'short' }) });
         lastMonth = month;
       }
     }
@@ -953,9 +967,9 @@ function getCurrentWeekStartDate() {
   const today = new Date();
   const day = today.getDay();
   const diff = day === 0 ? -6 : 1 - day;
-  const weekStart = new Date(today);
-  weekStart.setDate(today.getDate() + diff);
-  return weekStart.toISOString().split('T')[0];
+  const weekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  weekStart.setDate(weekStart.getDate() + diff);
+  return toLocalDateStr(weekStart);
 }
 
 function renderWeeklyPriorityOptions(selectedTaskIds = []) {
@@ -1103,9 +1117,8 @@ function scheduleWeeklyRealtimeRefresh() {
 function handleWeeklyRealtimeUpdate(event) {
   try {
     const payload = JSON.parse(event.data || '{}');
-    const currentWeekStart = getCurrentWeekStartDate();
 
-    if (payload.weekStartDate && payload.weekStartDate !== currentWeekStart) {
+    if (payload.type && payload.type !== 'weekly-plan-updated') {
       return;
     }
 
@@ -1160,6 +1173,7 @@ function startWeeklyPlanRealtimeStream() {
     };
 
     weeklyPlanEventSource.addEventListener('weekly-plan-updated', handleWeeklyRealtimeUpdate);
+    weeklyPlanEventSource.onmessage = handleWeeklyRealtimeUpdate;
 
     weeklyPlanEventSource.onerror = () => {
       if (weeklyPlanEventSource) {
@@ -1182,16 +1196,16 @@ function startWeeklyPlanRealtimeStream() {
 // Initialize theme on page load
 function initializeTheme() {
   const storedTheme = localStorage.getItem('habit_rabbit_theme');
-  const savedTheme = !storedTheme || storedTheme === 'dark' ? 'light' : storedTheme;
+  const savedTheme = storedTheme || 'dark';
+
   if (!localStorage.getItem('habit_rabbit_theme')) {
-    localStorage.setItem('habit_rabbit_theme', 'light');
-  } else if (storedTheme === 'dark') {
-    localStorage.setItem('habit_rabbit_theme', 'light');
+    localStorage.setItem('habit_rabbit_theme', 'dark');
   }
+
   applyTheme(savedTheme);
   
   // Set the correct radio button
-  const radio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
+  const radio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`) || document.querySelector('input[name="theme"][value="dark"]');
   if (radio) radio.checked = true;
 }
 

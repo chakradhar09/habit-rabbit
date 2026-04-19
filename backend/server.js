@@ -131,7 +131,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info('Habit Rabbit server started', {
     port: PORT,
     apiUrl: `http://localhost:${PORT}/api`,
@@ -140,3 +140,6 @@ app.listen(PORT, () => {
     allowedOrigins
   });
 });
+
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;

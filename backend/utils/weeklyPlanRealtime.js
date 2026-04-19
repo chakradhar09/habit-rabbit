@@ -1,13 +1,29 @@
 const clientsByUser = new Map();
+const SSE_HEARTBEAT_INTERVAL_MS = 4000;
 
-const toDateStr = (value = new Date()) => new Date(value).toISOString().split('T')[0];
+const toDateStr = (value = new Date()) => {
+  const date = value instanceof Date ? value : new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const parseDateOnly = (inputDate) => {
+  if (typeof inputDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(inputDate)) {
+    const [year, month, day] = inputDate.split('-').map((part) => Number(part));
+    return new Date(year, month - 1, day, 12, 0, 0, 0);
+  }
+
+  return new Date(inputDate);
+};
 
 const getWeekStartDateISO = (inputDate) => {
-  const date = inputDate ? new Date(inputDate) : new Date();
-  const normalized = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  const day = normalized.getUTCDay();
+  const date = inputDate ? parseDateOnly(inputDate) : new Date();
+  const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
+  const day = normalized.getDay();
   const diff = day === 0 ? -6 : 1 - day;
-  normalized.setUTCDate(normalized.getUTCDate() + diff);
+  normalized.setDate(normalized.getDate() + diff);
   return toDateStr(normalized);
 };
 
@@ -56,7 +72,7 @@ const registerWeeklyPlanStreamClient = (userId, res) => {
     if (!res.writableEnded) {
       res.write(': heartbeat\n\n');
     }
-  }, 25000);
+  }, SSE_HEARTBEAT_INTERVAL_MS);
 
   return () => {
     removeClient(userKey, client);
