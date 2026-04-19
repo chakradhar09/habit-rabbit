@@ -19,6 +19,7 @@ let weeklyPlanRefreshTimer = null;
 let weeklyRealtimeReconnectTimer = null;
 let showAnalytics = false;
 let mobileAnalyticsObserver = null;
+let isMobileScrollRevealBound = false;
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -376,9 +377,12 @@ function isMobileViewport() {
 function initializeMobileDashboardUX() {
   if (isMobileViewport()) {
     startMobileAnalyticsObserver();
+    startMobileScrollReveal();
     setAnalyticsVisibility(false);
+    evaluateMobileAnalyticsVisibility();
   } else {
     stopMobileAnalyticsObserver();
+    stopMobileScrollReveal();
   }
 }
 
@@ -386,9 +390,12 @@ function handleMobileViewportChange(event) {
   if (event.matches) {
     setAnalyticsVisibility(false);
     startMobileAnalyticsObserver();
+    startMobileScrollReveal();
+    evaluateMobileAnalyticsVisibility();
   } else {
     closeMobileMenu();
     stopMobileAnalyticsObserver();
+    stopMobileScrollReveal();
     setAnalyticsVisibility(false);
   }
 }
@@ -399,18 +406,10 @@ function startMobileAnalyticsObserver() {
   }
 
   mobileAnalyticsObserver = new IntersectionObserver((entries) => {
-    const [entry] = entries;
-    if (!entry || !isMobileViewport()) return;
-
-    if (!isTodayPanelActive()) {
-      setAnalyticsVisibility(false);
-      return;
-    }
-
-    const scrolledPastTasks = entry.boundingClientRect.bottom <= 0;
-    setAnalyticsVisibility(scrolledPastTasks, { animate: scrolledPastTasks });
+    if (!entries.length || !isMobileViewport()) return;
+    evaluateMobileAnalyticsVisibility();
   }, {
-    threshold: [0, 1]
+    threshold: [0, 0.25, 0.5, 0.75, 1]
   });
 
   mobileAnalyticsObserver.observe(habitsCard);
@@ -423,6 +422,50 @@ function stopMobileAnalyticsObserver() {
 
   mobileAnalyticsObserver.disconnect();
   mobileAnalyticsObserver = null;
+}
+
+function startMobileScrollReveal() {
+  if (isMobileScrollRevealBound) {
+    return;
+  }
+
+  window.addEventListener('scroll', evaluateMobileAnalyticsVisibility, { passive: true });
+  window.addEventListener('resize', evaluateMobileAnalyticsVisibility);
+  isMobileScrollRevealBound = true;
+}
+
+function stopMobileScrollReveal() {
+  if (!isMobileScrollRevealBound) {
+    return;
+  }
+
+  window.removeEventListener('scroll', evaluateMobileAnalyticsVisibility);
+  window.removeEventListener('resize', evaluateMobileAnalyticsVisibility);
+  isMobileScrollRevealBound = false;
+}
+
+function evaluateMobileAnalyticsVisibility() {
+  if (!isMobileViewport() || !habitsCard) {
+    return;
+  }
+
+  if (!isTodayPanelActive()) {
+    if (showAnalytics) {
+      setAnalyticsVisibility(false);
+    }
+    return;
+  }
+
+  const rect = habitsCard.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const nearTop = window.scrollY < 28;
+  const reachedPageEnd = (window.scrollY + viewportHeight) >= (document.documentElement.scrollHeight - 2);
+  const passedTasks = rect.bottom <= (viewportHeight - Math.max(96, viewportHeight * 0.18));
+  const shouldShowAnalytics = !nearTop && (passedTasks || reachedPageEnd);
+
+  if (shouldShowAnalytics !== showAnalytics) {
+    setAnalyticsVisibility(shouldShowAnalytics, { animate: shouldShowAnalytics });
+  }
 }
 
 function toggleMobileMenu(event) {
