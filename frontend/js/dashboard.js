@@ -20,6 +20,7 @@ let weeklyRealtimeReconnectTimer = null;
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
+const loadingTracePaths = Array.from(document.querySelectorAll('.loader-logo-trace-path'));
 const app = document.getElementById('app');
 const taskList = document.getElementById('task-list');
 const emptyState = document.getElementById('empty-state');
@@ -168,6 +169,7 @@ const THEME_TOKENS = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  initializeLoadingTraceAnimation();
   initializeDashboardHeader();
   updateHabitListMaxHeight();
   window.addEventListener('resize', updateHabitListMaxHeight);
@@ -213,6 +215,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   startWeeklyPlanRealtimeStream();
   window.addEventListener('beforeunload', stopWeeklyPlanRealtimeStream);
 });
+
+function initializeLoadingTraceAnimation() {
+  if (!loadingTracePaths.length) return;
+
+  loadingTracePaths.forEach((path, index) => {
+    const length = Math.ceil(path.getTotalLength());
+    path.style.setProperty('--loader-path-length', `${length}`);
+    path.style.animationDelay = `${index * 0.08}s`;
+  });
+}
 
 // Event Listeners Setup
 function setupEventListeners() {

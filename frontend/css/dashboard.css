@@ -110,21 +110,95 @@ body::after {
   display: grid;
   place-items: center;
   z-index: 1000;
+  background:
+    radial-gradient(860px 420px at -8% -12%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 56%),
+    radial-gradient(780px 410px at 108% 116%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 58%),
+    var(--bg);
 }
 
 .loader {
   text-align: center;
 }
 
-.loader-icon {
-  display: block;
-  font-size: 34px;
-  margin-bottom: 10px;
+.loader-brand {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
 }
 
 .loader p {
   color: var(--t2);
   font-size: 14px;
+}
+
+.loader-trace-stage {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+}
+
+.loader-trace-halo {
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  filter: blur(5px);
+  opacity: 0.72;
+  animation: loaderHaloPulse 2.3s ease-in-out infinite;
+}
+
+.loader-logo-trace {
+  width: 84px;
+  height: 84px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+.loader-logo-trace-path {
+  --loader-path-length: 140;
+  stroke-dasharray: var(--loader-path-length);
+  stroke-dashoffset: var(--loader-path-length);
+  animation: loaderTraceCycle 2.6s ease-in-out infinite;
+}
+
+@keyframes loaderTraceCycle {
+  0% {
+    stroke-dashoffset: var(--loader-path-length);
+    opacity: 0.05;
+  }
+  12% {
+    opacity: 1;
+  }
+  54% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: var(--loader-path-length);
+    opacity: 0.24;
+  }
+}
+
+@keyframes loaderHaloPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.56;
+  }
+  55% {
+    transform: scale(1.14);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.56;
+  }
 }
 
 .header {
