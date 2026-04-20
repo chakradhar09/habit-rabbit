@@ -108,6 +108,11 @@ const systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 const mobileViewportMediaQuery = window.matchMedia('(max-width: 768px)');
 let isSystemThemeListenerBound = false;
 
+function formatCompletionPercentage(completed, total) {
+  if (!total) return '0%';
+  return `${Math.round((completed / total) * 100)}%`;
+}
+
 const DARK_THEME_TOKENS = {
   '--bg': '#0E1512',
   '--bg2': '#111A16',
@@ -703,12 +708,12 @@ async function loadStats() {
   try {
     const response = await API.analytics.getStats();
     if (response.success) {
-      const { todayCompletions, currentStreak, totalCompletions } = response.data;
+      const { todayCompletions, currentStreak, totalCompletions, totalTasks } = response.data;
 
       statToday.textContent = todayCompletions;
       statStreak.textContent = currentStreak;
       statTotal.textContent = totalCompletions;
-      if (headerTodayCount) headerTodayCount.textContent = todayCompletions;
+      if (headerTodayCount) headerTodayCount.textContent = formatCompletionPercentage(todayCompletions, totalTasks);
       if (headerStreakCount) headerStreakCount.textContent = currentStreak;
     }
   } catch (error) {
@@ -780,7 +785,7 @@ function updateProgress(progress) {
   if (habitBadge) {
     habitBadge.textContent = pausedTasks > 0 ? `${completed} / ${total} (+${pausedTasks} paused)` : `${completed} / ${total}`;
   }
-  if (headerTodayCount) headerTodayCount.textContent = completed;
+  if (headerTodayCount) headerTodayCount.textContent = `${percentage}%`;
 }
 
 // Handle add task
