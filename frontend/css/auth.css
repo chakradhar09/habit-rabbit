@@ -424,6 +424,33 @@ input {
   color: var(--t2);
 }
 
+.form-meta {
+  display: flex;
+  justify-content: flex-end;
+  margin: -2px 0 6px;
+}
+
+.form-link {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0;
+}
+
+.form-link:hover {
+  text-decoration: underline;
+}
+
+.form-note {
+  font-size: 13px;
+  color: var(--t2);
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
 .btn {
   width: 100%;
   padding: 13px;
@@ -457,6 +484,18 @@ input {
 .btn-primary:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--surface-soft);
+  color: var(--t1);
+  border: 1px solid var(--border);
+  margin-top: 10px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-accent);
+  border-color: var(--accent-glow);
 }
 
 .btn-text {

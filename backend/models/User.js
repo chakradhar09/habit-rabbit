@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 6
   },
+  passwordResetTokenHash: {
+    type: String,
+    default: null
+  },
+  passwordResetExpiresAt: {
+    type: Date,
+    default: null
+  },
   onboarding: {
     completed: {
       type: Boolean,
@@ -71,6 +79,8 @@ userSchema.methods.comparePassword = async function(password) {
 userSchema.methods.toJSON = function() {
   const obj = this.toObject();
   delete obj.passwordHash;
+  delete obj.passwordResetTokenHash;
+  delete obj.passwordResetExpiresAt;
   return obj;
 };
 

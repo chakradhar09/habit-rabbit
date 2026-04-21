@@ -53,6 +53,45 @@ const validateLoginPayload = (req, res, next) => {
   return next();
 };
 
+const validateForgotPasswordPayload = (req, res, next) => {
+  const email = normalizeEmail(req.body.email);
+
+  if (!email) {
+    return badRequest(res, 'Please provide your email address.');
+  }
+
+  if (!EMAIL_REGEX.test(email)) {
+    return badRequest(res, 'Please provide a valid email address.');
+  }
+
+  req.body.email = email;
+  return next();
+};
+
+const validateResetPasswordPayload = (req, res, next) => {
+  const token = typeof req.body.token === 'string' ? req.body.token.trim().toLowerCase() : '';
+  const password = typeof req.body.password === 'string' ? req.body.password : '';
+
+  if (!token || !password) {
+    return badRequest(res, 'Please provide reset token and new password.');
+  }
+
+  if (!/^[a-f0-9]{64}$/.test(token)) {
+    return badRequest(res, 'Reset token is invalid.');
+  }
+
+  if (!PASSWORD_REGEX.test(password)) {
+    return badRequest(
+      res,
+      'Password must be 8-72 characters and include at least one uppercase letter, one lowercase letter, and one number.'
+    );
+  }
+
+  req.body.token = token;
+  req.body.password = password;
+  return next();
+};
+
 const validateTaskCreatePayload = (req, res, next) => {
   const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
 
@@ -312,6 +351,8 @@ const validateObjectIdParam = (paramName) => (req, res, next) => {
 module.exports = {
   validateRegisterPayload,
   validateLoginPayload,
+  validateForgotPasswordPayload,
+  validateResetPasswordPayload,
   validateTaskCreatePayload,
   validateTaskOrderPayload,
   validateApplyPrioritiesPayload,

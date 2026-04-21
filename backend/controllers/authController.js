@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 const { PASSWORD_REGEX } = require('../middleware/validationMiddleware');
@@ -6,6 +7,7 @@ const { PASSWORD_REGEX } = require('../middleware/validationMiddleware');
 const MAX_FAILED_ATTEMPTS = Number(process.env.MAX_LOGIN_ATTEMPTS || 5);
 const LOGIN_LOCKOUT_MINUTES = Number(process.env.LOGIN_LOCKOUT_MINUTES || 10);
 const LOGIN_ATTEMPT_WINDOW_MS = Number(process.env.LOGIN_ATTEMPT_WINDOW_MINUTES || 30) * 60 * 1000;
+const PASSWORD_RESET_TTL_MINUTES = Number(process.env.PASSWORD_RESET_TTL_MINUTES || 30);
 const loginAttempts = new Map();
 
 // Generate JWT Token
@@ -63,6 +65,9 @@ const registerFailedAttempt = (attemptKey) => {
 const clearAttemptRecord = (attemptKey) => {
   loginAttempts.delete(attemptKey);
 };
+
+const hashResetToken = (token) =>
+  crypto.createHash('sha256').update(token).digest('hex');
 
 // @desc    Register new user
 // @route   POST /api/auth/register
@@ -224,6 +229,111 @@ const login = async (req, res) => {
   }
 };
 
+// @desc    Request password reset token
+// @route   POST /api/auth/forgot-password
+// @access  Public
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = String(email || '').toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
+
+    let resetToken = null;
+
+    if (user) {
+      resetToken = crypto.randomBytes(32).toString('hex');
+      user.passwordResetTokenHash = hashResetToken(resetToken);
+      user.passwordResetExpiresAt = new Date(Date.now() + PASSWORD_RESET_TTL_MINUTES * 60 * 1000);
+      await user.save();
+
+      logger.audit('password_reset_requested', {
+        userId: String(user._id),
+        email: user.email
+      });
+    }
+
+    const response = {
+      success: true,
+      message: 'If an account exists for this email, reset instructions have been generated.'
+    };
+
+    if (resetToken && process.env.NODE_ENV !== 'production') {
+      const appBaseUrl = (process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+      response.data = {
+        resetToken,
+        resetUrl: `${appBaseUrl}/index.html?resetToken=${resetToken}`,
+        expiresInMinutes: PASSWORD_RESET_TTL_MINUTES
+      };
+    }
+
+    return res.json(response);
+  } catch (error) {
+    logger.error('Forgot password failure', {
+      error: error.message,
+      stack: error.stack
+    });
+
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while processing password reset request'
+    });
+  }
+};
+
+// @desc    Reset password using token
+// @route   POST /api/auth/reset-password
+// @access  Public
+const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!PASSWORD_REGEX.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be 8-72 characters and include uppercase, lowercase, and a number'
+      });
+    }
+
+    const tokenHash = hashResetToken(token);
+    const user = await User.findOne({
+      passwordResetTokenHash: tokenHash,
+      passwordResetExpiresAt: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Reset token is invalid or has expired'
+      });
+    }
+
+    user.passwordHash = password;
+    user.passwordResetTokenHash = null;
+    user.passwordResetExpiresAt = null;
+    await user.save();
+
+    logger.audit('password_reset_completed', {
+      userId: String(user._id),
+      email: user.email
+    });
+
+    return res.json({
+      success: true,
+      message: 'Password has been reset successfully.'
+    });
+  } catch (error) {
+    logger.error('Reset password failure', {
+      error: error.message,
+      stack: error.stack
+    });
+
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while resetting password'
+    });
+  }
+};
+
 // @desc    Get current user
 // @route   GET /api/auth/me
 // @access  Private
@@ -255,5 +365,7 @@ const getMe = async (req, res) => {
 module.exports = {
   register,
   login,
+  forgotPassword,
+  resetPassword,
   getMe
 };

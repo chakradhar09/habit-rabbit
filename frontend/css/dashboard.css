@@ -199,23 +199,14 @@ body::after {
   flex-shrink: 0;
 }
 
-.header-logo .brand-mark {
-  width: 28px;
-  height: 28px;
+.header-logo .brand-logo {
+  display: inline-block;
+  width: 188px;
+  height: 44px;
   background: var(--accent);
-  background: var(--brand);
-  -webkit-mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
-  mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
+  -webkit-mask: url('../assets/logo.svg') left center / contain no-repeat;
+  mask: url('../assets/logo.svg') left center / contain no-repeat;
   flex-shrink: 0;
-}
-
-.header-logo .brand-name {
-  font-family: var(--font-d);
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 0;
-  line-height: 1;
 }
 
 .header-date {
@@ -2210,22 +2201,14 @@ body::after {
   gap: 8px;
 }
 
-.header-logo .brand-mark {
+.header-logo .brand-logo {
   display: inline-block;
-  width: 30px;
-  height: 30px;
+  width: 300px;
+  height: 58px;
   background: var(--accent);
-  -webkit-mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
-  mask: url('../assets/rabbit-face.svg') center / contain no-repeat;
+  -webkit-mask: url('../assets/logo.svg') left center / contain no-repeat;
+  mask: url('../assets/logo.svg') left center / contain no-repeat;
   flex-shrink: 0;
-}
-
-.header-logo .brand-name {
-  font-size: 36px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--accent);
-  line-height: 1;
 }
 
 .header-actions {
@@ -2297,32 +2280,32 @@ body::after {
   align-items: flex-start;
   min-width: 148px;
   padding: 12px 14px;
-  border: 1px solid #ECE0B8;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
   border-radius: 12px;
-  background: #F3E9C3;
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface));
   box-shadow: none;
   transition: border-color 0.18s ease, background-color 0.18s ease;
 }
 
 .minimal-stat:nth-child(2) {
-  border-color: #E9D9C0;
-  background: #F2E3CA;
+  border-color: color-mix(in srgb, var(--accent) 24%, var(--border));
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
 }
 
 .minimal-stat:hover {
-  border-color: #E8D8B0;
-  background: #F4E7C1;
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--border));
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
   box-shadow: none;
 }
 
 .minimal-stat-label {
-  color: #5D6F88;
+  color: var(--t2);
   font-size: 12px;
   font-weight: 500;
 }
 
 .minimal-stat-value {
-  color: #0F2846;
+  color: var(--t1);
   font-size: 20px;
   font-weight: 700;
   line-height: 1.15;
@@ -2340,30 +2323,31 @@ body::after {
 }
 
 :root[data-theme="dark"] .minimal-stat {
-  border-color: rgba(125, 162, 214, 0.45);
-  background: rgba(63, 127, 234, 0.2);
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--border-mid));
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
   box-shadow: none;
 }
 
 :root[data-theme="dark"] .minimal-stat:nth-child(2) {
-  background: rgba(72, 145, 239, 0.18);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-2));
 }
 
 :root[data-theme="dark"] .minimal-stat:hover {
-  border-color: rgba(125, 179, 250, 0.64);
+  border-color: color-mix(in srgb, var(--accent) 56%, var(--border-mid));
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface-3));
   box-shadow: none;
 }
 
 :root[data-theme="dark"] .minimal-stat-label {
-  color: #A9C2E8;
+  color: var(--t2);
 }
 
 :root[data-theme="dark"] .minimal-stat-value {
-  color: #E2ECFF;
+  color: var(--t1);
 }
 
 :root[data-theme="dark"] .minimal-stat-value-emoji {
-  color: #7FB1FF;
+  color: var(--accent);
 }
 
 .header-date,
@@ -2513,13 +2497,9 @@ body::after {
     width: 100%;
   }
 
-  .header-logo .brand-name {
-    font-size: 30px;
-  }
-
-  .header-logo .brand-mark {
-    width: 22px;
-    height: 22px;
+  .header-logo .brand-logo {
+    width: 206px;
+    height: 40px;
   }
 
   .hbtn {
@@ -2582,13 +2562,9 @@ body::after {
     gap: 7px;
   }
 
-  .header-logo .brand-name {
-    font-size: 32px;
-  }
-
-  .header-logo .brand-mark {
-    width: 23px;
-    height: 23px;
+  .header-logo .brand-logo {
+    width: 230px;
+    height: 44px;
   }
 
   .header-spacer {
@@ -2807,13 +2783,9 @@ body::after {
     padding: 8px 12px;
   }
 
-  .header-logo .brand-name {
-    font-size: 26px;
-  }
-
-  .header-logo .brand-mark {
-    width: 20px;
-    height: 20px;
+  .header-logo .brand-logo {
+    width: 170px;
+    height: 34px;
   }
 
   .header-actions {
@@ -2889,12 +2861,8 @@ body::after {
   -webkit-backdrop-filter: blur(18px);
 }
 
-:root[data-theme="dark"] .header-logo .brand-mark {
-  background: #7FB1FF;
-}
-
-:root[data-theme="dark"] .header-logo .brand-name {
-  color: #E6EEFF;
+:root[data-theme="dark"] .header-logo .brand-logo {
+  background: var(--accent);
 }
 
 :root[data-theme="dark"] .hbtn {

@@ -134,6 +134,35 @@ const API = (() => {
       
       return response;
     },
+
+    /**
+     * Request password reset instructions
+     * @param {string} email
+     * @returns {Promise<object>}
+     */
+    forgotPassword: async (email) => {
+      const response = await request('/auth/forgot-password', {
+        method: 'POST',
+        body: { email }
+      });
+
+      return response;
+    },
+
+    /**
+     * Reset password with reset token
+     * @param {string} token
+     * @param {string} password
+     * @returns {Promise<object>}
+     */
+    resetPassword: async (token, password) => {
+      const response = await request('/auth/reset-password', {
+        method: 'POST',
+        body: { token, password }
+      });
+
+      return response;
+    },
     
     /**
      * Logout current user
