@@ -738,10 +738,18 @@ function renderTasks() {
     const taskId = card.dataset.taskId;
 
     card.addEventListener('click', (e) => {
-      // Don't toggle complete if delete button was clicked
-      if (e.target.classList.contains('task-delete-btn')) return;
+      // Don't toggle completion when interacting with action buttons
+      if (e.target.closest('.task-delete-btn') || e.target.closest('.task-edit-btn')) return;
       toggleTaskComplete(taskId);
     });
+
+    const editBtn = card.querySelector('.task-edit-btn');
+    if (editBtn) {
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEditMode(taskId);
+      });
+    }
 
     // Delete button handler
     const deleteBtn = card.querySelector('.task-delete-btn');
@@ -771,6 +779,11 @@ function createTaskHTML(task) {
   return `
     <div class="habit-item task-card ${task.completed ? 'completed' : ''}" data-task-id="${task._id}">
       <span class="habit-name task-title">${escapeHtml(task.title)}</span>
+      <button class="task-edit-btn" type="button" title="Edit task" aria-label="Edit task" data-task-id="${task._id}">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.96 1.96 3.75 3.75 2.13-1.79z"/>
+        </svg>
+      </button>
       <button class="task-delete-btn" type="button" title="Delete task" data-task-id="${task._id}">×</button>
     </div>
   `;
@@ -798,18 +811,21 @@ async function handleAddTask(e) {
   // If editing, update the task
   if (editingTaskId) {
     try {
-      // For now, delete and recreate (since we have no update endpoint)
-      const task = tasks.find(t => t._id === editingTaskId);
-      if (task) {
-        task.title = title;
+      const response = await API.tasks.update(editingTaskId, title);
+      if (response.success) {
+        const task = tasks.find(t => t._id === editingTaskId);
+        if (task) {
+          task.title = title;
+        }
+
         renderTasks();
         newTaskInput.value = '';
         editingTaskId = null;
-        
+
         // Update button text back to "Add"
         const addBtn = addTaskForm.querySelector('button[type="submit"]');
         addBtn.textContent = 'Add';
-        
+
         showToast('Task updated', 'success');
       }
     } catch (error) {
@@ -1233,15 +1249,9 @@ function renderHeatmap(data) {
         let className = 'heatmap-day';
         if (day.completed === true) {
           className += ' completed';
-        } else if (day.completed === false) {
-          className += ' missed';
         }
         const label = formatDate(day.date);
-        const statusText = day.completed === true
-          ? 'Done'
-          : day.completed === false
-            ? 'Missed'
-            : 'Not logged';
+        const statusText = day.completed === true ? 'Done' : 'Not Done';
         const tooltip = `${label} - ${statusText}`;
         grid.innerHTML += `<div class="${className}" data-date="${day.date}" title="${tooltip}" aria-label="${tooltip}"></div>`;
       }

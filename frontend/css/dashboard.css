@@ -741,9 +741,9 @@ body::after {
   opacity: 0.88;
 }
 
+.task-edit-btn,
 .task-delete-btn {
   position: absolute;
-  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   width: 24px;
@@ -763,9 +763,33 @@ body::after {
   padding: 0;
 }
 
+.task-edit-btn {
+  right: 40px;
+}
+
+.task-edit-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  display: block;
+}
+
+.task-delete-btn {
+  right: 12px;
+}
+
+.task-card:hover .task-edit-btn {
+  opacity: 1;
+  color: #D98E1D;
+}
+
 .task-card:hover .task-delete-btn {
   opacity: 1;
   color: #EF4444;
+}
+
+.task-edit-btn:hover {
+  color: #B87916;
 }
 
 .task-delete-btn:hover {
@@ -1734,39 +1758,9 @@ body.ai-drawer-open .ai-coach-fab {
   background: #F59E0B;
 }
 
-.heatmap-day.missed {
-  background: #FCA5A5;
-}
-
 .heatmap-day:not(.empty):hover {
   filter: brightness(0.97);
   transform: none;
-}
-
-.legend-label {
-  font-size: 11px;
-  color: var(--t3);
-  padding: 0 4px;
-}
-
-.legend-color {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  display: inline-block;
-}
-
-.legend-color.none {
-  background: #E5E7EB;
-  border: 1px solid var(--border-soft);
-}
-
-.legend-color.done {
-  background: #F59E0B;
-}
-
-.legend-color.missed {
-  background: #FCA5A5;
 }
 
 .btn {
@@ -2704,9 +2698,21 @@ body::after {
 
   .task-delete-btn {
     opacity: 1;
-    color: #EF4444;
     width: 32px;
     height: 32px;
+    right: 8px;
+  }
+
+  .task-edit-btn {
+    opacity: 1;
+    width: 32px;
+    height: 32px;
+    right: 42px;
+    color: #D98E1D;
+  }
+
+  .task-delete-btn {
+    color: #EF4444;
     right: 8px;
   }
 

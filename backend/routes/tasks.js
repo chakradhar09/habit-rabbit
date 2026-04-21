@@ -5,6 +5,7 @@ const {
   getTodaysTasks,
   toggleCompletion,
   deleteTask,
+  updateTask,
   getAllTasks,
   updateTaskOrder,
   applyAIPriorities,
@@ -41,6 +42,7 @@ router.put('/reorder', validateTaskOrderPayload, updateTaskOrder);
 router.put('/apply-priorities', validateApplyPrioritiesPayload, applyAIPriorities);
 router.put('/apply-skips', validateApplySkipsPayload, applyAISkips);
 router.put('/apply-fallbacks', validateApplyFallbacksPayload, applyAIFallbacks);
+router.put('/:id', validateObjectIdParam('id'), validateTaskCreatePayload, updateTask);
 router.put('/:id/reminder', validateObjectIdParam('id'), validateTaskReminderPayload, updateTaskReminder);
 router.put('/:id/complete', validateObjectIdParam('id'), toggleCompletion);
 router.delete('/:id', validateObjectIdParam('id'), deleteTask);

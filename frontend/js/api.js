@@ -230,6 +230,20 @@ const API = (() => {
       });
       return response;
     },
+
+    /**
+     * Update an existing task title
+     * @param {string} taskId
+     * @param {string} title
+     * @returns {Promise<{task: object}>}
+     */
+    update: async (taskId, title) => {
+      const response = await request(`/tasks/${taskId}`, {
+        method: 'PUT',
+        body: { title }
+      });
+      return response;
+    },
     
     /**
      * Toggle task completion for today

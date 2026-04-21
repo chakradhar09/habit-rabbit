@@ -758,6 +758,70 @@ const applyAIFallbacks = async (req, res) => {
   }
 };
 
+// @desc    Update task title
+// @route   PUT /api/tasks/:id
+// @access  Private
+const updateTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+    const userId = req.user._id;
+
+    const task = await Task.findOneAndUpdate(
+      { _id: id, userId, isActive: true },
+      {
+        $set: {
+          title: title.trim()
+        }
+      },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found.'
+      });
+    }
+
+    logger.audit('task_updated', {
+      userId: String(userId),
+      taskId: String(task._id),
+      title: task.title
+    });
+
+    notifyWeeklyPlanChange(userId, 'tasks-updated');
+
+    res.json({
+      success: true,
+      message: 'Task updated successfully.',
+      data: {
+        task: {
+          _id: task._id,
+          title: task.title,
+          isActive: task.isActive,
+          reminder: task.reminder,
+          pausedUntil: task.pausedUntil,
+          pauseReason: task.pauseReason,
+          createdAt: task.createdAt
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Update task error', {
+      userId: String(req.user._id),
+      taskId: req.params.id,
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error updating task.'
+    });
+  }
+};
+
 // @desc    Update reminder settings for a task
 // @route   PUT /api/tasks/:id/reminder
 // @access  Private
@@ -822,6 +886,7 @@ module.exports = {
   getTodaysTasks,
   toggleCompletion,
   deleteTask,
+  updateTask,
   getAllTasks,
   updateTaskOrder,
   applyAIPriorities,
