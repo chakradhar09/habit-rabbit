@@ -531,7 +531,7 @@ function getRecentTaskDates() {
   const dates = [];
   const today = new Date();
 
-  for (let offset = 13; offset >= 0; offset -= 1) {
+  for (let offset = 15; offset >= 0; offset -= 1) {
     const date = new Date(today);
     date.setHours(12, 0, 0, 0);
     date.setDate(date.getDate() - offset);
