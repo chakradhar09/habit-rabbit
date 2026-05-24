@@ -26,7 +26,7 @@ const toDateOnlyString = (value) => {
   return `${year}-${month}-${day}`;
 };
 
-const isWithinLast7Days = (dateStr) => {
+const isWithinLast14Days = (dateStr) => {
   if (!DATE_ONLY_REGEX.test(dateStr)) {
     return false;
   }
@@ -41,7 +41,7 @@ const isWithinLast7Days = (dateStr) => {
   const targetDate = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate(), 12, 0, 0, 0);
   const diffDays = Math.floor((todayDate - targetDate) / (1000 * 60 * 60 * 24));
 
-  return diffDays >= 0 && diffDays <= 6;
+  return diffDays >= 0 && diffDays <= 13;
 };
 
 const validateRegisterPayload = (req, res, next) => {
@@ -308,8 +308,8 @@ const validateTaskReminderPayload = (req, res, next) => {
 const validateRecentDateParam = (paramName) => (req, res, next) => {
   const value = req.params[paramName];
 
-  if (typeof value !== 'string' || !isWithinLast7Days(value)) {
-    return badRequest(res, 'Date must be within the last 7 days and use YYYY-MM-DD format.');
+  if (typeof value !== 'string' || !isWithinLast14Days(value)) {
+    return badRequest(res, 'Date must be within the last 14 days and use YYYY-MM-DD format.');
   }
 
   req.params[paramName] = value;
@@ -325,8 +325,8 @@ const validateTaskCompletionDatePayload = (req, res, next) => {
 
   const normalizedDate = date || toDateOnlyString(new Date());
 
-  if (!isWithinLast7Days(normalizedDate)) {
-    return badRequest(res, 'Completion date must be within the last 7 days.');
+  if (!isWithinLast14Days(normalizedDate)) {
+    return badRequest(res, 'Completion date must be within the last 14 days.');
   }
 
   req.body.date = normalizedDate;
