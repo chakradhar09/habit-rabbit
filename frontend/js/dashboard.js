@@ -633,7 +633,7 @@ function renderTaskDateSelector() {
   }).join('');
 
   taskDateSelector.querySelectorAll('.task-date-btn').forEach((button) => {
-    button.addEventListener('click', async () => {
+    button.addEventListener('click', () => {
       const nextDate = button.dataset.date;
       if (!nextDate || nextDate === selectedTaskDate) {
         return;
@@ -642,15 +642,21 @@ function renderTaskDateSelector() {
       selectedTaskDate = nextDate;
       renderTaskDateSelector();
       syncSelectedDateUI();
-      await loadTodaysTasks();
 
-      if (isAnalyticsVisible()) {
-        loadProgressChart(currentRange);
-        renderHeatmapSelector();
-        if (selectedHeatmapTask) {
-          loadHeatmap(selectedHeatmapTask);
+      // Load tasks immediately (non-blocking). Heavy analytics work will be deferred
+      // so the UI updates instantly when switching dates.
+      loadTodaysTasks();
+
+      // Defer analytics-heavy work slightly to avoid blocking the main render.
+      setTimeout(() => {
+        if (isAnalyticsVisible()) {
+          loadProgressChart(currentRange);
+          renderHeatmapSelector();
+          if (selectedHeatmapTask) {
+            loadHeatmap(selectedHeatmapTask);
+          }
         }
-      }
+      }, 50);
     });
   });
 }
@@ -781,11 +787,11 @@ async function loadTodaysTasks() {
       tasks = response.data.tasks;
       taskSkeleton.classList.add('hidden');
       taskList.classList.remove('hidden');
-      
-      // Load streak data for all tasks
-      await loadTaskStreaks();
-      
+
+      // Render tasks immediately, then start background streak fetches (batched)
       renderTasks();
+      loadTaskStreaks(); // don't await - run in background
+
       updateProgress(response.data.progress);
       syncSelectedDateUI();
       updateHabitListMaxHeight();
@@ -800,20 +806,36 @@ async function loadTodaysTasks() {
 // Load streak data for all tasks
 async function loadTaskStreaks() {
   taskStreaks = {};
-  const streakPromises = tasks.map(async (task) => {
-    try {
-      const response = await API.analytics.getHeatmap(task._id);
-      if (response.success) {
-        const streak = calculateStreakFromHeatmap(response.data.heatmap);
+  const concurrency = 4;
+
+  for (let i = 0; i < tasks.length; i += concurrency) {
+    const batch = tasks.slice(i, i + concurrency);
+    const promises = batch.map(async (task) => {
+      try {
+        const response = await API.analytics.getHeatmap(task._id);
+        const streak = (response && response.success && response.data && response.data.heatmap)
+          ? calculateStreakFromHeatmap(response.data.heatmap)
+          : 0;
         taskStreaks[task._id] = streak;
+
+        // Update any visible streak element progressively
+        const card = document.querySelector(`[data-task-id="${task._id}"]`);
+        if (card) {
+          const streakEl = card.querySelector('.task-streak');
+          if (streakEl) streakEl.textContent = String(streak);
+        }
+      } catch (err) {
+        console.error(`Failed to load streak for task ${task._id}:`, err);
+        taskStreaks[task._id] = 0;
       }
-    } catch (error) {
-      console.error(`Failed to load streak for task ${task._id}:`, error);
-      taskStreaks[task._id] = 0;
-    }
-  });
-  
-  await Promise.all(streakPromises);
+    });
+
+    // Wait for this batch to finish before starting the next to limit concurrency
+    // This keeps the network load reasonable and reduces perceived lag for the user.
+    // We don't await the caller, so this overall function runs in background.
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(promises);
+  }
 }
 
 function toLocalDateStr(value = new Date()) {
