@@ -217,6 +217,16 @@ const API = (() => {
       const response = await request('/tasks/today');
       return response;
     },
+
+    /**
+     * Get tasks for a specific date within the last 7 days
+     * @param {string} date
+     * @returns {Promise<{tasks: array, date: string, progress: object}>}
+     */
+    getByDate: async (date) => {
+      const response = await request(`/tasks/date/${date}`);
+      return response;
+    },
     
     /**
      * Create a new task
@@ -246,13 +256,15 @@ const API = (() => {
     },
     
     /**
-     * Toggle task completion for today
+     * Toggle task completion for a specific date
      * @param {string} taskId 
+     * @param {string} date
      * @returns {Promise<{completed: boolean}>}
      */
-    toggleComplete: async (taskId) => {
+    toggleComplete: async (taskId, date) => {
       const response = await request(`/tasks/${taskId}/complete`, {
-        method: 'PUT'
+        method: 'PUT',
+        body: { date }
       });
       return response;
     },

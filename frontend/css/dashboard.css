@@ -2268,6 +2268,126 @@ body::after {
   margin-top: 5px;
 }
 
+.task-date-card {
+  margin-bottom: 16px;
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 10%, var(--surface)), var(--surface)),
+    var(--surface);
+}
+
+.task-date-card .card-head {
+  padding-right: 16px;
+  padding-top: 16px;
+}
+
+.task-date-card .card-body {
+  padding: 12px 16px 16px;
+  width: auto;
+}
+
+.date-section-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-date-nav-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border: 1px solid var(--border-soft);
+  border-radius: 9999px;
+  background: var(--surface);
+  color: var(--t2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+  flex-shrink: 0;
+}
+
+.task-date-nav-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--t1);
+}
+
+.task-date-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.task-date-nav-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.task-date-selector {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.task-date-btn {
+  width: 64px;
+  height: 64px;
+  min-height: 64px;
+  border: 1px solid var(--border-soft);
+  border-radius: 9999px;
+  background: var(--surface);
+  color: var(--t2);
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  justify-self: center;
+}
+
+.task-date-btn:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--t1);
+}
+
+.task-date-btn.is-active {
+  background: var(--accent-dim);
+  border-color: color-mix(in srgb, var(--accent) 76%, var(--border));
+  color: var(--accent-contrast);
+  box-shadow: 0 8px 20px rgba(245, 166, 35, 0.16);
+}
+
+.task-date-btn-day {
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.task-date-btn-label {
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .minimal-stat {
   display: flex;
   flex-direction: column;
@@ -2478,6 +2598,10 @@ body::after {
     justify-content: flex-start;
     width: 100%;
   }
+
+  .task-date-selector {
+    gap: 6px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -2514,6 +2638,10 @@ body::after {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 10px;
+  }
+
+  .task-date-selector {
+    gap: 6px;
   }
 
   .minimal-stat {
@@ -2621,6 +2749,24 @@ body::after {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     justify-content: stretch;
+  }
+
+  .task-date-card {
+    margin-bottom: 14px;
+    display: block;
+    width: 100%;
+  }
+
+  .date-section-header-row {
+    gap: 8px;
+  }
+
+  .task-date-card .card-body {
+    padding: 12px 12px 14px;
+  }
+
+  .task-date-selector {
+    gap: 6px;
   }
 
   .minimal-stat {
@@ -2824,6 +2970,21 @@ body::after {
 
   .minimal-stat {
     padding: 11px;
+  }
+
+  .task-date-btn {
+    width: 60px;
+    height: 60px;
+    min-height: 60px;
+    padding: 7px 5px;
+  }
+
+  .task-date-btn-day {
+    font-size: 16px;
+  }
+
+  .task-date-btn-label {
+    font-size: 8px;
   }
 
   .minimal-stat-value {

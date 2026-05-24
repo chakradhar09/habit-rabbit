@@ -20,6 +20,7 @@ let weeklyRealtimeReconnectTimer = null;
 let showAnalytics = false;
 let mobileAnalyticsObserver = null;
 let isMobileScrollRevealBound = false;
+let selectedTaskDate = toLocalDateStr(new Date());
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -59,10 +60,18 @@ const reorderTaskList = document.getElementById('reorder-task-list');
 const toastContainer = document.getElementById('toast-container');
 const taskSkeleton = document.getElementById('task-skeleton');
 const headerDate = document.getElementById('header-date');
+const dateSectionTitle = document.getElementById('date-section-title');
+const taskDatePrevBtn = document.getElementById('task-date-prev-btn');
+const taskDateCard = document.getElementById('task-date-card');
+const taskDateSelector = document.getElementById('task-date-selector');
+const taskSectionTitle = document.getElementById('task-section-title');
+const taskSectionBadge = document.getElementById('task-section-badge');
+const progressSectionTitle = document.getElementById('progress-section-title');
 const habitsCard = document.getElementById('habits-card');
 const habitBadge = document.getElementById('habit-badge');
 const headerTodayCount = document.getElementById('header-today-count');
 const headerStreakCount = document.getElementById('header-streak-count');
+const statTodayLabel = document.getElementById('stat-today-label');
 
 if (analyticsSection && analyticsMountParent && analyticsMountAnchor) {
   analyticsMountParent.insertBefore(analyticsMountAnchor, analyticsSection);
@@ -264,6 +273,12 @@ function setupEventListeners() {
 
   // Logout
   logoutBtn.addEventListener('click', handleLogout);
+
+  if (taskDatePrevBtn) {
+    taskDatePrevBtn.setAttribute('aria-controls', 'task-date-card');
+    taskDatePrevBtn.setAttribute('aria-expanded', 'false');
+    taskDatePrevBtn.addEventListener('click', () => toggleRecentDaysCard());
+  }
 
   // Analysis
   if (analysisBtn) {
@@ -509,16 +524,146 @@ function handleDocumentClick(event) {
 }
 
 function initializeDashboardHeader() {
-  const now = new Date();
+  syncSelectedDateUI();
+}
+
+function getRecentTaskDates() {
+  const dates = [];
+  const today = new Date();
+
+  for (let offset = 6; offset >= 0; offset -= 1) {
+    const date = new Date(today);
+    date.setHours(12, 0, 0, 0);
+    date.setDate(date.getDate() - offset);
+    dates.push(toLocalDateStr(date));
+  }
+
+  return dates;
+}
+
+function formatSelectedDate(dateStr) {
+  const parsed = new Date(`${dateStr}T12:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return dateStr;
+  }
+
+  return parsed.toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
+function formatSelectedHeading(dateStr) {
+  const parsed = new Date(`${dateStr}T12:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return 'Selected day';
+  }
+
+  const dayNumber = parsed.toLocaleDateString('en-GB', { day: 'numeric' });
+  const dayName = parsed.toLocaleDateString('en-GB', { weekday: 'short' });
+  return `${dayNumber} ${dayName}`;
+}
+
+function formatDateButtonDay(dateStr) {
+  const parsed = new Date(`${dateStr}T12:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+
+  return parsed.toLocaleDateString('en-GB', { day: 'numeric' });
+}
+
+function formatDateButtonLabel(dateStr) {
+  const parsed = new Date(`${dateStr}T12:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+
+  return parsed.toLocaleDateString('en-GB', { weekday: 'short' });
+}
+
+function isSelectedTaskDate(dateStr) {
+  return String(dateStr) === String(selectedTaskDate);
+}
+
+function syncSelectedDateUI() {
+  const formattedDate = formatSelectedDate(selectedTaskDate);
+  const isTodaySelected = selectedTaskDate === toLocalDateStr(new Date());
 
   if (headerDate) {
-    headerDate.textContent = now.toLocaleDateString('en-GB', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+    headerDate.textContent = formattedDate;
   }
+
+  if (dateSectionTitle) {
+    dateSectionTitle.textContent = isTodaySelected ? 'Today' : formatSelectedHeading(selectedTaskDate);
+  }
+
+  if (taskSectionTitle) {
+    taskSectionTitle.textContent = isTodaySelected ? 'Today\'s Tasks' : 'Tasks for this date';
+  }
+
+  if (taskSectionBadge) {
+    taskSectionBadge.textContent = isTodaySelected ? 'Today' : formattedDate;
+  }
+
+  if (statTodayLabel) {
+    statTodayLabel.textContent = isTodaySelected ? "Today's Done" : 'Selected Day Done';
+  }
+
+  if (progressSectionTitle) {
+    progressSectionTitle.textContent = isTodaySelected ? 'Today\'s Progress' : 'Selected Day Progress';
+  }
+}
+
+function renderTaskDateSelector() {
+  if (!taskDateSelector) return;
+
+  const dateOptions = getRecentTaskDates();
+
+  taskDateSelector.innerHTML = dateOptions.map((dateStr) => {
+    const activeClass = isSelectedTaskDate(dateStr) ? 'is-active' : '';
+    return `
+      <button class="task-date-btn ${activeClass}" type="button" data-date="${dateStr}" aria-pressed="${isSelectedTaskDate(dateStr)}">
+        <span class="task-date-btn-day">${formatDateButtonDay(dateStr)}</span>
+        <span class="task-date-btn-label">${formatDateButtonLabel(dateStr)}</span>
+      </button>
+    `;
+  }).join('');
+
+  taskDateSelector.querySelectorAll('.task-date-btn').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const nextDate = button.dataset.date;
+      if (!nextDate || nextDate === selectedTaskDate) {
+        return;
+      }
+
+      selectedTaskDate = nextDate;
+      renderTaskDateSelector();
+      syncSelectedDateUI();
+      await loadTodaysTasks();
+
+      if (isAnalyticsVisible()) {
+        loadProgressChart(currentRange);
+        renderHeatmapSelector();
+        if (selectedHeatmapTask) {
+          loadHeatmap(selectedHeatmapTask);
+        }
+      }
+    });
+  });
+}
+
+function toggleRecentDaysCard(forceOpen) {
+  if (!taskDateCard || !taskDatePrevBtn) return;
+
+  const shouldOpen = typeof forceOpen === 'boolean'
+    ? forceOpen
+    : taskDateCard.classList.contains('hidden');
+
+  taskDateCard.classList.toggle('hidden', !shouldOpen);
+  taskDatePrevBtn.setAttribute('aria-expanded', String(shouldOpen));
 }
 
 function updateHabitListMaxHeight() {
@@ -628,7 +773,10 @@ function activateDashboardPanel(panelKey, { keepAnalytics = false } = {}) {
 // Load today's tasks
 async function loadTodaysTasks() {
   try {
-    const response = await API.tasks.getToday();
+    syncSelectedDateUI();
+    renderTaskDateSelector();
+
+    const response = await API.tasks.getByDate(selectedTaskDate);
     if (response.success) {
       tasks = response.data.tasks;
       taskSkeleton.classList.add('hidden');
@@ -639,6 +787,7 @@ async function loadTodaysTasks() {
       
       renderTasks();
       updateProgress(response.data.progress);
+      syncSelectedDateUI();
       updateHabitListMaxHeight();
     }
   } catch (error) {
@@ -710,10 +859,8 @@ async function loadStats() {
     if (response.success) {
       const { todayCompletions, currentStreak, totalCompletions, totalTasks } = response.data;
 
-      statToday.textContent = todayCompletions;
       statStreak.textContent = currentStreak;
       statTotal.textContent = totalCompletions;
-      if (headerTodayCount) headerTodayCount.textContent = formatCompletionPercentage(todayCompletions, totalTasks);
       if (headerStreakCount) headerStreakCount.textContent = currentStreak;
     }
   } catch (error) {
@@ -903,7 +1050,7 @@ async function toggleTaskComplete(taskId) {
   }
 
   try {
-    const response = await API.tasks.toggleComplete(taskId);
+    const response = await API.tasks.toggleComplete(taskId, selectedTaskDate);
     if (response.success) {
       // Update progress
       const total = tasks.length;

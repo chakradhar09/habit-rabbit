@@ -125,6 +125,26 @@ const createTask = async (req, res) => {
 const getTodaysTasks = async (req, res) => {
   try {
     const today = getTodayDate();
+    const requestedDate = typeof req.query.date === 'string' && req.query.date.trim()
+      ? req.query.date.trim()
+      : today;
+    return getTasksForDate(req, res, requestedDate);
+  } catch (error) {
+    logger.error('Get today tasks error', {
+      userId: String(req.user._id),
+      error: error.message,
+      stack: error.stack
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching tasks'
+    });
+  }
+};
+
+const getTasksForDate = async (req, res, dateStr) => {
+  try {
     const userId = req.user._id;
 
     // Get all active tasks for the user (sorted by sortOrder, then createdAt)
@@ -135,7 +155,7 @@ const getTodaysTasks = async (req, res) => {
     const completions = await TaskCompletion.find({
       userId,
       taskId: { $in: taskIds },
-      date: today
+      date: dateStr
     });
 
     // Create a map of completed tasks
@@ -156,7 +176,7 @@ const getTodaysTasks = async (req, res) => {
       pauseReason: task.pauseReason,
       fallbackFromTitle: task.fallbackFromTitle,
       fallbackAppliedAt: task.fallbackAppliedAt,
-      isPaused: isTaskPaused(task, today),
+      isPaused: isTaskPaused(task, dateStr),
       createdAt: task.createdAt,
       completed: completedMap.get(task._id.toString()) || false
     }));
@@ -179,7 +199,7 @@ const getTodaysTasks = async (req, res) => {
           percentage,
           pausedTasks
         },
-        date: today
+        date: dateStr
       }
     });
   } catch (error) {
@@ -196,13 +216,20 @@ const getTodaysTasks = async (req, res) => {
   }
 };
 
+// @desc    Get tasks for a specific recent date
+// @route   GET /api/tasks/date/:date
+// @access  Private
+const getTasksByDate = async (req, res) => {
+  return getTasksForDate(req, res, req.params.date);
+};
+
 // @desc    Toggle task completion for today
 // @route   PUT /api/tasks/:id/complete
 // @access  Private
 const toggleCompletion = async (req, res) => {
   try {
     const { id } = req.params;
-    const today = getTodayDate();
+    const selectedDate = req.body.date || getTodayDate();
     const userId = req.user._id;
 
     // Verify task belongs to user
@@ -218,7 +245,7 @@ const toggleCompletion = async (req, res) => {
     let completion = await TaskCompletion.findOne({
       userId,
       taskId: id,
-      date: today
+      date: selectedDate
     });
 
     if (completion) {
@@ -230,19 +257,19 @@ const toggleCompletion = async (req, res) => {
       completion = await TaskCompletion.create({
         userId,
         taskId: id,
-        date: today,
+        date: selectedDate,
         completed: true
       });
     }
 
-    notifyWeeklyPlanChange(userId, 'tasks-updated', today);
+    notifyWeeklyPlanChange(userId, 'tasks-updated', selectedDate);
 
     res.json({
       success: true,
       message: completion.completed ? 'Task marked as completed' : 'Task marked as incomplete',
       data: {
         taskId: id,
-        date: today,
+        date: selectedDate,
         completed: completion.completed
       }
     });
@@ -884,6 +911,7 @@ const updateTaskReminder = async (req, res) => {
 module.exports = {
   createTask,
   getTodaysTasks,
+  getTasksByDate,
   toggleCompletion,
   deleteTask,
   updateTask,

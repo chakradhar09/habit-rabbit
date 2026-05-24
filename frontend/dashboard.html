@@ -78,7 +78,14 @@
       <main class="main">
         <section class="planner-top">
           <div class="date-section">
-            <h1>Today</h1>
+            <div class="date-section-header-row">
+              <button id="task-date-prev-btn" class="task-date-nav-btn" type="button" aria-label="Show recent days">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M15.5 4.5L9 12l6.5 7.5" />
+                </svg>
+              </button>
+              <h1 id="date-section-title">Today</h1>
+            </div>
             <p id="header-date" class="today-date">Tuesday, 13 Feb 2026</p>
           </div>
 
@@ -101,6 +108,16 @@
                 >
               </span>
             </div>
+          </div>
+        </section>
+
+        <section id="task-date-card" class="card task-date-card hidden" aria-label="Recent dates for editing task completion">
+          <div class="card-head task-date-card-head">
+            <span class="card-title">Recent days</span>
+            <span class="card-badge" id="task-section-badge">Today</span>
+          </div>
+          <div class="card-body">
+            <div id="task-date-selector" class="task-date-selector" role="tablist" aria-label="Last seven days"></div>
           </div>
         </section>
 
@@ -136,7 +153,7 @@
             <div class="stat-icon green">✓</div>
             <div class="stat-info">
               <div class="stat-val" id="stat-today">0</div>
-              <div class="stat-label">Today's Done</div>
+              <div id="stat-today-label" class="stat-label">Today's Done</div>
             </div>
           </div>
           <div class="stat-card">
@@ -158,7 +175,7 @@
         <div class="content-grid">
           <div id="habits-card" class="card habits-card">
             <div class="card-head">
-              <span class="card-title">Today's Tasks</span>
+              <span id="task-section-title" class="card-title">Today's Tasks</span>
               <span class="card-badge" id="habit-badge">0 / 0</span>
             </div>
             <div class="card-body">
@@ -179,7 +196,7 @@
 
               <div class="progress-section">
                 <div class="progress-meta">
-                  <span class="progress-label">Today's Progress</span>
+                  <span id="progress-section-title" class="progress-label">Today's Progress</span>
                   <span class="progress-count" id="progress-text">0 / 0</span>
                 </div>
                 <div class="progress-bar-track">

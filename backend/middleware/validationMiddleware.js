@@ -12,6 +12,38 @@ const badRequest = (res, message, details) =>
 
 const normalizeEmail = (email) => (typeof email === 'string' ? email.trim().toLowerCase() : '');
 
+const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+const toDateOnlyString = (value) => {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const isWithinLast7Days = (dateStr) => {
+  if (!DATE_ONLY_REGEX.test(dateStr)) {
+    return false;
+  }
+
+  const parsed = new Date(`${dateStr}T12:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return false;
+  }
+
+  const today = new Date();
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0, 0, 0);
+  const targetDate = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate(), 12, 0, 0, 0);
+  const diffDays = Math.floor((todayDate - targetDate) / (1000 * 60 * 60 * 24));
+
+  return diffDays >= 0 && diffDays <= 6;
+};
+
 const validateRegisterPayload = (req, res, next) => {
   const email = normalizeEmail(req.body.email);
   const password = typeof req.body.password === 'string' ? req.body.password : '';
@@ -273,6 +305,34 @@ const validateTaskReminderPayload = (req, res, next) => {
   return next();
 };
 
+const validateRecentDateParam = (paramName) => (req, res, next) => {
+  const value = req.params[paramName];
+
+  if (typeof value !== 'string' || !isWithinLast7Days(value)) {
+    return badRequest(res, 'Date must be within the last 7 days and use YYYY-MM-DD format.');
+  }
+
+  req.params[paramName] = value;
+  return next();
+};
+
+const validateTaskCompletionDatePayload = (req, res, next) => {
+  const date = typeof req.body.date === 'string'
+    ? req.body.date.trim()
+    : typeof req.query.date === 'string'
+      ? req.query.date.trim()
+      : '';
+
+  const normalizedDate = date || toDateOnlyString(new Date());
+
+  if (!isWithinLast7Days(normalizedDate)) {
+    return badRequest(res, 'Completion date must be within the last 7 days.');
+  }
+
+  req.body.date = normalizedDate;
+  return next();
+};
+
 const validateWeeklyPlanPayload = (req, res, next) => {
   const {
     weekStartDate,
@@ -360,6 +420,8 @@ module.exports = {
   validateApplySkipsPayload,
   validateApplyFallbacksPayload,
   validateTaskReminderPayload,
+  validateRecentDateParam,
+  validateTaskCompletionDatePayload,
   validateWeeklyPlanPayload,
   validateAIInsightsPayload,
   validateObjectIdParam,

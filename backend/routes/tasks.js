@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   createTask,
   getTodaysTasks,
+  getTasksByDate,
   toggleCompletion,
   deleteTask,
   updateTask,
@@ -25,6 +26,8 @@ const {
   validateApplySkipsPayload,
   validateApplyFallbacksPayload,
   validateTaskReminderPayload,
+  validateRecentDateParam,
+  validateTaskCompletionDatePayload,
   validateObjectIdParam
 } = require('../middleware/validationMiddleware');
 
@@ -37,6 +40,7 @@ router.post('/onboarding/setup', validateOnboardingSetupPayload, setupOnboarding
 router.put('/onboarding/complete', completeOnboarding);
 router.post('/', validateTaskCreatePayload, createTask);
 router.get('/today', getTodaysTasks);
+router.get('/date/:date', validateRecentDateParam('date'), getTasksByDate);
 router.get('/', getAllTasks);
 router.put('/reorder', validateTaskOrderPayload, updateTaskOrder);
 router.put('/apply-priorities', validateApplyPrioritiesPayload, applyAIPriorities);
@@ -44,7 +48,7 @@ router.put('/apply-skips', validateApplySkipsPayload, applyAISkips);
 router.put('/apply-fallbacks', validateApplyFallbacksPayload, applyAIFallbacks);
 router.put('/:id', validateObjectIdParam('id'), validateTaskCreatePayload, updateTask);
 router.put('/:id/reminder', validateObjectIdParam('id'), validateTaskReminderPayload, updateTaskReminder);
-router.put('/:id/complete', validateObjectIdParam('id'), toggleCompletion);
+router.put('/:id/complete', validateObjectIdParam('id'), validateTaskCompletionDatePayload, toggleCompletion);
 router.delete('/:id', validateObjectIdParam('id'), deleteTask);
 
 module.exports = router;
